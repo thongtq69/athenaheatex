@@ -1,0 +1,14 @@
+ï»¿User-agent: *
+Disallow: /adminsoft/
+Disallow: /wap/
+Disallow: /install/
+Disallow: /public/
+Disallow: /html/
+Disallow: /api/
+Disallow: /htaccess/
+Disallow: /interface/
+Disallow: /js/
+Disallow: /qdsoft/
+Disallow: /mail.php
+
+Sitemap: http://www.shjoylong.com/sitemap.xml
