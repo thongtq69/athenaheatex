@@ -147,20 +147,62 @@ try:
 except (OSError, ValueError, TypeError):
     _MEMORY = {}
 
+_WS = re.compile(r"\s+")
+
+
+def _norm(value):
+    return _WS.sub(" ", value).strip()
+
+
+# Exact-match table. Memory entries (reviewed, page-specific copy) take
+# precedence over the structured dictionary so a whole sentence is always
+# preferred to a phrase-by-phrase rewrite.
+_EXACT = {}
+for _src, _dst in TRANSLATIONS.items():
+    _EXACT.setdefault(_norm(_src), _dst)
+for _src, _dst in _MEMORY.items():
+    if _norm(_src):
+        _EXACT[_norm(_src)] = _dst
+
+# Phrase fallback for text that has no exact entry. Matches are whole words
+# only (so "Product" never rewrites "Production") and are applied longest
+# phrase first.
+_BOUNDARY_L = r"(?<![A-Za-z0-9À-ỹ])"
+_BOUNDARY_R = r"(?![A-Za-z0-9À-ỹ])"
+_PHRASES = sorted({_norm(k): v for k, v in TRANSLATIONS.items() if _norm(k)}.items(), key=lambda kv: len(kv[0]), reverse=True)
+_PHRASE_RE = [(re.compile(_BOUNDARY_L + re.escape(k) + _BOUNDARY_R), v) for k, v in _PHRASES]
+_TRAILERS = (":", "：", ".", "!", "?", ",", ";")
+
+
+def _lookup(text):
+    if text in _EXACT:
+        return _EXACT[text]
+    for mark in _TRAILERS:
+        if text.endswith(mark):
+            base = text[:-1].rstrip()
+            if base in _EXACT:
+                return _EXACT[base] + mark
+    return None
+
+
 def translate_text(value):
-    original = value
+    if not value or not value.strip():
+        return value
     # Mirrored HTML uses non-breaking spaces and line-wrapped whitespace in
-    # long paragraphs. Normalize visible text before applying phrase entries
-    # so the same locale data works across every generated page.
-    value = re.sub(r"\s+", " ", value).strip() if value.strip() else value
-    if value in _MEMORY:
-        return _MEMORY[value]
-    # Long phrases first; this prevents fragments such as "Product" from
-    # corrupting a translated sentence.
-    for src in sorted(TRANSLATIONS, key=len, reverse=True):
-        value = value.replace(re.sub(r"\s+", " ", src).strip(), TRANSLATIONS[src])
-    value = re.sub(r"\bComplete\s+(?=[A-ZÀ-Ỹ])", "", value)
-    return value if value != original else original
+    # long paragraphs. Normalize visible text before lookups so the same
+    # locale data works across every generated page, but keep the original
+    # leading/trailing whitespace so inline fragments do not run together.
+    lead = value[: len(value) - len(value.lstrip())]
+    trail = value[len(value.rstrip()):]
+    core = _norm(value)
+    hit = _lookup(core)
+    if hit is not None:
+        return lead + hit + trail
+    out = core
+    for pattern, replacement in _PHRASE_RE:
+        out = pattern.sub(replacement, out)
+    out = re.sub(r"\bComplete\s+(?=[A-ZÀ-Ỹ])", "", out)
+    return lead + out + trail if out != core else value
 
 def locale_href(href, vi_root: Path):
     if not href or not href.startswith("/") or href.startswith("//") or href.startswith(ASSET_PREFIXES):
@@ -174,12 +216,60 @@ def locale_href(href, vi_root: Path):
         return VI_PREFIX + candidate + (("?" + suffix) if sep else "") + (("#" + fragment) if hash_sep else "")
     return href
 
+_META_KEYS = {"description", "keywords", "og:title", "og:description", "twitter:title", "twitter:description"}
+# "Name" inside a specification table is the machine name, while the same
+# word on the inquiry form is the visitor's name.
+_TABLE_LABELS = {"Name": "Tên", "Name:": "Tên:", "Name model": "Tên model"}
+_COMPANY_SUFFIX = " - Shanghai Joylong Industry Co.,Ltd"
+
+
+def translate_title(soup):
+    if not soup.title:
+        return
+    title_text = _norm(soup.title.get_text(" ", strip=True))
+    if not title_text:
+        return
+    heading = soup.find("h1")
+    heading_text = _norm(heading.get_text(" ", strip=True)) if heading else ""
+    # SEO titles such as "X - China X Supplier,Factory - Shanghai Joylong ..."
+    # are rebuilt from the rendered heading so the tab title matches the page.
+    if heading_text and ("Supplier" in title_text or "Factory" in title_text or "processing line" in title_text.lower()):
+        soup.title.string = translate_text(heading_text) + _COMPANY_SUFFIX
+        return
+    translated = translate_text(title_text)
+    if translated == title_text:
+        head, sep, tail = title_text.partition(" - Shanghai")
+        if sep:
+            translated = translate_text(head) + sep + tail
+    if translated == title_text and heading_text:
+        translated = translate_text(heading_text) + _COMPANY_SUFFIX
+    soup.title.string = translated
+
+
 def translate_document(path: Path, vi_root: Path):
     soup = BeautifulSoup(path.read_text(encoding="utf8"), "html.parser")
+    if soup.html:
+        soup.html["lang"] = "vi"
     for node in list(soup.find_all(string=True)):
         if not isinstance(node, NavigableString) or isinstance(node, (Comment, Doctype)) or node.parent.name in {"script", "style", "noscript"}:
             continue
+        core = _norm(str(node))
+        if core in _TABLE_LABELS and node.find_parent(("td", "th")) is not None:
+            # Specification tables label the machine, not a person.
+            lead = str(node)[: len(str(node)) - len(str(node).lstrip())]
+            trail = str(node)[len(str(node).rstrip()):]
+            node.replace_with(lead + _TABLE_LABELS[core] + trail)
+            continue
         node.replace_with(translate_text(str(node)))
+    # English ordinal suffixes ("25<sup>th</sup> Jan") have no Vietnamese
+    # counterpart; the surrounding text is translated as "ngày 25 tháng 1".
+    for sup in soup.find_all("sup"):
+        if sup.get_text(strip=True).lower() in {"st", "nd", "rd", "th"}:
+            sup.string = ""
+    for meta in soup.find_all("meta"):
+        key = (meta.get("name") or meta.get("property") or "").lower()
+        if key in _META_KEYS and meta.get("content"):
+            meta["content"] = translate_text(meta["content"])
     for tag in soup.find_all(True):
         for attr in ("placeholder", "aria-label", "title", "alt"):
             if tag.has_attr(attr): tag[attr] = translate_text(tag[attr])
@@ -217,11 +307,5 @@ def translate_document(path: Path, vi_root: Path):
                 ul.append(li)
     # Localize SEO titles from the rendered heading while preserving the
     # company name and model identifiers used by the source pages.
-    if soup.title:
-        title_text = " ".join(soup.title.get_text(" ", strip=True).split())
-        heading = soup.find("h1")
-        if heading and ("Supplier" in title_text or "Factory" in title_text or "processing line" in title_text.lower()):
-            soup.title.string = f"{translate_text(heading.get_text(' ', strip=True))} - Shanghai Joylong Industry Co.,Ltd"
-        else:
-            soup.title.string = translate_text(title_text)
+    translate_title(soup)
     path.write_text(str(soup), encoding="utf8")
