@@ -6,6 +6,7 @@ fixed in the source mirror rather than by replacing strings in URLs/scripts.
 """
 import json, re
 from urllib.parse import urljoin, urlparse
+from bs4 import Comment
 from pathlib import Path
 from bs4 import BeautifulSoup
 
@@ -21,13 +22,26 @@ def clean_text(soup):
     for node in soup.select("script,style,noscript,svg"): node.decompose()
     return " ".join(soup.stripped_strings)
 
+def dom_signature(soup):
+    """Compare page structure while excluding locale selector internals."""
+    for node in soup.select("script,style,noscript,.header-lang,.lang"):
+        node.decompose()
+    return [(tag.name, tuple(sorted(tag.get("class", []))), tag.get("id")) for tag in soup.find_all(True)]
+
 def main():
     default = {p.name for p in DIST.glob("*.html")}
     vi_files = {p.name for p in VI.glob("*.html")}
     missing = sorted(default - vi_files)
-    wrong_links, broken_vi_links, leftovers, mixed = [], [], [], []
+    wrong_links, broken_vi_links, leftovers, mixed, dom_mismatches, comment_artifacts = [], [], [], [], [], []
     for page in sorted(VI.rglob("*.html")):
         soup = BeautifulSoup(page.read_text(encoding="utf8"), "html.parser")
+        canonical = DIST / page.name
+        if canonical.exists() and page.name != "search.html":
+            en_soup = BeautifulSoup(canonical.read_text(encoding="utf8"), "html.parser")
+            if dom_signature(en_soup) != dom_signature(BeautifulSoup(page.read_text(encoding="utf8"), "html.parser")):
+                dom_mismatches.append(str(page.relative_to(DIST)).replace("\\", "/"))
+        if any("div style=\"margin-top" in str(node) for node in soup.find_all(string=True) if not isinstance(node, Comment)):
+            comment_artifacts.append(str(page.relative_to(DIST)).replace("\\", "/"))
         text = clean_text(soup)
         hits = sorted(set(LEFTOVER.findall(text)))
         if hits: leftovers.append({"page": str(page.relative_to(DIST)).replace("\\", "/"), "hits": hits[:20]})
@@ -56,9 +70,11 @@ def main():
         "missing_vietnamese_routes": missing,
         "wrong_locale_links": wrong_links,
         "broken_vietnamese_links": broken_vi_links,
+        "dom_structure_mismatches": dom_mismatches,
+        "visible_comment_artifacts": comment_artifacts,
         "english_leftovers": leftovers,
         "mixed_language": mixed,
-        "critical": len(missing) + len(wrong_links) + len(broken_vi_links),
+        "critical": len(missing) + len(wrong_links) + len(broken_vi_links) + len(dom_mismatches) + len(comment_artifacts),
     }
     REPORT.parent.mkdir(exist_ok=True)
     REPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf8")

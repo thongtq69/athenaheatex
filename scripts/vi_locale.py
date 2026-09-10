@@ -4,9 +4,10 @@ Translations are applied to parsed visible text nodes and selected UI
 attributes. URLs, scripts, CSS, model numbers and company names are never fed
 through the translation map.
 """
+import json
 import re
 from pathlib import Path
-from bs4 import BeautifulSoup, NavigableString
+from bs4 import BeautifulSoup, NavigableString, Comment, Doctype
 
 VI_PREFIX = "/languages/vi/"
 ASSET_PREFIXES = ("/templates/", "/img/", "/upfile/", "/aifeedback/", "/api/", "/languages/al/", "/languages/es/", "/languages/fr/", "/languages/ru/", "/languages/cn/")
@@ -137,12 +138,23 @@ TRANSLATIONS = {
     "In order to get running situation for the products in the plant and client device, Joylong established an advanced service feedback system and effective dispose, which largely increase the service quality and decrease the running cost.": "Để nắm bắt tình trạng vận hành của sản phẩm và thiết bị tại nhà máy, Joylong xây dựng hệ thống phản hồi dịch vụ tiên tiến và cơ chế xử lý hiệu quả, qua đó nâng cao chất lượng dịch vụ và giảm chi phí vận hành.",
 }
 
+# Preserve translations already present in the reviewed VI mirror. The
+# structured entries above take precedence; this memory fills page-specific
+# headings, captions and product copy without touching markup or URLs.
+_memory_path = Path(__file__).with_name("vi_memory.json")
+try:
+    _MEMORY = json.loads(_memory_path.read_text(encoding="utf8")) if _memory_path.exists() else {}
+except (OSError, ValueError, TypeError):
+    _MEMORY = {}
+
 def translate_text(value):
     original = value
     # Mirrored HTML uses non-breaking spaces and line-wrapped whitespace in
     # long paragraphs. Normalize visible text before applying phrase entries
     # so the same locale data works across every generated page.
     value = re.sub(r"\s+", " ", value).strip() if value.strip() else value
+    if value in _MEMORY:
+        return _MEMORY[value]
     # Long phrases first; this prevents fragments such as "Product" from
     # corrupting a translated sentence.
     for src in sorted(TRANSLATIONS, key=len, reverse=True):
@@ -165,12 +177,16 @@ def locale_href(href, vi_root: Path):
 def translate_document(path: Path, vi_root: Path):
     soup = BeautifulSoup(path.read_text(encoding="utf8"), "html.parser")
     for node in list(soup.find_all(string=True)):
-        if not isinstance(node, NavigableString) or node.parent.name in {"script", "style", "noscript"}:
+        if not isinstance(node, NavigableString) or isinstance(node, (Comment, Doctype)) or node.parent.name in {"script", "style", "noscript"}:
             continue
         node.replace_with(translate_text(str(node)))
     for tag in soup.find_all(True):
         for attr in ("placeholder", "aria-label", "title", "alt"):
             if tag.has_attr(attr): tag[attr] = translate_text(tag[attr])
+        if tag.name == "a" and tag.has_attr("data-lang"):
+            # Language menu entries are routing metadata. They must never be
+            # passed through the VI content resolver.
+            continue
         if tag.name in {"a", "form"}:
             key = "href" if tag.name == "a" else "action"
             if tag.has_attr(key): tag[key] = locale_href(tag[key], vi_root)

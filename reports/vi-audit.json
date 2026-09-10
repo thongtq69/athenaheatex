@@ -566,6 +566,8 @@
   "missing_vietnamese_routes": [],
   "wrong_locale_links": [],
   "broken_vietnamese_links": [],
+  "dom_structure_mismatches": [],
+  "visible_comment_artifacts": [],
   "english_leftovers": [
     {
       "page": "languages/vi/1_2.html",
@@ -986,12 +988,6 @@
       "hits": [
         "product",
         "products"
-      ]
-    },
-    {
-      "page": "languages/vi/index.html",
-      "hits": [
-        "processing line"
       ]
     },
     {
@@ -1904,16 +1900,6 @@
       "page": "languages/vi/incubation-room-249.html",
       "hits": [
         "product testing"
-      ]
-    },
-    {
-      "page": "languages/vi/index.html",
-      "hits": [
-        "Complete juice",
-        "Complete milk",
-        "Complete water",
-        "Complete yogurt",
-        "processing line"
       ]
     },
     {
