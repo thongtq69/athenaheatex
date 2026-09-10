@@ -1,0 +1,68 @@
+html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"/>
+<link href="https://jimeishcn.com/templates/default/css/chat.css" rel="stylesheet" type="text/css"/>
+<script src="/templates/default/js/jquery-1.7.2.min.js" type="text/javascript"></script>
+<style id="language-switcher-style">.header-lang{position:relative!important}.header-lang .box{display:flex;align-items:center;gap:9px;padding:10px 16px;border:1px solid #b7cce0;border-radius:28px;background:#fff;cursor:pointer;box-shadow:0 2px 8px #183b5d18}.header-lang .box img,.header-lang li img{width:24px;height:16px;object-fit:cover;border-radius:2px}.header-lang>ul{display:none;position:absolute;z-index:1000;right:0;top:calc(100% + 8px);min-width:220px;padding:8px;margin:0;background:#fff;border:1px solid #d9e3ee;border-radius:18px;box-shadow:0 12px 32px #183b5d2b}.header-lang.open>ul{display:block}.header-lang>ul li{list-style:none}.header-lang>ul li a{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;color:#193654;text-decoration:none}.header-lang>ul li a:hover{background:#edf4ff}.header-lang>ul li a[aria-current=true]{background:#edf4ff;font-weight:600}.header-lang .box em{font-style:normal;font-weight:600;color:#193654}.header-lang .box i{margin-left:auto}</style><script>(function(){document.addEventListener("click",function(e){var h=e.target.closest(".header-lang");document.querySelectorAll(".header-lang.open").forEach(function(x){if(x!==h)x.classList.remove("open")});if(h&&e.target.closest(".box")){h.classList.toggle("open");e.preventDefault()}});document.addEventListener("DOMContentLoaded",function(){document.querySelectorAll(".header-lang").forEach(function(h){var p=location.pathname.replace(/\\/g,"/"),cur=p.match(/^\/languages\/([a-z]+)\//);cur=cur?cur[1]:"en";h.querySelectorAll("ul a").forEach(function(a){var href=a.getAttribute("href")||"";if((cur==="en"&&href==="/index.html")||href.indexOf("/languages/"+cur+"/")===0)a.setAttribute("aria-current","true")})})})})();</script><style id="desktop-language-style">.topRight .lang{position:relative;display:inline-block!important;min-width:128px}.topRight .lang>a{display:none!important}.topRight .lang .lang-trigger{display:flex;align-items:center;gap:9px;padding:9px 16px;border:1px solid #b7cce0;border-radius:26px;background:#fff;color:#193654;cursor:pointer;font-weight:600}.topRight .lang .lang-trigger img{width:24px;height:16px;object-fit:cover;border-radius:2px}.topRight .lang .lang-menu{display:none;position:absolute;right:0;top:calc(100% + 8px);z-index:1100;width:230px;padding:8px;background:#fff;border:1px solid #d9e3ee;border-radius:18px;box-shadow:0 12px 32px #183b5d2b}.topRight .lang.open .lang-menu{display:block}.topRight .lang .lang-menu a{display:flex!important;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;color:#193654;text-decoration:none}.topRight .lang .lang-menu a:hover{background:#edf4ff}.topRight .lang .lang-menu img{width:24px;height:16px;object-fit:cover;border-radius:2px}.topRight .lang .lang-menu b{margin-left:auto;color:#7890a8;font-size:12px}</style><script id="desktop-language-script">document.addEventListener("DOMContentLoaded",function(){document.querySelectorAll(".topRight .lang").forEach(function(box){if(box.querySelector(".lang-trigger"))return;var links=[...box.querySelectorAll(":scope>a")];var vi=links.find(a=>a.textContent.includes("Tiếng Việt"));if(!vi){vi=document.createElement("a");vi.href="/languages/vi/"+(location.pathname.split("/").pop()||"index.html");vi.innerHTML='<img src="/templates/default/images/vi.svg" alt=""><span>Tiếng Việt</span><b>VI</b>';}var menu=document.createElement("div");menu.className="lang-menu";links.forEach(function(a){var code=(a.querySelector("span")?.textContent||"").slice(0,2).toUpperCase();a.innerHTML=a.innerHTML+'<b>'+code+'</b>';menu.appendChild(a)});menu.appendChild(vi);var trig=document.createElement("div");trig.className="lang-trigger";trig.innerHTML='<img src="/templates/default/images/vi.svg" alt=""><span>VI</span><span>⌄</span>';box.append(trig,menu);trig.addEventListener("click",function(e){e.stopPropagation();box.classList.toggle("open")})});document.addEventListener("click",function(){document.querySelectorAll(".topRight .lang.open").forEach(x=>x.classList.remove("open"))})});</script></head>
+<body style="margin: 0px; padding: 0px;">
+<div class="contTitle">Yêu cầu</div>
+<link href="/aifeedback/form.css" rel="stylesheet" type="text/css"/>aifeedback start<div class="crm-form">
+<div class="create-form-wrap">
+<div class="create-form-title" style="background:#5fafdf;">Liên hệ</div>
+<div class="create-form-inner">
+<div class="create-form-ul">
+<form>
+<input name="fid" type="hidden" value="1"/>
+<input id="pagetitle" name="pagetitle" type="hidden" value="Liên hệ - Shanghai Joylong Industry Co.,Ltd"/>
+<div class="create-form-sort ui-sortable">
+<div class="create-form-li">
+<div class="create-form-input">
+<label>Họ tên<span style="color:#F00">*</span>:</label>
+<input name="Name" type="text"/><div class="crmFormVali-error" style="color:#a94442;font-size:12px;line-height:1;margin-top:2px;">This field is required.</div>
+</div>
+</div>
+<div class="create-form-li">
+<div class="create-form-input">
+<label>Quốc gia:</label>
+<input name="Country" type="text"/>
+</div>
+</div>
+<div class="create-form-li">
+<div class="create-form-input">
+<label>Công ty:</label>
+<input name="Công ty" type="text"/>
+</div>
+</div>
+<div class="create-form-li">
+<div class="create-form-input">
+<label>Email<span style="color:#F00">*</span>:</label>
+<input name="Email" type="text"/>
+</div>
+</div>
+<div class="create-form-li">
+<div class="create-form-input">
+<label>Điện thoại:</label>
+<input name="Tel" type="text"/>
+</div>
+</div>
+<div class="create-form-block create-form-li create-form-message">
+<div class="create-form-textarea">
+<label>Tin nhắn<span style="color:#F00">*</span>:</label>
+<textarea name="Tin nhắn"></textarea>
+</div>
+</div>
+</div>
+<div class="create-form-block create-form-cen create-form-action">
+<input class="cid" name="cid" type="hidden" value="120"/>
+<button class="create-form-submit" style="background:#5fafdf;" type="submit">Gửi</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>aifeedback end<script src="/aifeedback/form.js" type="text/javascript"></script>
+<script defer="True" src="/local-runtime.js"></script></body>
+</html>

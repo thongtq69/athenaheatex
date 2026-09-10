@@ -13,8 +13,8 @@ before(async()=>{
  base=`http://127.0.0.1:${server.address().port}`;
 });
 after(async()=>{await new Promise(resolve=>server.close(resolve));await rm(dataDir,{recursive:true,force:true});});
-test('all six homepages and search pages are served with correct content type',async()=>{
- for(const prefix of ['','/languages/al','/languages/es','/languages/fr','/languages/ru','/languages/cn']) {
+test('all seven homepages and search pages are served with correct content type',async()=>{
+ for(const prefix of ['','/languages/al','/languages/es','/languages/fr','/languages/ru','/languages/cn','/languages/vi']) {
   for(const file of ['/index.html','/search.html']){
    const r=await fetch(base+prefix+file);assert.equal(r.status,200);assert.match(r.headers.get('content-type'),/text\/html/);assert.match(await r.text(),/local-runtime\.js/);
   }
@@ -24,6 +24,7 @@ test('search returns relevant local results and no cross-language leakage',async
  const r=await fetch(base+'/api/search?q=milk&lang=en');assert.equal(r.status,200);
  const data=await r.json();assert.ok(data.total>0);assert.match(data.results[0].title,/milk/i);
  assert.ok(data.results.every(x=>x.path.startsWith('/')&&!x.path.startsWith('/languages/')));
+ const vi=await (await fetch(base+'/api/search?q=Máy&lang=vi')).json();assert.ok(vi.total>0);assert.ok(vi.results.every(x=>x.path.startsWith('/languages/vi/')));
  const none=await (await fetch(base+'/api/search?q=zzzzzzunfindable')).json();assert.equal(none.total,0);
 });
 test('legacy search form redirects to local search',async()=>{
