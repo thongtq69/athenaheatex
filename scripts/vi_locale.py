@@ -27,7 +27,7 @@ TRANSLATIONS = {
     "Company Profile": "Giới thiệu công ty", "Company Culture": "Văn hóa công ty", "Factory Tools": "Thiết bị nhà máy",
     "Quality Control": "Kiểm soát chất lượng", "Why Us": "Vì sao chọn chúng tôi", "More Machinery": "Thêm máy móc",
     "Drop Us A Link!": "Gửi yêu cầu cho chúng tôi!", "Certification": "Chứng nhận", "Submit": "Gửi",
-    "Inquiry": "Yêu cầu", "E-mail": "Email", "Email": "Email", "Phone": "Điện thoại", "Address": "Địa chỉ",
+    "Inquiry": "Yêu cầu", "Message": "Tin nhắn", "Message * :": "Tin nhắn * :", "Share": "Chia sẻ", "E-mail": "Email", "Email": "Email", "Phone": "Điện thoại", "Address": "Địa chỉ",
     "Tel:": "Điện thoại:", "Fax:": "Fax:", "Mobile:": "Di động:",
     "Aseptic Carton Filling Machine": "Máy chiết rót hộp tiệt trùng", "Aseptic Carton Packaging Material": "Vật liệu đóng gói hộp tiệt trùng",
     "Filling, Packing Machine": "Máy chiết rót và đóng gói", "Stainless Steel Tanks": "Bồn inox", "Preparation system": "Hệ thống chuẩn bị",
@@ -190,6 +190,31 @@ def translate_document(path: Path, vi_root: Path):
         if tag.name in {"a", "form"}:
             key = "href" if tag.name == "a" else "action"
             if tag.has_attr(key): tag[key] = locale_href(tag[key], vi_root)
+    # Keep the existing mobile selector markup and visual design, while making
+    # its displayed state reflect the active locale.
+    for selector in soup.select(".header-lang"):
+        flag = selector.select_one(".box img")
+        code = selector.select_one(".box em")
+        if flag:
+            flag["src"] = "/templates/default/images/vi.svg"
+            flag["alt"] = "Tiếng Việt"
+        if code:
+            code.string = "VI"
+        english = selector.select_one('a[href="/index.html"]')
+        if english:
+            english["href"] = "/" + path.name
+        if not selector.select_one('a[data-lang="vi"]'):
+            ul = selector.select_one("ul")
+            if ul:
+                li = soup.new_tag("li")
+                link = soup.new_tag("a", href=VI_PREFIX + path.name)
+                link["data-lang"] = "vi"
+                link["aria-current"] = "true"
+                icon = soup.new_tag("img", src="/templates/default/images/vi.svg", alt="Tiếng Việt")
+                link.append(icon)
+                link.append("VI")
+                li.append(link)
+                ul.append(li)
     # Localize SEO titles from the rendered heading while preserving the
     # company name and model identifiers used by the source pages.
     if soup.title:
