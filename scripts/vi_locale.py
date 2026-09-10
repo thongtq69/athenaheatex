@@ -1,16 +1,20 @@
 """Structured Vietnamese locale helpers.
 
-Translations are applied to parsed visible text nodes and selected UI
-attributes. URLs, scripts, CSS, model numbers and company names are never fed
-through the translation map.
+Vietnamese is the site's only language: pages are rendered from the English
+source mirror straight onto the root routes, and every language-switching
+control is stripped out. Translations are applied to parsed visible text nodes
+and selected UI attributes. URLs, scripts, CSS, model numbers and company names
+are never fed through the translation map.
 """
 import json
 import re
 from pathlib import Path
+from urllib.parse import unquote
 from bs4 import BeautifulSoup, NavigableString, Comment, Doctype
 
-VI_PREFIX = "/languages/vi/"
-ASSET_PREFIXES = ("/templates/", "/img/", "/upfile/", "/aifeedback/", "/api/", "/languages/al/", "/languages/es/", "/languages/fr/", "/languages/ru/", "/languages/cn/")
+# Markup that exists only to switch languages: the desktop flag row in the
+# header and the mobile dropdown next to the hamburger button.
+LANGUAGE_UI_SELECTORS = (".lang", ".header-lang")
 
 TRANSLATIONS = {
     "Description": "Mô tả", "Description:": "Mô tả:", "Parameter": "Thông số", "Parameter:": "Thông số:",
@@ -167,6 +171,11 @@ for _src, _dst in _MEMORY.items():
 # Phrase fallback for text that has no exact entry. Matches are whole words
 # only (so "Product" never rewrites "Production") and are applied longest
 # phrase first.
+# Case-folded view of the exact table, first entry wins so title case is preferred.
+_FOLDED = {}
+for _key, _value in _EXACT.items():
+    _FOLDED.setdefault(_key.casefold(), _value)
+
 _BOUNDARY_L = r"(?<![A-Za-z0-9À-ỹ])"
 _BOUNDARY_R = r"(?![A-Za-z0-9À-ỹ])"
 _PHRASES = sorted({_norm(k): v for k, v in TRANSLATIONS.items() if _norm(k)}.items(), key=lambda kv: len(kv[0]), reverse=True)
@@ -182,6 +191,11 @@ def _lookup(text):
             base = text[:-1].rstrip()
             if base in _EXACT:
                 return _EXACT[base] + mark
+    # Upstream shouts some headings ("PERFORMANCE CHARACTERISTIC") that are
+    # written in title case elsewhere on the same page.
+    folded = _FOLDED.get(text.casefold())
+    if folded is not None:
+        return folded
     return None
 
 
@@ -204,27 +218,128 @@ def translate_text(value):
     out = re.sub(r"\bComplete\s+(?=[A-ZÀ-Ỹ])", "", out)
     return lead + out + trail if out != core else value
 
-def locale_href(href, vi_root: Path):
-    if not href or not href.startswith("/") or href.startswith("//") or href.startswith(ASSET_PREFIXES):
-        return href
-    if href.startswith(VI_PREFIX):
-        return href
-    path, sep, suffix = href.partition("?")
-    path, hash_sep, fragment = path.partition("#")
-    candidate = path.lstrip("/")
-    if candidate.endswith(".html") and (vi_root / candidate).exists():
-        return VI_PREFIX + candidate + (("?" + suffix) if sep else "") + (("#" + fragment) if hash_sep else "")
-    return href
+def strip_language_ui(soup):
+    """Remove every control that pointed at another language edition."""
+    for selector in LANGUAGE_UI_SELECTORS:
+        for node in soup.select(selector):
+            node.decompose()
+    # The multilingual build injected a floating locale picker into every page.
+    # Strip it defensively so a stale copy in the source mirror can never leak
+    # a dead locale route back into a build.
+    for node in soup.select("#locale-selector-css, #locale-selector-js, .locale-selector"):
+        node.decompose()
+    # Defensive sweep: any link left over that still addresses a locale route
+    # would 404 now that the other editions are gone.
+    for anchor in soup.select('a[href^="/languages/"]'):
+        anchor.decompose()
+
+
+def retarget_search_form(soup):
+    """Point the mirrored search box at the static search page.
+
+    Upstream posted to ``/index.php``, a PHP route this static mirror does not
+    have. Submitting to ``/search.html`` keeps search working even when the
+    JavaScript adapter has not loaded, and drops the two hidden fields that
+    only meant something to the original CMS.
+    """
+    for form in soup.select("form.searchForm"):
+        form["action"] = "/search.html"
+        form["method"] = "get"
+        for field in form.select('input[name="lng"], input[name="mid"]'):
+            field.decompose()
+
+
+def strip_runtime_artifacts(soup):
+    """Remove markup the upstream page only ever produced at runtime.
+
+    The mirror captured a rendered validation error, so the inquiry popup shipped
+    with a red "this field is required" message under an untouched field. The
+    form script re-creates these nodes when a visitor actually needs them.
+    """
+    for node in soup.select(".crmFormVali-error"):
+        node.decompose()
+
+
+def normalize_lang_attributes(soup):
+    """Drop stale per-element lang attributes inherited from the English source.
+
+    Word-generated markup wraps paragraphs in <span lang="EN-US">. Now that the
+    text inside is Vietnamese, that attribute would tell screen readers and
+    search engines to treat it as English, overriding <html lang="vi">.
+    """
+    for tag in soup.find_all(attrs={"lang": True}):
+        if tag.name == "html":
+            continue
+        if (tag.get("lang") or "").strip().lower() not in {"vi", "vi-vn"}:
+            del tag["lang"]
+
+
+def fix_split_phrases(soup):
+    """Translate phrases the source split across sibling inline tags.
+
+    Upstream emits headings such as
+    ``<strong>Air</strong><strong> </strong><strong>Compressor</strong>``.
+    Translating one text node at a time only matches the fragments, leaving a
+    half-English heading. When the element's whole text has an exact entry the
+    translation goes into the first inline child and the others are blanked, so
+    the tag structure is untouched and only the text moves.
+    """
+    for element in soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "td", "th", "li"]):
+        children = [c for c in element.children if not (isinstance(c, NavigableString) and not c.strip())]
+        if len(children) < 2:
+            continue
+        if any(getattr(c, "name", None) not in _INLINE_TAGS for c in children):
+            continue
+        if any(c.find(True) is not None for c in children):
+            continue
+        joined = _norm(element.get_text(" "))
+        if not joined:
+            continue
+        hit = _lookup(joined)
+        if hit is None or hit == joined:
+            continue
+        children[0].string = hit
+        for extra in children[1:]:
+            extra.string = ""
+
+
+def drop_missing_images(soup, root: Path):
+    """Remove <img> elements whose file is absent, so no broken icon renders.
+
+    A handful of upstream images already 404 on the source site; mirroring
+    could not fetch them and the browser would draw a broken-image glyph.
+    """
+    removed = []
+    for image in soup.find_all("img"):
+        src = (image.get("src") or "").split("?")[0].split("#")[0]
+        if not src.startswith("/") or src.startswith("//"):
+            continue
+        if not (root / unquote(src).lstrip("/")).exists():
+            removed.append(src)
+            image.decompose()
+    return removed
+
 
 _META_KEYS = {"description", "keywords", "og:title", "og:description", "twitter:title", "twitter:description"}
 # "Name" inside a specification table is the machine name, while the same
 # word on the inquiry form is the visitor's name.
-_TABLE_LABELS = {"Name": "Tên", "Name:": "Tên:", "Name model": "Tên model"}
+_TABLE_LABELS = {"Name": "Tên", "Name:": "Tên:", "Name model": "Tên model", "Cap": "Nắp", "Cap:": "Nắp:"}
+# Inline wrappers upstream uses to split one heading across several tags.
+_INLINE_TAGS = {"strong", "b", "em", "i", "span", "u", "font"}
 _COMPANY_SUFFIX = " - Shanghai Joylong Industry Co.,Ltd"
 
 
 def translate_title(soup):
     if not soup.title:
+        # A couple of mirrored fragments (the inquiry popup) shipped with no
+        # title at all, which leaves the browser tab showing a bare URL.
+        heading = soup.select_one("h1,.create-form-title,.proTitle,.articleTitle")
+        if soup.head is not None and heading is not None:
+            text = _norm(heading.get_text(" ", strip=True))
+            if text:
+                tag = soup.new_tag("title")
+                tag.string = text + _COMPANY_SUFFIX
+                soup.head.append(tag)
         return
     title_text = _norm(soup.title.get_text(" ", strip=True))
     if not title_text:
@@ -246,10 +361,18 @@ def translate_title(soup):
     soup.title.string = translated
 
 
-def translate_document(path: Path, vi_root: Path):
+def translate_document(path: Path, root: Path = None):
+    root = root or path.parent
     soup = BeautifulSoup(path.read_text(encoding="utf8"), "html.parser")
     if soup.html:
         soup.html["lang"] = "vi"
+    # Drop the switcher before translating so its flag labels never reach the
+    # translation map, and so no dead locale route survives in the output.
+    strip_language_ui(soup)
+    strip_runtime_artifacts(soup)
+    retarget_search_form(soup)
+    drop_missing_images(soup, root)
+    fix_split_phrases(soup)
     for node in list(soup.find_all(string=True)):
         if not isinstance(node, NavigableString) or isinstance(node, (Comment, Doctype)) or node.parent.name in {"script", "style", "noscript"}:
             continue
@@ -273,38 +396,7 @@ def translate_document(path: Path, vi_root: Path):
     for tag in soup.find_all(True):
         for attr in ("placeholder", "aria-label", "title", "alt"):
             if tag.has_attr(attr): tag[attr] = translate_text(tag[attr])
-        if tag.name == "a" and tag.has_attr("data-lang"):
-            # Language menu entries are routing metadata. They must never be
-            # passed through the VI content resolver.
-            continue
-        if tag.name in {"a", "form"}:
-            key = "href" if tag.name == "a" else "action"
-            if tag.has_attr(key): tag[key] = locale_href(tag[key], vi_root)
-    # Keep the existing mobile selector markup and visual design, while making
-    # its displayed state reflect the active locale.
-    for selector in soup.select(".header-lang"):
-        flag = selector.select_one(".box img")
-        code = selector.select_one(".box em")
-        if flag:
-            flag["src"] = "/templates/default/images/vi.svg"
-            flag["alt"] = "Tiếng Việt"
-        if code:
-            code.string = "VI"
-        english = selector.select_one('a[href="/index.html"]')
-        if english:
-            english["href"] = "/" + path.name
-        if not selector.select_one('a[data-lang="vi"]'):
-            ul = selector.select_one("ul")
-            if ul:
-                li = soup.new_tag("li")
-                link = soup.new_tag("a", href=VI_PREFIX + path.name)
-                link["data-lang"] = "vi"
-                link["aria-current"] = "true"
-                icon = soup.new_tag("img", src="/templates/default/images/vi.svg", alt="Tiếng Việt")
-                link.append(icon)
-                link.append("VI")
-                li.append(link)
-                ul.append(li)
+    normalize_lang_attributes(soup)
     # Localize SEO titles from the rendered heading while preserving the
     # company name and model identifiers used by the source pages.
     translate_title(soup)

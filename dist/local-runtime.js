@@ -1,22 +1,21 @@
 /* Adapters for services whose private server source is not publicly available. */
 (() => {
   'use strict';
-  const lang=location.pathname.match(/^\/languages\/([a-z]+)\//)?.[1]||'en';
-  const prefix=lang==='en'?'':'/languages/'+lang;
-  const messages={
-    en:['Your inquiry has been saved locally. It has not been emailed.','Please enter your name, a valid email address, and a message.','Unable to save your inquiry. Please try again.'],
-    fr:['Votre demande a été enregistrée localement. Aucun e-mail n’a été envoyé.','Veuillez saisir votre nom, une adresse e-mail valide et un message.','Impossible d’enregistrer votre demande. Réessayez.'],
-    es:['Su consulta se ha guardado localmente. No se ha enviado por correo.','Introduzca su nombre, un correo válido y un mensaje.','No se pudo guardar. Inténtelo de nuevo.'],
-    ru:['Ваш запрос сохранён локально. Письмо не отправлено.','Укажите имя, корректный email и сообщение.','Не удалось сохранить запрос. Повторите попытку.'],
-    cn:['您的咨询已保存在本机，尚未发送电子邮件。','请输入姓名、有效的电子邮件地址和留言。','保存失败，请重试。'],
-    al:['تم حفظ استفسارك محليًا. لم يتم إرساله بالبريد الإلكتروني.','يرجى إدخال الاسم وبريد إلكتروني صالح ورسالة.','تعذر حفظ الاستفسار. حاول مرة أخرى.']
-  }[lang]||[];
+  // Vietnamese is the site's only edition, so every route lives at the root.
+  // The third message is what a visitor sees when no inquiry endpoint is
+  // reachable (a purely static deployment): give them the direct channels
+  // rather than a dead end, so the enquiry is not simply lost.
+  const messages=[
+    'Yêu cầu của quý khách đã được lưu lại. Hệ thống chưa gửi email.',
+    'Vui lòng nhập họ tên, địa chỉ email hợp lệ và nội dung tin nhắn.',
+    'Hiện chưa gửi được yêu cầu trực tuyến. Quý khách vui lòng liên hệ trực tiếp: Điện thoại +86-21-50911019, WhatsApp +86-18616619098, Email info@shjoylong.com.'
+  ];
   // Optional WebMCP integration mirrors the visible search and inquiry actions.
   const modelContext=document.modelContext;
   if(modelContext?.registerTool){
     try {
-      modelContext.registerTool({name:'search_products',title:'Search products',description:'Search mirrored Joylong product and company pages.',inputSchema:{type:'object',properties:{query:{type:'string'}},required:['query'],additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:true},async execute(input){
-        const q=String(input?.query||'').trim();if(!q)throw new Error('query is required');return fetch('/api/search?q='+encodeURIComponent(q)+'&lang='+lang).then(r=>r.json());
+      modelContext.registerTool({name:'search_products',title:'Search products',description:'Tìm kiếm trang sản phẩm và trang giới thiệu của Joylong.',inputSchema:{type:'object',properties:{query:{type:'string'}},required:['query'],additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:true},async execute(input){
+        const q=String(input?.query||'').trim();if(!q)throw new Error('query is required');return fetch('/api/search?q='+encodeURIComponent(q)).then(r=>r.json());
       }});
       modelContext.registerTool({name:'submit_inquiry',title:'Submit inquiry',description:'Save an inquiry through the visible local contact form.',inputSchema:{type:'object',properties:{name:{type:'string'},email:{type:'string'},message:{type:'string'}},required:['name','email','message'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},async execute(input){
         const payload={Name:String(input?.name||''),Email:String(input?.email||''),Message:String(input?.message||''),page:location.pathname};const r=await fetch('/api/inquiries',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const result=await r.json();if(!r.ok)throw new Error(result.error||'Unable to save inquiry');return result;
@@ -36,7 +35,7 @@
     const fields=new FormData(form);
     if(form.matches('.searchForm')||fields.has('keyword')) {
       event.preventDefault();event.stopImmediatePropagation();
-      location.href=prefix+'/search.html?q='+encodeURIComponent(fields.get('keyword')||'');return;
+      location.href='/search.html?q='+encodeURIComponent(fields.get('keyword')||'');return;
     }
     if(!form.closest('.crm-form')&&!fields.has('Message'))return;
     event.preventDefault();event.stopImmediatePropagation();

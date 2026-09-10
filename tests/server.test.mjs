@@ -13,19 +13,59 @@ before(async()=>{
  base=`http://127.0.0.1:${server.address().port}`;
 });
 after(async()=>{await new Promise(resolve=>server.close(resolve));await rm(dataDir,{recursive:true,force:true});});
-test('all seven homepages and search pages are served with correct content type',async()=>{
- for(const prefix of ['','/languages/al','/languages/es','/languages/fr','/languages/ru','/languages/cn','/languages/vi']) {
-  for(const file of ['/index.html','/search.html']){
-   const r=await fetch(base+prefix+file);assert.equal(r.status,200);assert.match(r.headers.get('content-type'),/text\/html/);assert.match(await r.text(),/local-runtime\.js/);
-  }
+test('the home and search pages are served in Vietnamese with the local runtime',async()=>{
+ for(const file of ['/index.html','/search.html']){
+  const r=await fetch(base+file);assert.equal(r.status,200);assert.match(r.headers.get('content-type'),/text\/html/);
+  const html=await r.text();
+  assert.match(html,/local-runtime\.js/);
+  assert.match(html,/<html lang="vi"/);
+  assert.doesNotMatch(html,/\/languages\//);
+  assert.doesNotMatch(html,/class="(?:lang|header-lang)"/);
  }
 });
-test('search returns relevant local results and no cross-language leakage',async()=>{
- const r=await fetch(base+'/api/search?q=milk&lang=en');assert.equal(r.status,200);
- const data=await r.json();assert.ok(data.total>0);assert.match(data.results[0].title,/milk/i);
+test('search returns Vietnamese results addressed at root routes',async()=>{
+ const r=await fetch(base+'/api/search?q=máy');assert.equal(r.status,200);
+ const data=await r.json();assert.ok(data.total>0);
  assert.ok(data.results.every(x=>x.path.startsWith('/')&&!x.path.startsWith('/languages/')));
- const vi=await (await fetch(base+'/api/search?q=Máy&lang=vi')).json();assert.ok(vi.total>0);assert.ok(vi.results.every(x=>x.path.startsWith('/languages/vi/')));
+ assert.ok(data.results.some(x=>/máy/i.test(x.title)));
  const none=await (await fetch(base+'/api/search?q=zzzzzzunfindable')).json();assert.equal(none.total,0);
+});
+test('search works without an API: the index ships as a static file',async()=>{
+ const r=await fetch(base+'/search-index.json');
+ assert.equal(r.status,200);
+ const index=await r.json();
+ assert.ok(index.length>200);
+ assert.ok(index.every(x=>x.path.startsWith('/')&&!x.path.startsWith('/languages/')&&x.title));
+ for(const slug of ['/contact-us-7.html','/service-4.html','/juice-solution-13.html'])
+  assert.ok(index.some(x=>x.path===slug),`missing from index: ${slug}`);
+ assert.ok(index.every(x=>!/^\/\d+_\d+\.html$/.test(x.path)),'pagination stubs must not be indexed');
+ const js=await (await fetch(base+'/search.js')).text();
+ assert.match(js,/search-index\.json/);
+});
+test('a Vietnamese not-found page is part of the deployable output',async()=>{
+ const r=await fetch(base+'/404.html');assert.equal(r.status,200);
+ const html=await r.text();
+ assert.match(html,/<html lang="vi"/);
+ assert.match(html,/Không tìm thấy trang/);
+ assert.doesNotMatch(html,/\/languages\//);
+});
+test('the helper scripts and share popup carry no English UI text',async()=>{
+ const form=await (await fetch(base+'/aifeedback/form.js')).text();
+ assert.doesNotMatch(form,/This field is required|Please enter a valid email/);
+ assert.match(form,/Trường này là bắt buộc/);
+ const video=await (await fetch(base+'/templates/default/js/video.js')).text();
+ assert.doesNotMatch(video,/Video will be uploaded soon/);
+ const share=await (await fetch(base+'/templates/default/share.php')).text();
+ assert.match(share,/Chia sẻ/);
+ assert.doesNotMatch(share,/<p>Share<\/p>/);
+});
+test('retired locale routes redirect permanently to their Vietnamese page',async()=>{
+ const vi=await fetch(base+'/languages/vi/contact-us-7.html',{redirect:'manual'});
+ assert.equal(vi.status,301);assert.equal(vi.headers.get('location'),'/contact-us-7.html');
+ for(const pathname of ['/languages/fr/index.html','/languages/cn/anything-123.html','/languages/vi']) {
+  const r=await fetch(base+pathname,{redirect:'manual'});
+  assert.equal(r.status,301);assert.equal(r.headers.get('location'),'/index.html');
+ }
 });
 test('legacy search form redirects to local search',async()=>{
  const r=await fetch(base+'/index.php?ac=search&at=list',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'keyword=milk+cooling',redirect:'manual'});

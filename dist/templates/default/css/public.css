@@ -275,3 +275,21 @@ text-overflow: ellipsis; white-space: nowrap;}
 #footerBar li i{color:#fff;font-size:20px;}
 #footerBar li span{display:block;color:#fff;font-size:12px;margin-top:3px;}
 
+/* joylong-vi-overrides:start - maintained by scripts/prepare.py, do not edit by hand */
+/* The header used to stack a language switcher above the search box. With a
+   single language that row is gone, so the right-hand column is centred
+   against the logo instead of hugging the top edge of the header. */
+@media screen and (min-width:769px){.topRight{margin-top:15px;}}
+
+/* These upstream images 404 at the source site; suppress the failed
+   request and the empty broken-image slot they left behind. */
+.asideCont{background-image:none !important;}
+.contactLeft ul li.l1{background-image:none !important;}
+.contactLeft ul li.l2{background-image:none !important;}
+.contactLeft ul li.l3{background-image:none !important;}
+.contactLeft ul li.l4{background-image:none !important;}
+.contactLeft ul li.l5{background-image:none !important;}
+.contactLeft ul li.l6{background-image:none !important;}
+.contactLeft ul li.l7{background-image:none !important;}
+.contactLeft ul li.l8{background-image:none !important;}
+/* joylong-vi-overrides:end */

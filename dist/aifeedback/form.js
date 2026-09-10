@@ -2,9 +2,9 @@ $(function(){
 	//$.get('https://www.shjoylong.com/aifeedback/save.php?act=checksend',{},function(data){});
 	var pagetitle='';
 	$('#pagetitle').val(document.title);
-	var crmValidStr = "This field is required.";
-	var crmEmailStr = "Please enter a valid email address.";
-	var crmFailedStr = "Email send failed";
+	var crmValidStr = "Trường này là bắt buộc.";
+	var crmEmailStr = "Vui lòng nhập địa chỉ email hợp lệ.";
+	var crmFailedStr = "Gửi email không thành công.";
 		$(".crm-form").find("input[name='Name'],input[name='Email'],textarea[name='Message']").bind("keyup blur",function(){
     	_crminputVali($(this),crmValidStr);
 	});
@@ -21,14 +21,14 @@ $(function(){
             $.post(url, form.serialize(), function(result){
                 form.find(".create-form-submit").removeAttr("disabled").find(".crm-submit-load").remove();
                 if(result=='1'){
-                    _crmAlertText(1,'Email Send Succesfully!');
+                    _crmAlertText(1,'Gửi email thành công!');
                     form[0].reset();
                 }
                 else if(result=='2'){
-                	_crmAlertText(1,'Content not allowed!');
+                	_crmAlertText(1,'Nội dung không được phép!');
                 }
 			   else if(result=='3'){
-                	_crmAlertText(1,'Only one message allowed within 1 minute!');
+                	_crmAlertText(1,'Mỗi phút chỉ được gửi một tin nhắn!');
                 }
                 else{ 
                     _crmAlertText(1,crmFailedStr);
@@ -52,7 +52,7 @@ $(function(){
     }
     function _crmAlertText(type,text){
         $("body").addClass("crm-body-clear");
-        var succ = '<div id="crmMailMask"><div class="crmMailMask-box"><div class="crmMailMask-boxTop">'+text+'</div><div class="crmMailMask-boxBot"><button type="button" class="crmMailMask-close"> OK </button></div></div></div>';
+        var succ = '<div id="crmMailMask"><div class="crmMailMask-box"><div class="crmMailMask-boxTop">'+text+'</div><div class="crmMailMask-boxBot"><button type="button" class="crmMailMask-close"> Đóng </button></div></div></div>';
         if(type==1){
             $("body").find("#crmMailMask").remove();
             $("body").append(succ);

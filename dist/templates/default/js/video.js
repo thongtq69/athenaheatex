@@ -14,7 +14,7 @@ jQuery(function ($) {
 
     $(".fancyVideo").each(function(){
         if($(this).attr("href")=="" || $(this).attr("href")==" " || $(this).attr("href")=="#"){
-            $(this).removeClass("fancyVideo").addClass("fancybox").attr("title","Video will be uploaded soon").attr("href","/images/logo.png");
+            $(this).removeClass("fancyVideo").addClass("fancybox").attr("title","Video sẽ được cập nhật trong thời gian tới").attr("href","/images/logo.png");
         }    });
     
     if ($(".fancybox").length) {

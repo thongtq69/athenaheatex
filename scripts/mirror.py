@@ -8,8 +8,14 @@ from bs4 import BeautifulSoup
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'dist'
+# Page routes land in the untranslated source tree; prepare.py renders them
+# into dist/. Shared assets are written straight to dist/ because they are
+# language independent.
+SRC = ROOT / 'source'
 CACHE = ROOT / '.mirror-cache'
-HOSTS = {'www.shjoylong.com', 'shjoylong.com', *(f'{x}.shjoylong.com' for x in ['al','es','fr','ru','cn'])}
+# Only the English edition is mirrored: it is the source the Vietnamese site
+# is rendered from. The other language hosts were retired with the switcher.
+HOSTS = {'www.shjoylong.com', 'shjoylong.com'}
 IGNORE = ('/cdn-cgi/', '/adminsoft/', '/install/', '/api/', '/mail.php', '/aifeedback/save.php')
 TRACKERS = ('googletagmanager', 'google-analytics', 'service-analytics', 'rocket-loader', 'email-decode', 'cloudflareinsights', 'hm.baidu.com', 'cnzz.com')
 ASSET_EXT = r'(?:png|jpe?g|gif|webp|svg|ico|css|js|woff2?|ttf|eot|otf|mp4|webm|pdf|swf)'
@@ -30,15 +36,18 @@ def canonical(url, base='https://www.shjoylong.com/'):
 
 def local_path(url):
     p = urlsplit(url)
-    prefix = '' if p.hostname in ('www.shjoylong.com','shjoylong.com') else '/languages/' + p.hostname.split('.')[0]
     path = unquote(p.path)
     if path.endswith('/'): path += 'index.html'
     if not Path(path).suffix: path += '/index.html'
     if p.query:
         stem, ext = path.rsplit('.',1)
         path = stem + '--' + hashlib.sha256(p.query.encode()).hexdigest()[:10] + '.' + ext
-    path = re.sub(r'[<>:"|?*]', '_', path)
-    return prefix + path
+    return re.sub(r'[<>:"|?*]', '_', path)
+
+
+def target_root(path, page):
+    """Top-level HTML routes are source material; everything else is an asset."""
+    return SRC if page and path.endswith('.html') and path.count('/') == 1 else OUT
 
 def relink(value, base):
     if not value or value.startswith(('data:', '#','javascript:','mailto:','tel:')): return value
@@ -125,7 +134,6 @@ def transform(url, data, kind):
 
 def run(home_only=False):
     queue = {'https://www.shjoylong.com/'}
-    if not home_only: queue.update('https://'+h+'/' for h in HOSTS if h!='shjoylong.com')
     visited = set()
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
         while queue:
@@ -136,7 +144,7 @@ def run(home_only=False):
                 if error: ERRORS[url]=error; continue
                 result, found, page, title = transform(url,data,kind)
                 path = local_path(url)
-                target = OUT / path.lstrip('/')
+                target = target_root(path, page) / path.lstrip('/')
                 target.parent.mkdir(parents=True,exist_ok=True); target.write_bytes(result)
                 MANIFEST[url]={'path':path,'type':kind,'page':page,'title':title,'bytes':len(result)}
                 if home_only:

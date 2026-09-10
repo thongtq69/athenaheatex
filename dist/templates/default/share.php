@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="vi" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -50,13 +50,13 @@
         .shareComp p{ font-size:15px;}
         .shareComp p a{ display:inline-block; padding:8px 0; color:#888; font-weight:bold; text-transform:capitalize; }
     </style>
-</head>
+<title>Chia sẻ</title></head>
 <body>
 <div class="sharebox">
 <div class="shareComp">
 <img alt="" src="/templates/default/images/logo.jpg"/>
 </div>
-<p>Share</p>
+<p>Chia sẻ</p>
 <!-- Go to www.addthis.com/dashboard to generate a new set of buttons -->
 <ul class="shareButtonList clearfix">
 <li class="fb"><a href="https://api.addthis.com/oexchange/0.8/forward/facebook/offer?pco=tbxnj-1.0&amp;url=mySite&amp;pubid=ra-53e1dd8a0887cb8f&amp;ct=1" target="_blank"><img alt="Facebook" border="0" src="https://cache.addthiscdn.com/icons/v2/thumbs/32x32/facebook.png"/></a></li>

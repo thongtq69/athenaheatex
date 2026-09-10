@@ -1,5 +1,13 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "framework": null
+  "framework": null,
+  "redirects": [
+    { "source": "/languages/vi", "destination": "/index.html", "permanent": true },
+    { "source": "/languages/vi/:path*", "destination": "/:path*", "permanent": true },
+    { "source": "/languages/:lang", "destination": "/index.html", "permanent": true },
+    { "source": "/languages/:lang/:path*", "destination": "/index.html", "permanent": true },
+    { "source": "/index.php", "destination": "/search.html", "permanent": false },
+    { "source": "/search.php", "destination": "/search.html", "permanent": false }
+  ]
 }
