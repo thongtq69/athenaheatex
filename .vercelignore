@@ -1,0 +1,8 @@
+# Never upload local secrets or local-only data with a CLI deployment.
+.env*
+.vercel
+data/
+.mirror-cache/
+node_modules/
+*.log
+__pycache__/

@@ -1,8 +1,10 @@
 import http from 'node:http';
-import { readFile, stat, mkdir, appendFile } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { randomUUID } from 'node:crypto';
+import { clientAddress, isAllowedOrigin, MESSAGES, submitInquiry } from './lib/inquiries.mjs';
+import { healthReport } from './lib/health.mjs';
+import { isDatabaseConfigured } from './lib/mongodb.mjs';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const publicRoot = path.join(root, 'dist');
@@ -12,7 +14,7 @@ let cachedIndex;
 async function index() { return cachedIndex ||= JSON.parse(await readFile(path.join(root,'reports/search-index.json'),'utf8')); }
 async function body(req) {
   const chunks=[]; let size=0;
-  for await (const chunk of req) {size+=chunk.length;if(size>65536)throw Object.assign(new Error('Request too large'),{status:413});chunks.push(chunk);}
+  for await (const chunk of req) {size+=chunk.length;if(size>65536)throw Object.assign(new Error('Nội dung gửi lên quá lớn.'),{status:413});chunks.push(chunk);}
   const raw=Buffer.concat(chunks).toString();
   if ((req.headers['content-type']||'').includes('application/json')) return JSON.parse(raw || '{}');
   return Object.fromEntries(new URLSearchParams(raw));
@@ -27,24 +29,23 @@ function legacyLocaleTarget(pathname) {
   const rest=match[2]||'';
   return match[1].toLowerCase()==='vi'&&rest?'/'+rest:'/index.html';
 }
-export function createServer({dataDir=path.join(root,'data')}={}) {
+// useDatabase defaults to MongoDB whenever MONGODB_URI is set (see .env.local);
+// tests pass false so they never touch a real database.
+export function createServer({dataDir=path.join(root,'data'),useDatabase=isDatabaseConfigured()}={}) {
  return http.createServer(async(req,res)=>{
   try {
    const url=new URL(req.url,'http://localhost');
    res.setHeader('X-Content-Type-Options','nosniff');
    res.setHeader('Referrer-Policy','strict-origin-when-cross-origin');
-   if(url.pathname==='/api/health') return json(res,200,{ok:true});
+   if(url.pathname==='/api/health') {const report=await healthReport();return json(res,report.ok?200:503,report);}
+   // Same validation and storage as the deployed Vercel Function (api/inquiries.mjs).
    if(url.pathname==='/api/inquiries') {
-    if(req.method!=='POST') return json(res,405,{error:'Method not allowed'});
-    if(req.headers.origin && new URL(req.headers.origin).host!==req.headers.host) return json(res,403,{error:'Invalid origin'});
-    const input=await body(req);
-    const name=String(input.Name||input.name||'').trim(), email=String(input.Email||input.email||'').trim(), message=String(input.Message||input.message||'').trim();
-    if(!name||!message||!/^\S+@\S+\.\S+$/.test(email)) return json(res,400,{error:'Vui lòng nhập họ tên, địa chỉ email hợp lệ và nội dung tin nhắn.'});
-    if(name.length>200||email.length>320||message.length>20000) return json(res,400,{error:'Một hoặc nhiều trường nhập vào quá dài.'});
-    const record={id:randomUUID(),createdAt:new Date().toISOString(),name,email,message,phone:String(input.Tel||input.Phone||input.Telephone||''),company:String(input.Company||''),country:String(input.Country||''),page:String(input.page||input.pagetitle||'')};
-    await mkdir(dataDir,{recursive:true});
-    await appendFile(path.join(dataDir,'inquiries.jsonl'),JSON.stringify(record)+'\n','utf8');
-    return json(res,201,{ok:true,id:record.id,delivery:'local',message:'Yêu cầu của quý khách đã được lưu lại. Hệ thống chưa gửi email.'});
+    if(req.method!=='POST') {res.setHeader('Allow','POST');return json(res,405,{error:'Phương thức không được hỗ trợ.'});}
+    if(!isAllowedOrigin(req.headers.origin,req.headers.host)) return json(res,403,{error:MESSAGES.forbidden});
+    let input;
+    try {input=await body(req);} catch(error) {if(error.status)throw error;return json(res,400,{error:MESSAGES.invalid});}
+    const result=await submitInquiry(input,{address:clientAddress(req.headers,req.socket.remoteAddress),userAgent:req.headers['user-agent'],dataDir,useDatabase});
+    return json(res,result.status,result.body);
    }
    if(url.pathname==='/api/search') {
     const query=(url.searchParams.get('q')||'').trim().slice(0,200).toLowerCase();
@@ -60,11 +61,11 @@ export function createServer({dataDir=path.join(root,'data')}={}) {
     const target=legacyLocaleTarget(decodeURIComponent(url.pathname));
     if(target){res.writeHead(301,{Location:target});return res.end();}
    }
-   if(!['GET','HEAD'].includes(req.method)) return json(res,405,{error:'Method not allowed'});
+   if(!['GET','HEAD'].includes(req.method)) return json(res,405,{error:'Phương thức không được hỗ trợ.'});
    let pathname=decodeURIComponent(url.pathname);
-   if(pathname.includes('\0')||pathname.includes('\\'))return json(res,400,{error:'Invalid path'});
+   if(pathname.includes('\0')||pathname.includes('\\'))return json(res,400,{error:'Đường dẫn không hợp lệ.'});
    let file=path.resolve(publicRoot,'.'+pathname);
-   if(!file.startsWith(publicRoot+path.sep)&&file!==publicRoot) return json(res,403,{error:'Forbidden'});
+   if(!file.startsWith(publicRoot+path.sep)&&file!==publicRoot) return json(res,403,{error:'Không được phép truy cập.'});
    try {if((await stat(file)).isDirectory())file=path.join(file,'index.html');}catch{}
    let data;
    try {data=await readFile(file);}catch {

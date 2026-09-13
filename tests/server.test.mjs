@@ -4,11 +4,14 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { createServer } from '../server.mjs';
+import { clientAddress, isAllowedOrigin, normalizeInquiry } from '../lib/inquiries.mjs';
+import inquiryFunction from '../api/inquiries.mjs';
 
 let server,base,dataDir;
 before(async()=>{
  dataDir=await mkdtemp(path.join(os.tmpdir(),'joylong-test-'));
- server=createServer({dataDir});
+ // Never reach a real database from the test suite, even if MONGODB_URI is exported.
+ server=createServer({dataDir,useDatabase:false});
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
  base=`http://127.0.0.1:${server.address().port}`;
 });
@@ -82,6 +85,33 @@ test('inquiry validates, persists all fields, and clearly reports local delivery
 test('inquiry rejects requests from other sites',async()=>{
  const r=await fetch(base+'/api/inquiries',{method:'POST',headers:{Origin:'https://unrelated.example','Content-Type':'application/json'},body:'{}'});
  assert.equal(r.status,403);
+ const malformed=await fetch(base+'/api/inquiries',{method:'POST',headers:{Origin:'not a url','Content-Type':'application/json'},body:'{}'});
+ assert.equal(malformed.status,403);
+ const broken=await fetch(base+'/api/inquiries',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"Name":'});
+ assert.equal(broken.status,400);
+});
+test('inquiry normalization maps the mirrored form fields and enforces limits',()=>{
+ const {record}=normalizeInquiry({Name:' An ',Email:'an@example.com',Message:'Báo giá',Tel:'0909',Company:'ACME',Country:'VN',pagetitle:'Liên hệ'});
+ assert.deepEqual(record,{name:'An',email:'an@example.com',message:'Báo giá',phone:'0909',company:'ACME',country:'VN',page:'Liên hệ'});
+ assert.ok(normalizeInquiry({Name:'An',Email:'bad',Message:'x'}).error);
+ assert.ok(normalizeInquiry({Name:'An',Email:'an@example.com',Message:'x',Tel:'9'.repeat(101)}).error);
+ assert.ok(normalizeInquiry(['not','an','object']).error);
+ assert.equal(isAllowedOrigin(undefined,'site.test'),true);
+ assert.equal(isAllowedOrigin('https://site.test','site.test'),true);
+ assert.equal(isAllowedOrigin('https://evil.test','site.test'),false);
+ assert.equal(clientAddress({'x-forwarded-for':'203.0.113.9, 10.0.0.1'},'127.0.0.1'),'203.0.113.9');
+});
+test('the Vercel inquiry function rejects bad requests before touching storage',async()=>{
+ const call=async req=>{
+  const res={statusCode:200,headers:{},body:undefined,setHeader(k,v){this.headers[k.toLowerCase()]=v;},status(c){this.statusCode=c;return this;},json(b){this.body=b;return this;}};
+  await inquiryFunction({headers:{host:'site.test'},socket:{},...req},res);return res;
+ };
+ const get=await call({method:'GET'});
+ assert.equal(get.statusCode,405);assert.equal(get.headers.allow,'POST');
+ assert.equal((await call({method:'POST',headers:{host:'site.test',origin:'https://evil.test'},body:{}})).statusCode,403);
+ const invalid=await call({method:'POST',body:{Name:'An',Email:'bad',Message:'x'}});
+ assert.equal(invalid.statusCode,400);assert.match(invalid.body.error,/email hợp lệ/);
+ assert.equal(invalid.headers['cache-control'],'no-store');
 });
 test('private files and unknown pages are not exposed',async()=>{
  for(const pathname of ['/data/inquiries.jsonl','/.mirror-cache/','/server.mjs','/does-not-exist.html'])assert.equal((await fetch(base+pathname)).status,404);

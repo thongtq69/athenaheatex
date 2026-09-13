@@ -1,2 +1,2 @@
 Set-Location -LiteralPath $PSScriptRoot
-node server.mjs
+node --env-file-if-exists=.env.local server.mjs

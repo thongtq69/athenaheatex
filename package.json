@@ -4,11 +4,16 @@
   "private": true,
   "description": "Vietnamese edition of the Shanghai Joylong website, rendered from the English source mirror",
   "scripts": {
-    "start": "node server.mjs",
-    "dev": "node server.mjs",
+    "start": "node --env-file-if-exists=.env.local server.mjs",
+    "dev": "node --env-file-if-exists=.env.local server.mjs",
     "mirror": "python3 scripts/mirror.py",
     "build": "python3 scripts/prepare.py",
     "check": "python3 scripts/audit.py",
-    "test": "node --test tests/server.test.mjs"
+    "test": "node --test tests/server.test.mjs",
+    "check:services": "node --env-file-if-exists=.env.local scripts/check-services.mjs"
+  },
+  "dependencies": {
+    "cloudinary": "^2.11.0",
+    "mongodb": "^7.6.0"
   }
 }
