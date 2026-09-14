@@ -80,7 +80,7 @@ try {
   result = await request('/api/admin/media?idsOnly=true');
   check(result.response.ok && result.data.items.length >= 432 && result.data.items.every(item => item._id && !item.url), 'API sắp xếp chỉ tải ID, không tải ảnh');
 
-  const category = await create('categories', { name: `${tag} category`, path: `/${tag}-category.html`, kind: 'product', enabled: true, sortOrder: 99999, descriptionHtml: '<p>Danh mục kiểm thử</p>' });
+  const category = await create('categories', { name: `${tag} category`, path: `/${tag}-category.html`, image: 'https://example.com/cms-category.jpg', kind: 'product', enabled: true, sortOrder: 99999, descriptionHtml: '<p>Danh mục kiểm thử</p>' });
   check(Boolean(category._id), 'CREATE danh mục');
   const product = await create('products', { name: `${tag} product`, path: `/${tag}-product.html`, categoryId: category._id, summary: 'URL image test', descriptionHtml: '<p>Nội dung sản phẩm từ CMS</p>', image: 'https://example.com/cms-image-url.jpg', enabled: true, sortOrder: 99999, seo: { title: `${tag} SEO` } });
   check(Boolean(product._id), 'CREATE sản phẩm với URL ảnh');
@@ -94,6 +94,12 @@ try {
   check(result.response.ok && result.data.includes('https://example.com/optional-product.jpg'), 'sản phẩm chỉ có URL ảnh được lưu và đồng bộ ra website');
   result = await request(`/api/admin/products/${optionalProduct._id}`, { method: 'PUT', body: { name: '', path: '' } });
   check(result.response.ok && result.data.item.path === optionalProduct.path, 'chỉnh sửa để trống tên và đường dẫn vẫn lưu, giữ nguyên URL public');
+  result = await request('/api/admin/categories', { method: 'POST', body: { name: '', path: '', image: '' } });
+  check(result.response.status === 400, 'danh mục chỉ chặn lưu khi thiếu ảnh đại diện');
+  const optionalCategory = await create('categories', { name: '', path: '', image: 'https://example.com/optional-category.jpg', kind: 'product', enabled: true, sortOrder: 99996 });
+  check(optionalCategory.name === '' && /^\/danh-muc(?:-\d+)?\.html$/.test(optionalCategory.path), 'danh mục cho phép để trống tên và đường dẫn');
+  result = await request(optionalCategory.path);
+  check(result.response.ok && result.data.includes('https://example.com/optional-category.jpg'), 'ảnh đại diện danh mục đồng bộ ra website');
   result = await request(PUBLIC_PATHS['/2_2.html']);
   const renderedCategory = load(result.data);
   check(result.response.ok && renderedCategory('.proDisplay').length === 1 && renderedCategory('[id="pageNum"]').length === 1, 'danh mục import không nhân đôi lưới sản phẩm và phân trang');
@@ -119,9 +125,13 @@ try {
   check(result.response.status === 404, 'bật/tắt sản phẩm điều khiển public');
   await request(`/api/admin/products/${product._id}`, { method: 'PUT', body: { enabled: true } });
 
-  const service = await create('services', { name: `${tag} service`, path: `/${tag}-service.html`, descriptionHtml: '<h1>Dịch vụ CMS thật</h1>', enabled: true, sortOrder: 99999 });
+  const service = await create('services', { name: `${tag} service`, path: `/${tag}-service.html`, image: 'https://example.com/cms-service.jpg', descriptionHtml: '<h1>Dịch vụ CMS thật</h1>', enabled: true, sortOrder: 99999 });
   result = await request(`/${tag}-service.html`);
-  check(result.response.ok && result.data.includes('Dịch vụ CMS thật'), 'CRUD dịch vụ tạo trang public thật');
+  check(result.response.ok && result.data.includes('Dịch vụ CMS thật') && result.data.includes('https://example.com/cms-service.jpg'), 'CRUD dịch vụ và ảnh đại diện đồng bộ trang public thật');
+  const optionalService = await create('services', { name: '', path: '', image: 'https://example.com/optional-service.jpg', enabled: true, sortOrder: 99995 });
+  check(optionalService.name === '' && /^\/dich-vu(?:-\d+)?\.html$/.test(optionalService.path), 'dịch vụ cho phép để trống tên và đường dẫn');
+  result = await request(optionalService.path);
+  check(result.response.ok && result.data.includes('https://example.com/optional-service.jpg'), 'dịch vụ chỉ có ảnh đại diện vẫn đồng bộ ra website');
 
   const page = await create('pages', { title: `${tag} page`, path: `/${tag}-page.html`, type: 'page', enabled: true, sortOrder: 99999, seo: { title: `${tag} page SEO` }, html: '<!doctype html><html><head><title>base</title></head><body><main id="main"><div id="cms-target">Nội dung cũ</div></main></body></html>' });
   const section = await create('sections', { name: `${tag} section`, pagePath: `/${tag}-page.html`, selector: '#cms-target', mode: 'inner', html: '<strong>Nội dung section persistent</strong>', enabled: true, sortOrder: 0 });
@@ -171,6 +181,7 @@ try {
   await remove('products', product._id);
   result = await request(`/${tag}-product.html`);
   check(result.response.status === 404, 'DELETE sản phẩm xoá trang public tương ứng');
+  await remove('services', optionalService._id);
   await remove('services', service._id);
   await remove('banners', banner._id);
   await remove('media', uploadedMedia._id);
@@ -178,6 +189,7 @@ try {
   await remove('media', externalMedia._id);
   await remove('sections', section._id);
   await remove('pages', page._id);
+  await remove('categories', optionalCategory._id);
   await remove('categories', category._id);
   result = await request('/api/admin/logout', { method: 'POST' });
   check(result.response.ok, 'đăng xuất huỷ session');

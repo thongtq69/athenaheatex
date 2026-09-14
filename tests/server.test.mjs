@@ -28,11 +28,14 @@ test('the home and search pages are served in Vietnamese with the local runtime'
   assert.doesNotMatch(html,/class="(?:lang|header-lang)"/);
  }
 });
-test('the deployed product editor marks only the representative image as required',async()=>{
+test('the deployed entity editors mark only the representative image as required',async()=>{
  const source=await readFile(path.join(process.cwd(),'admin','admin.js'),'utf8');
  const built=await readFile(path.join(process.cwd(),'dist','admin','admin.js'),'utf8');
  assert.equal(built,source);
  assert.match(source,/products:\{singular:'sản phẩm',fields:entityFields\(\{withCategory:true,requireIdentity:false,requireImage:true\}\)\}/);
+ assert.match(source,/services:\{singular:'dịch vụ',fields:entityFields\(\{withCategory:false,requireIdentity:false,requireImage:true\}\)\}/);
+ assert.match(source,/categories:\{singular:'danh mục',fields:\[\['name','Tên danh mục','text'\],\['path','Đường dẫn \(\.html\)','text'\]/);
+ assert.match(source,/\['image','Ảnh đại diện','image',true\]/);
  assert.match(source,/data-image-required="\$\{required\}"/);
  assert.match(source,/!url&&!file/);
 });
