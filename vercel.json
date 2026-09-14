@@ -6,7 +6,7 @@
   "rewrites": [
     { "source": "/api/admin/:path*", "destination": "/api/admin?path=:path*" },
     { "source": "/", "destination": "/api/render?path=/index.html" },
-    { "source": "^/(?<page>.+\\.html)$", "destination": "/api/render?path=/$page" }
+    { "source": "/:page*.html", "destination": "/api/render?path=/:page*.html" }
   ],
   "redirects": [
     { "source": "/languages/vi", "destination": "/index.html", "permanent": true },
