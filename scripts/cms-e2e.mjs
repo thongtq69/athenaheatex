@@ -3,6 +3,7 @@ import { load } from 'cheerio';
 import { createServer } from '../server.mjs';
 import { ensureCmsSeeded } from '../lib/cms.mjs';
 import { closeDatabase } from '../lib/mongodb.mjs';
+import { PUBLIC_PATHS } from '../lib/public-path-map.mjs';
 
 if (!process.env.ADMIN_PASSWORD) throw new Error('test:cms requires ADMIN_PASSWORD');
 const externalBase = String(process.env.CMS_BASE_URL || '').replace(/\/+$/, '');
@@ -66,6 +67,10 @@ try {
 
   result = await request('/api/admin/dashboard');
   check(result.response.ok && result.data.counts.pages >= 280, 'dashboard đọc số liệu database thật');
+  result = await request('/machinery-2.html');
+  check(result.response.status === 308 && result.response.headers.get('location') === '/may-moc', 'đường dẫn Máy móc cũ chuyển sang /may-moc');
+  result = await request('/may-moc');
+  check(result.response.ok && result.data.includes('href="/may-moc"') && !result.data.includes('href="/machinery-2.html"') && result.data.includes('rel="canonical"'), 'Máy móc hiển thị tại URL tiếng Việt với liên kết và canonical đúng');
   result = await request('/api/admin/products', { method: 'POST', body: { name: `${tag} collision`, path: '/index.html' } });
   check(result.response.status === 409, 'CREATE sản phẩm từ chối đường dẫn trang đã dùng');
   result = await request(`/api/admin/products?q=${encodeURIComponent(`${tag} collision`)}`);
@@ -79,10 +84,10 @@ try {
   check(Boolean(category._id), 'CREATE danh mục');
   const product = await create('products', { name: `${tag} product`, path: `/${tag}-product.html`, categoryId: category._id, summary: 'URL image test', descriptionHtml: '<p>Nội dung sản phẩm từ CMS</p>', image: 'https://example.com/cms-image-url.jpg', enabled: true, sortOrder: 99999, seo: { title: `${tag} SEO` } });
   check(Boolean(product._id), 'CREATE sản phẩm với URL ảnh');
-  result = await request('/2_2.html');
+  result = await request(PUBLIC_PATHS['/2_2.html']);
   const renderedCategory = load(result.data);
   check(result.response.ok && renderedCategory('.proDisplay').length === 1 && renderedCategory('[id="pageNum"]').length === 1, 'danh mục import không nhân đôi lưới sản phẩm và phân trang');
-  result = await request('/service-4.html');
+  result = await request('/dich-vu');
   const renderedService = load(result.data);
   check(result.response.ok && renderedService('#aside').length === 1 && renderedService('#location').length === 1, 'dịch vụ import không nhân đôi sidebar và breadcrumb');
   result = await request(`/api/admin/products/${product._id}`, { method: 'PUT', body: { path: '/index.html' } });

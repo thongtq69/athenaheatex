@@ -7,6 +7,7 @@ import { healthReport } from './lib/health.mjs';
 import { isDatabaseConfigured } from './lib/mongodb.mjs';
 import { ensureCmsSeeded } from './lib/cms.mjs';
 import { renderCmsPage } from './lib/cms-render.mjs';
+import { publicPathForSourcePath, rewritePublicLinks, sourcePathForPublicPath } from './lib/public-paths.mjs';
 import { handleAdminApi } from './lib/admin-api.mjs';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
@@ -59,16 +60,18 @@ export function createServer({dataDir=path.join(root,'data'),useDatabase=isDatab
     const query=(url.searchParams.get('q')||'').trim().slice(0,200).toLowerCase();
     const terms=query.split(/\s+/).filter(Boolean);
     const found=query?(await index()).filter(x=>terms.every(t=>(x.title+' '+x.text).toLowerCase().includes(t))).map(x=>({...x,score:terms.reduce((n,t)=>n+(x.title.toLowerCase().includes(t)?10:1),0)})).sort((a,b)=>b.score-a.score):[];
-    return json(res,200,{query,total:found.length,results:found.map(({text,score,...x})=>({...x,snippet:text.slice(0,260)}))});
+    return json(res,200,{query,total:found.length,results:found.map(({text,score,...x})=>({...x,path:publicPathForSourcePath(x.path),snippet:text.slice(0,260)}))});
    }
    if(/\/(search|index)\.php$/.test(url.pathname) && (url.searchParams.get('ac')==='search'||url.pathname.endsWith('/search.php'))) {
     const params=req.method==='POST'?await body(req):Object.fromEntries(url.searchParams);
-    res.writeHead(303,{Location:'/search.html?q='+encodeURIComponent(params.keyword||params.q||'')});return res.end();
+    res.writeHead(303,{Location:'/tim-kiem?q='+encodeURIComponent(params.keyword||params.q||'')});return res.end();
    }
    {
     const target=legacyLocaleTarget(decodeURIComponent(url.pathname));
-    if(target){res.writeHead(301,{Location:target});return res.end();}
+    if(target){res.writeHead(301,{Location:publicPathForSourcePath(target)});return res.end();}
    }
+   const visitorPath=publicPathForSourcePath(url.pathname);
+   if(visitorPath!==url.pathname && url.pathname!=='/index.html') {res.writeHead(308,{Location:visitorPath+url.search});return res.end();}
    if(url.pathname==='/admin'){res.writeHead(308,{Location:'/admin/'});return res.end();}
    if(url.pathname.startsWith('/admin/')) {
     if(!['GET','HEAD'].includes(req.method)) return json(res,405,{error:'Phương thức không được hỗ trợ.'});
@@ -82,7 +85,7 @@ export function createServer({dataDir=path.join(root,'data'),useDatabase=isDatab
     } catch {return json(res,404,{error:'Không tìm thấy tài nguyên Admin.'});}
    }
    if(!['GET','HEAD'].includes(req.method)) return json(res,405,{error:'Phương thức không được hỗ trợ.'});
-   let pathname=decodeURIComponent(url.pathname);
+   let pathname=sourcePathForPublicPath(decodeURIComponent(url.pathname));
    if(pathname.includes('\0')||pathname.includes('\\'))return json(res,400,{error:'Đường dẫn không hợp lệ.'});
    let file=path.resolve(publicRoot,'.'+pathname);
    if(!file.startsWith(publicRoot+path.sep)&&file!==publicRoot) return json(res,403,{error:'Không được phép truy cập.'});
@@ -94,6 +97,7 @@ export function createServer({dataDir=path.join(root,'data'),useDatabase=isDatab
    } else {
     try {data=await readFile(file);}catch {}
    }
+   if(data&&path.extname(file).toLowerCase()==='.html')data=Buffer.from(rewritePublicLinks(data.toString('utf8')));
    if(!data) {
     res.writeHead(404,{'Content-Type':mime['.html']});return res.end('<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>Không tìm thấy trang</title></head><body style="font:18px Arial;padding:4rem"><h1>Không tìm thấy trang</h1><p>'+escape(pathname)+'</p><a href="/index.html">Trang chủ</a></body></html>');
    }

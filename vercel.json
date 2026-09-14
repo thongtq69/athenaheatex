@@ -3,17 +3,2552 @@
   "buildCommand": "npm run build && node scripts/prune-vercel-html.mjs",
   "outputDirectory": "dist",
   "framework": null,
-  "rewrites": [
-    { "source": "/api/admin/:path*", "destination": "/api/admin?path=:path*" },
-    { "source": "/", "destination": "/api/render?path=/index.html" },
-    { "source": "/:page*.html", "destination": "/api/render?path=/:page*.html" }
-  ],
   "redirects": [
-    { "source": "/languages/vi", "destination": "/index.html", "permanent": true },
-    { "source": "/languages/vi/:path*", "destination": "/:path*", "permanent": true },
-    { "source": "/languages/:lang", "destination": "/index.html", "permanent": true },
-    { "source": "/languages/:lang/:path*", "destination": "/index.html", "permanent": true },
-    { "source": "/index.php", "destination": "/search.html", "permanent": false },
-    { "source": "/search.php", "destination": "/search.html", "permanent": false }
+    {
+      "source": "/1_2.html",
+      "destination": "/day-chuyen-hoan-chinh-trang-2",
+      "permanent": true
+    },
+    {
+      "source": "/2_2.html",
+      "destination": "/may-moc-trang-2",
+      "permanent": true
+    },
+    {
+      "source": "/2_3.html",
+      "destination": "/may-moc-trang-3",
+      "permanent": true
+    },
+    {
+      "source": "/2_4.html",
+      "destination": "/may-moc-trang-4",
+      "permanent": true
+    },
+    {
+      "source": "/2_5.html",
+      "destination": "/may-moc-trang-5",
+      "permanent": true
+    },
+    {
+      "source": "/2_6.html",
+      "destination": "/may-moc-trang-6",
+      "permanent": true
+    },
+    {
+      "source": "/5_2.html",
+      "destination": "/video-trang-2",
+      "permanent": true
+    },
+    {
+      "source": "/5_3.html",
+      "destination": "/video-trang-3",
+      "permanent": true
+    },
+    {
+      "source": "/64_2.html",
+      "destination": "/day-chuyen-hoan-chinh-trang-2-64-2",
+      "permanent": true
+    },
+    {
+      "source": "/65_2.html",
+      "destination": "/may-moc-trang-2-65-2",
+      "permanent": true
+    },
+    {
+      "source": "/67_2.html",
+      "destination": "/tin-tuc-trang-2",
+      "permanent": true
+    },
+    {
+      "source": "/67_3.html",
+      "destination": "/tin-tuc-trang-3",
+      "permanent": true
+    },
+    {
+      "source": "/67_4.html",
+      "destination": "/tin-tuc-trang-4",
+      "permanent": true
+    },
+    {
+      "source": "/67_5.html",
+      "destination": "/tin-tuc-trang-5",
+      "permanent": true
+    },
+    {
+      "source": "/67_6.html",
+      "destination": "/tin-tuc-trang-6",
+      "permanent": true
+    },
+    {
+      "source": "/67_7.html",
+      "destination": "/tin-tuc-trang-7",
+      "permanent": true
+    },
+    {
+      "source": "/about-us-6.html",
+      "destination": "/gioi-thieu",
+      "permanent": true
+    },
+    {
+      "source": "/air-compressor-252.html",
+      "destination": "/may-nen-khi-252",
+      "permanent": true
+    },
+    {
+      "source": "/air-dryer-machine-253.html",
+      "destination": "/may-say-khi-253",
+      "permanent": true
+    },
+    {
+      "source": "/apple-pear-processing-line-279.html",
+      "destination": "/day-chuyen-che-bien-tao-le-279",
+      "permanent": true
+    },
+    {
+      "source": "/apricot-plum-peach-beverage-processing-line-281.html",
+      "destination": "/day-chuyen-san-xuat-do-uong-tu-mo-man-dao-281",
+      "permanent": true
+    },
+    {
+      "source": "/aseptic-brick-carton-filling-machine-for-customer-in-india-422.html",
+      "destination": "/may-chiet-rot-hop-giay-tiet-trung-cho-khach-hang-tai-an-do-422",
+      "permanent": true
+    },
+    {
+      "source": "/aseptic-brick-carton-filling-machine-for-customer-in-turkmenistan-424.html",
+      "destination": "/may-chiet-rot-hop-giay-tiet-trung-cho-khach-hang-tai-turkmenistan-424",
+      "permanent": true
+    },
+    {
+      "source": "/aseptic-brick-carton-filling-machine-in-vietnam-421.html",
+      "destination": "/may-chiet-rot-hop-giay-tiet-trung-tai-viet-nam-421",
+      "permanent": true
+    },
+    {
+      "source": "/aseptic-brick-carton-packaging-material-371.html",
+      "destination": "/vat-lieu-dong-goi-hop-giay-tiet-trung-dang-brick-371",
+      "permanent": true
+    },
+    {
+      "source": "/aseptic-carton-filling-machine-69.html",
+      "destination": "/may-chiet-rot-hop-tiet-trung-69",
+      "permanent": true
+    },
+    {
+      "source": "/aseptic-carton-filling-machine-for-ml-sq-449.html",
+      "destination": "/may-chiet-rot-hop-tiet-trung-cho-hop-1000ml-sq-449",
+      "permanent": true
+    },
+    {
+      "source": "/aseptic-carton-filling-machine-testing-441.html",
+      "destination": "/kiem-tra-may-chiet-rot-hop-tiet-trung-441",
+      "permanent": true
+    },
+    {
+      "source": "/aseptic-carton-packaging-material-68.html",
+      "destination": "/vat-lieu-dong-goi-hop-tiet-trung-68",
+      "permanent": true
+    },
+    {
+      "source": "/aseptic-large-bag-filling-machine-350.html",
+      "destination": "/may-chiet-rot-tui-lon-tiet-trung-350",
+      "permanent": true
+    },
+    {
+      "source": "/aseptic-tank-244.html",
+      "destination": "/bon-chua-tiet-trung-244",
+      "permanent": true
+    },
+    {
+      "source": "/auto-cup-filling--sealing-machine-147.html",
+      "destination": "/may-chiet-rot-va-han-nap-coc-tu-dong-147",
+      "permanent": true
+    },
+    {
+      "source": "/automatic-aseptic-plastic-pouch-filling-machine-140.html",
+      "destination": "/may-chiet-rot-tui-nhua-tiet-trung-tu-dong-140",
+      "permanent": true
+    },
+    {
+      "source": "/automatic-bottle-tilting-machine-103.html",
+      "destination": "/may-lat-chai-tu-dong-103",
+      "permanent": true
+    },
+    {
+      "source": "/automatic-cap-applicator-269.html",
+      "destination": "/may-gan-nap-tu-dong-269",
+      "permanent": true
+    },
+    {
+      "source": "/automatic-cartoning-machine-379.html",
+      "destination": "/may-dong-thung-carton-tu-dong-379",
+      "permanent": true
+    },
+    {
+      "source": "/automatic-plastic-pouch-filling-machine-142.html",
+      "destination": "/may-chiet-rot-tui-nhua-tu-dong-142",
+      "permanent": true
+    },
+    {
+      "source": "/automatic-shrink-packing-machine-151.html",
+      "destination": "/may-dong-goi-mang-co-tu-dong-151",
+      "permanent": true
+    },
+    {
+      "source": "/automatic-shrink-sleeve-labelling-machine-155.html",
+      "destination": "/may-dan-nhan-mang-co-tu-dong-155",
+      "permanent": true
+    },
+    {
+      "source": "/automatic-stand-up-pouch-filling-machine-272.html",
+      "destination": "/may-chiet-rot-tui-dung-tu-dong-272",
+      "permanent": true
+    },
+    {
+      "source": "/blueberry-raspberry-strawberry-beverage-processing-line-277.html",
+      "destination": "/day-chuyen-san-xuat-do-uong-tu-viet-quat-mam-xoi-dau-tay-277",
+      "permanent": true
+    },
+    {
+      "source": "/bolivian-customer-visited-our-factory-418.html",
+      "destination": "/khach-hang-bolivia-den-tham-nha-may-cua-chung-toi-418",
+      "permanent": true
+    },
+    {
+      "source": "/bright-dairy--food-189.html",
+      "destination": "/bright-dairy-food-189",
+      "permanent": true
+    },
+    {
+      "source": "/brush-washing-machine-374.html",
+      "destination": "/may-rua-kieu-ban-chai-374",
+      "permanent": true
+    },
+    {
+      "source": "/bubbling-washing-machine-375.html",
+      "destination": "/may-rua-suc-khi-375",
+      "permanent": true
+    },
+    {
+      "source": "/butter-processing-line-33.html",
+      "destination": "/day-chuyen-san-xuat-bo-33",
+      "permanent": true
+    },
+    {
+      "source": "/butter-processing-line-47.html",
+      "destination": "/day-chuyen-san-xuat-bo-47",
+      "permanent": true
+    },
+    {
+      "source": "/can-filling-line-158.html",
+      "destination": "/day-chuyen-chiet-rot-lon-158",
+      "permanent": true
+    },
+    {
+      "source": "/carbonated-beverage-equipment-34.html",
+      "destination": "/thiet-bi-do-uong-co-ga-34",
+      "permanent": true
+    },
+    {
+      "source": "/carbonated-drinks-mixer-92.html",
+      "destination": "/may-pha-tron-do-uong-co-ga-92",
+      "permanent": true
+    },
+    {
+      "source": "/carbonated-drinks-production-line-29.html",
+      "destination": "/day-chuyen-san-xuat-do-uong-co-ga-29",
+      "permanent": true
+    },
+    {
+      "source": "/carbonated-drinks-production-line-51.html",
+      "destination": "/day-chuyen-san-xuat-do-uong-co-ga-51",
+      "permanent": true
+    },
+    {
+      "source": "/carbonated-drinks-solution-14.html",
+      "destination": "/giai-phap-do-uong-co-ga-14",
+      "permanent": true
+    },
+    {
+      "source": "/carrot-beverage-processing-line-345.html",
+      "destination": "/day-chuyen-san-xuat-do-uong-ca-rot-345",
+      "permanent": true
+    },
+    {
+      "source": "/case-56.html",
+      "destination": "/du-an-tieu-bieu-56",
+      "permanent": true
+    },
+    {
+      "source": "/cheese-processing-line-36.html",
+      "destination": "/day-chuyen-san-xuat-pho-mai-36",
+      "permanent": true
+    },
+    {
+      "source": "/cheese-processing-line-46.html",
+      "destination": "/day-chuyen-san-xuat-pho-mai-46",
+      "permanent": true
+    },
+    {
+      "source": "/chinese-new-year-holiday-notice-429.html",
+      "destination": "/thong-bao-nghi-tet-nguyen-dan-429",
+      "permanent": true
+    },
+    {
+      "source": "/chinese-new-year-holiday-notice-443.html",
+      "destination": "/thong-bao-nghi-tet-nguyen-dan-443",
+      "permanent": true
+    },
+    {
+      "source": "/chinese-new-year-holiday-notice-457.html",
+      "destination": "/thong-bao-nghi-tet-nguyen-dan-457",
+      "permanent": true
+    },
+    {
+      "source": "/cip-cleaning-system-31.html",
+      "destination": "/he-thong-ve-sinh-cip-31",
+      "permanent": true
+    },
+    {
+      "source": "/cip-self-priming-pump-87.html",
+      "destination": "/bom-tu-moi-cip-87",
+      "permanent": true
+    },
+    {
+      "source": "/citrus-processing-line-274.html",
+      "destination": "/day-chuyen-che-bien-trai-cay-ho-cam-quyt-274",
+      "permanent": true
+    },
+    {
+      "source": "/clamp-ferrule-set-74.html",
+      "destination": "/bo-khop-noi-clamp-74",
+      "permanent": true
+    },
+    {
+      "source": "/coca-cola-186.html",
+      "destination": "/coca-cola-186",
+      "permanent": true
+    },
+    {
+      "source": "/coconut-water-milk-processing-line-283.html",
+      "destination": "/day-chuyen-san-xuat-nuoc-dua-sua-dua-283",
+      "permanent": true
+    },
+    {
+      "source": "/colloid-mill-124.html",
+      "destination": "/may-nghien-keo-124",
+      "permanent": true
+    },
+    {
+      "source": "/commissioning-of-juice-production-line-446.html",
+      "destination": "/chay-thu-day-chuyen-san-xuat-nuoc-ep-446",
+      "permanent": true
+    },
+    {
+      "source": "/company-culture-18.html",
+      "destination": "/van-hoa-cong-ty-18",
+      "permanent": true
+    },
+    {
+      "source": "/company-profile-16.html",
+      "destination": "/gioi-thieu-cong-ty-16",
+      "permanent": true
+    },
+    {
+      "source": "/complete-line-1.html",
+      "destination": "/day-chuyen-hoan-chinh",
+      "permanent": true
+    },
+    {
+      "source": "/complete-line-64.html",
+      "destination": "/day-chuyen-hoan-chinh-64",
+      "permanent": true
+    },
+    {
+      "source": "/condensed-milk-processing-line-271.html",
+      "destination": "/day-chuyen-san-xuat-sua-dac-271",
+      "permanent": true
+    },
+    {
+      "source": "/condensed-milk-processing-line-44.html",
+      "destination": "/day-chuyen-san-xuat-sua-dac-44",
+      "permanent": true
+    },
+    {
+      "source": "/contact-us-7.html",
+      "destination": "/lien-he",
+      "permanent": true
+    },
+    {
+      "source": "/continuous-spraying-type-pasteurization-and-cooling-tunnel-106.html",
+      "destination": "/ham-thanh-trung-va-lam-nguoi-kieu-phun-lien-tuc-106",
+      "permanent": true
+    },
+    {
+      "source": "/continuous-water-soaking-sterilizer-105.html",
+      "destination": "/may-tiet-trung-ngam-nuoc-lien-tuc-105",
+      "permanent": true
+    },
+    {
+      "source": "/cooling-and-heating-tank-130.html",
+      "destination": "/bon-gia-nhiet-va-lam-lanh-130",
+      "permanent": true
+    },
+    {
+      "source": "/cooling-room-254.html",
+      "destination": "/kho-lanh-254",
+      "permanent": true
+    },
+    {
+      "source": "/cooling-tower-255.html",
+      "destination": "/thap-giai-nhiet-255",
+      "permanent": true
+    },
+    {
+      "source": "/cream-separator-123.html",
+      "destination": "/may-ly-tam-tach-kem-123",
+      "permanent": true
+    },
+    {
+      "source": "/cut-half-juicer-95.html",
+      "destination": "/may-ep-qua-cat-doi-95",
+      "permanent": true
+    },
+    {
+      "source": "/dairy-product-solution-12.html",
+      "destination": "/giai-phap-san-pham-sua-12",
+      "permanent": true
+    },
+    {
+      "source": "/diaphragm-valve-76.html",
+      "destination": "/van-mang-76",
+      "permanent": true
+    },
+    {
+      "source": "/diesel-generator-248.html",
+      "destination": "/may-phat-dien-diesel-248",
+      "permanent": true
+    },
+    {
+      "source": "/double-layered-pot-119.html",
+      "destination": "/noi-nau-hai-lop-119",
+      "permanent": true
+    },
+    {
+      "source": "/double-seal-circulative-pump-84.html",
+      "destination": "/bom-tuan-hoan-phot-kep-84",
+      "permanent": true
+    },
+    {
+      "source": "/drinking-water-solution-15.html",
+      "destination": "/giai-phap-nuoc-uong-15",
+      "permanent": true
+    },
+    {
+      "source": "/drinking-water-treatment-equipments-35.html",
+      "destination": "/thiet-bi-xu-ly-nuoc-uong-35",
+      "permanent": true
+    },
+    {
+      "source": "/drying-tower-system-114.html",
+      "destination": "/he-thong-thap-say-114",
+      "permanent": true
+    },
+    {
+      "source": "/factory-tools-22.html",
+      "destination": "/thiet-bi-nha-may-22",
+      "permanent": true
+    },
+    {
+      "source": "/falling-film-vacuum-evaporator-94.html",
+      "destination": "/thiet-bi-co-dac-chan-khong-mang-roi-94",
+      "permanent": true
+    },
+    {
+      "source": "/fermentation-tank-127.html",
+      "destination": "/bon-len-men-127",
+      "permanent": true
+    },
+    {
+      "source": "/filling-and-aluminum-foil-sealing-machine-144.html",
+      "destination": "/may-chiet-rot-va-han-mang-nhom-144",
+      "permanent": true
+    },
+    {
+      "source": "/filling-packing-machine-39.html",
+      "destination": "/may-chiet-rot-va-dong-goi-39",
+      "permanent": true
+    },
+    {
+      "source": "/filter-71.html",
+      "destination": "/bo-loc-71",
+      "permanent": true
+    },
+    {
+      "source": "/flow-plate-57.html",
+      "destination": "/tam-phan-dong-57",
+      "permanent": true
+    },
+    {
+      "source": "/fluidized-bed-113.html",
+      "destination": "/may-say-tang-soi-113",
+      "permanent": true
+    },
+    {
+      "source": "/forced-external-circulation-vacuum-evaporator-93.html",
+      "destination": "/thiet-bi-co-dac-chan-khong-tuan-hoan-ngoai-cuong-buc-93",
+      "permanent": true
+    },
+    {
+      "source": "/fruit-processing-equipment-33.html",
+      "destination": "/thiet-bi-che-bien-trai-cay-33",
+      "permanent": true
+    },
+    {
+      "source": "/fruit-processing-line-62.html",
+      "destination": "/day-chuyen-che-bien-trai-cay-62",
+      "permanent": true
+    },
+    {
+      "source": "/fully-automatic-cup-forming-filling-sealing-machine-150.html",
+      "destination": "/may-tao-hinh-coc-chiet-rot-va-han-nap-hoan-toan-tu-dong-150",
+      "permanent": true
+    },
+    {
+      "source": "/ghanaian-customer-visited-our-factory-463.html",
+      "destination": "/khach-hang-ghana-den-tham-nha-may-chung-toi-463",
+      "permanent": true
+    },
+    {
+      "source": "/glass-bottle-filling-machineplc-268.html",
+      "destination": "/may-chiet-rot-chai-thuy-tinh-plc-268",
+      "permanent": true
+    },
+    {
+      "source": "/grape-beverage-processing-line-280.html",
+      "destination": "/day-chuyen-san-xuat-do-uong-nho-280",
+      "permanent": true
+    },
+    {
+      "source": "/grasping-carton-fillerdecrater-148.html",
+      "destination": "/may-gap-xep-chai-vao-thung-do-thung-148",
+      "permanent": true
+    },
+    {
+      "source": "/hammer-crusher-372.html",
+      "destination": "/may-nghien-bua-372",
+      "permanent": true
+    },
+    {
+      "source": "/handle-welded-butterfly-valve-82.html",
+      "destination": "/van-buom-han-co-tay-gat-82",
+      "permanent": true
+    },
+    {
+      "source": "/happy-chinese-new-year---year-of-the-tiger-415.html",
+      "destination": "/chuc-mung-tet-nguyen-dan-2022-nam-dan-415",
+      "permanent": true
+    },
+    {
+      "source": "/high-efficiency-centrifugal-pump-89.html",
+      "destination": "/bom-ly-tam-hieu-suat-cao-89",
+      "permanent": true
+    },
+    {
+      "source": "/high-efficiency-sanitary-pump-85.html",
+      "destination": "/bom-ve-sinh-hieu-suat-cao-85",
+      "permanent": true
+    },
+    {
+      "source": "/high-pressure-homogenizer-118.html",
+      "destination": "/may-dong-hoa-ap-suat-cao-118",
+      "permanent": true
+    },
+    {
+      "source": "/high-speed-straw-applicator-104.html",
+      "destination": "/may-gan-ong-hut-toc-do-cao-104",
+      "permanent": true
+    },
+    {
+      "source": "/holiday-notice-for-chinas-national-day-452.html",
+      "destination": "/thong-bao-nghi-le-quoc-khanh-trung-quoc-452",
+      "permanent": true
+    },
+    {
+      "source": "/hollow-fiber-ultra-filteration-system-91.html",
+      "destination": "/he-thong-sieu-loc-soi-rong-91",
+      "permanent": true
+    },
+    {
+      "source": "/horizontal-milk-cooling-tank-135.html",
+      "destination": "/bon-lam-lanh-sua-nam-ngang-135",
+      "permanent": true
+    },
+    {
+      "source": "/hot-melt-glue-opp-labelling-machine-149.html",
+      "destination": "/may-dan-nhan-opp-keo-nong-chay-149",
+      "permanent": true
+    },
+    {
+      "source": "/huiyuan-187.html",
+      "destination": "/huiyuan-187",
+      "permanent": true
+    },
+    {
+      "source": "/ice-cream-processing-line-26.html",
+      "destination": "/day-chuyen-san-xuat-kem-26",
+      "permanent": true
+    },
+    {
+      "source": "/ice-cream-processing-line-54.html",
+      "destination": "/day-chuyen-san-xuat-kem-54",
+      "permanent": true
+    },
+    {
+      "source": "/incubation-room-249.html",
+      "destination": "/phong-u-len-men-249",
+      "permanent": true
+    },
+    {
+      "source": "/installation-pipelines-valves-fittings-37.html",
+      "destination": "/lap-dat-duong-ong-van-va-phu-kien-37",
+      "permanent": true
+    },
+    {
+      "source": "/insulated-tank-132.html",
+      "destination": "/bon-bao-on-132",
+      "permanent": true
+    },
+    {
+      "source": "/integrated-sight-glass-68.html",
+      "destination": "/kinh-quan-sat-tich-hop-68",
+      "permanent": true
+    },
+    {
+      "source": "/isobaric-filling-machine--in--unit-154.html",
+      "destination": "/may-chiet-rot-dang-ap-3-trong-1-154",
+      "permanent": true
+    },
+    {
+      "source": "/jb---aseptic-brick-carton-filling-machine-for--ml-398.html",
+      "destination": "/may-chiet-rot-hop-giay-tiet-trung-jb-2000-1000-cho-hop-500-1000ml-398",
+      "permanent": true
+    },
+    {
+      "source": "/jb---aseptic-brick-carton-filling-machine-for-ml-ml-390.html",
+      "destination": "/may-chiet-rot-hop-giay-tiet-trung-jb-6000-1000-cho-hop-500ml-1000ml-390",
+      "permanent": true
+    },
+    {
+      "source": "/jb--aseptic-brick-carton-aseptic-filling-machine-for----ml-389.html",
+      "destination": "/may-chiet-rot-hop-giay-tiet-trung-jb-4000-cho-hop-100-330ml-389",
+      "permanent": true
+    },
+    {
+      "source": "/jb--aseptic-brick-carton-aseptic-filling-machine-for----ml-397.html",
+      "destination": "/may-chiet-rot-hop-giay-tiet-trung-jb-3000-cho-hop-100-330ml-397",
+      "permanent": true
+    },
+    {
+      "source": "/jb--aseptic-brick-carton-aseptic-filling-machine-for-ml---ml-391.html",
+      "destination": "/may-chiet-rot-hop-giay-tiet-trung-jb-6000-cho-hop-100ml-330ml-391",
+      "permanent": true
+    },
+    {
+      "source": "/jb--aseptic-brick-carton-aseptic-filling-machine-for-ml---ml-392.html",
+      "destination": "/may-chiet-rot-hop-giay-tiet-trung-jb-7500-cho-hop-100ml-330ml-392",
+      "permanent": true
+    },
+    {
+      "source": "/joylong-manufacturing-workshop-456.html",
+      "destination": "/xuong-san-xuat-joylong-456",
+      "permanent": true
+    },
+    {
+      "source": "/juice-processing-line-32.html",
+      "destination": "/day-chuyen-san-xuat-nuoc-ep-32",
+      "permanent": true
+    },
+    {
+      "source": "/juice-processing-line-48.html",
+      "destination": "/day-chuyen-san-xuat-nuoc-ep-48",
+      "permanent": true
+    },
+    {
+      "source": "/juice-processing-line-delivery-437.html",
+      "destination": "/giao-hang-day-chuyen-che-bien-nuoc-ep-437",
+      "permanent": true
+    },
+    {
+      "source": "/juice-processing-line-shipping-426.html",
+      "destination": "/van-chuyen-day-chuyen-che-bien-nuoc-ep-426",
+      "permanent": true
+    },
+    {
+      "source": "/juice-processing-line-shipping-427.html",
+      "destination": "/van-chuyen-day-chuyen-che-bien-nuoc-ep-427",
+      "permanent": true
+    },
+    {
+      "source": "/juice-processing-line-shipping-434.html",
+      "destination": "/van-chuyen-day-chuyen-che-bien-nuoc-ep-434",
+      "permanent": true
+    },
+    {
+      "source": "/juice-production-line-delivery-453.html",
+      "destination": "/giao-hang-day-chuyen-san-xuat-nuoc-ep-453",
+      "permanent": true
+    },
+    {
+      "source": "/juice-production-line-installation-458.html",
+      "destination": "/lap-dat-day-chuyen-san-xuat-nuoc-ep-458",
+      "permanent": true
+    },
+    {
+      "source": "/juice-production-line-shipping-451.html",
+      "destination": "/van-chuyen-day-chuyen-san-xuat-nuoc-ep-451",
+      "permanent": true
+    },
+    {
+      "source": "/juice-solution-13.html",
+      "destination": "/giai-phap-nuoc-ep-13",
+      "permanent": true
+    },
+    {
+      "source": "/jw--gable-top-carton-filling-machine-159.html",
+      "destination": "/may-chiet-rot-hop-giay-nap-nhon-gable-top-jw-2000-159",
+      "permanent": true
+    },
+    {
+      "source": "/labor-day-holiday-notice-459.html",
+      "destination": "/thong-bao-nghi-le-quoc-te-lao-dong-459",
+      "permanent": true
+    },
+    {
+      "source": "/liquid-food-carry-vehicles-tank-136.html",
+      "destination": "/bon-cho-thuc-pham-long-gan-tren-xe-136",
+      "permanent": true
+    },
+    {
+      "source": "/machinery-2.html",
+      "destination": "/may-moc",
+      "permanent": true
+    },
+    {
+      "source": "/machinery-65.html",
+      "destination": "/may-moc-65",
+      "permanent": true
+    },
+    {
+      "source": "/mango-pineapple-juice-processing-line-278.html",
+      "destination": "/day-chuyen-san-xuat-nuoc-ep-xoai-dua-278",
+      "permanent": true
+    },
+    {
+      "source": "/mengniu-188.html",
+      "destination": "/mengniu-188",
+      "permanent": true
+    },
+    {
+      "source": "/merry-christmas-442.html",
+      "destination": "/giang-sinh-an-lanh-442",
+      "permanent": true
+    },
+    {
+      "source": "/merry-christmas-455.html",
+      "destination": "/giang-sinh-an-lanh-455",
+      "permanent": true
+    },
+    {
+      "source": "/message.html",
+      "destination": "/lien-he-message",
+      "permanent": true
+    },
+    {
+      "source": "/milk-powder-filling-machine-delivery-448.html",
+      "destination": "/giao-hang-may-chiet-rot-sua-bot-448",
+      "permanent": true
+    },
+    {
+      "source": "/milk-powder-processing-line-43.html",
+      "destination": "/day-chuyen-san-xuat-sua-bot-43",
+      "permanent": true
+    },
+    {
+      "source": "/milk-powder-processing-line-53.html",
+      "destination": "/day-chuyen-san-xuat-sua-bot-53",
+      "permanent": true
+    },
+    {
+      "source": "/milk-powder-production-line-460.html",
+      "destination": "/day-chuyen-san-xuat-sua-bot-460",
+      "permanent": true
+    },
+    {
+      "source": "/milk-processing-line-installation-438.html",
+      "destination": "/lap-dat-day-chuyen-xu-ly-sua-438",
+      "permanent": true
+    },
+    {
+      "source": "/milk-processing-line-ready-for-shipping-to-malaysia-420.html",
+      "destination": "/day-chuyen-xu-ly-sua-san-sang-van-chuyen-den-malaysia-420",
+      "permanent": true
+    },
+    {
+      "source": "/milk-processing-line-shipping-419.html",
+      "destination": "/van-chuyen-day-chuyen-xu-ly-sua-419",
+      "permanent": true
+    },
+    {
+      "source": "/milk-processing-line-shipping-425.html",
+      "destination": "/van-chuyen-day-chuyen-xu-ly-sua-425",
+      "permanent": true
+    },
+    {
+      "source": "/milk-processing-line-shipping-447.html",
+      "destination": "/van-chuyen-day-chuyen-xu-ly-sua-447",
+      "permanent": true
+    },
+    {
+      "source": "/milk-production-line-delivery-462.html",
+      "destination": "/giao-hang-day-chuyen-san-xuat-sua-462",
+      "permanent": true
+    },
+    {
+      "source": "/milk-receiving-tank-141.html",
+      "destination": "/bon-tiep-nhan-sua-141",
+      "permanent": true
+    },
+    {
+      "source": "/milk-weight-tank-143.html",
+      "destination": "/bon-can-sua-143",
+      "permanent": true
+    },
+    {
+      "source": "/mineral-water-production-line-28.html",
+      "destination": "/day-chuyen-san-xuat-nuoc-khoang-28",
+      "permanent": true
+    },
+    {
+      "source": "/mineral-water-production-line-52.html",
+      "destination": "/day-chuyen-san-xuat-nuoc-khoang-52",
+      "permanent": true
+    },
+    {
+      "source": "/mixing-tank-128.html",
+      "destination": "/bon-khuay-tron-128",
+      "permanent": true
+    },
+    {
+      "source": "/myanmar-customers-visited-our-factory-440.html",
+      "destination": "/khach-hang-myanmar-den-tham-nha-may-cua-chung-toi-440",
+      "permanent": true
+    },
+    {
+      "source": "/new-customer-visited-our-factory-417.html",
+      "destination": "/khach-hang-moi-den-tham-nha-may-cua-chung-toi-417",
+      "permanent": true
+    },
+    {
+      "source": "/news-67.html",
+      "destination": "/tin-tuc",
+      "permanent": true
+    },
+    {
+      "source": "/normal-presure-filling-machine--in--unit-152.html",
+      "destination": "/may-chiet-rot-ap-suat-thuong-3-trong-1-152",
+      "permanent": true
+    },
+    {
+      "source": "/normal-presure-hot-filling-machine--in--unit-153.html",
+      "destination": "/may-chiet-rot-nong-thuong-ap-3-trong-1-153",
+      "permanent": true
+    },
+    {
+      "source": "/outdoor-milk-storage-tank-125.html",
+      "destination": "/bon-chua-sua-ngoai-troi-125",
+      "permanent": true
+    },
+    {
+      "source": "/paper-cart-380.html",
+      "destination": "/xe-cho-cuon-giay-380",
+      "permanent": true
+    },
+    {
+      "source": "/paper-trolley-381.html",
+      "destination": "/xe-day-cuon-giay-381",
+      "permanent": true
+    },
+    {
+      "source": "/passion-fruit-guava-beverage-processing-line-282.html",
+      "destination": "/day-chuyen-san-xuat-do-uong-tu-chanh-day-oi-282",
+      "permanent": true
+    },
+    {
+      "source": "/pasteurized-milk-processing-line-183.html",
+      "destination": "/day-chuyen-xu-ly-sua-thanh-trung-183",
+      "permanent": true
+    },
+    {
+      "source": "/pasteurized-milk-processing-line-40.html",
+      "destination": "/day-chuyen-xu-ly-sua-thanh-trung-40",
+      "permanent": true
+    },
+    {
+      "source": "/pitting-and-pulping-machine-98.html",
+      "destination": "/may-tach-hat-va-cha-qua-98",
+      "permanent": true
+    },
+    {
+      "source": "/plate-108.html",
+      "destination": "/tam-108",
+      "permanent": true
+    },
+    {
+      "source": "/plate-heat-exchange-109.html",
+      "destination": "/bo-trao-doi-nhiet-dang-tam-109",
+      "permanent": true
+    },
+    {
+      "source": "/plate-pasteurizer-112.html",
+      "destination": "/may-thanh-trung-dang-tam-112",
+      "permanent": true
+    },
+    {
+      "source": "/pneumatic-valve-77.html",
+      "destination": "/van-khi-nen-77",
+      "permanent": true
+    },
+    {
+      "source": "/preheating-and-killing-enzyme-machine-99.html",
+      "destination": "/may-gia-nhiet-so-bo-va-diet-enzyme-99",
+      "permanent": true
+    },
+    {
+      "source": "/preparation-system-29.html",
+      "destination": "/he-thong-chuan-bi-29",
+      "permanent": true
+    },
+    {
+      "source": "/previous-successful-cases-184.html",
+      "destination": "/cac-du-an-tieu-bieu-da-thuc-hien-184",
+      "permanent": true
+    },
+    {
+      "source": "/pulpingrefining-machine-97.html",
+      "destination": "/may-cha-tho-va-cha-tinh-97",
+      "permanent": true
+    },
+    {
+      "source": "/pure-water-processing-line-27.html",
+      "destination": "/day-chuyen-xu-ly-nuoc-tinh-khiet-27",
+      "permanent": true
+    },
+    {
+      "source": "/pure-water-processing-line-53.html",
+      "destination": "/day-chuyen-xu-ly-nuoc-tinh-khiet-53",
+      "permanent": true
+    },
+    {
+      "source": "/quality-control-23.html",
+      "destination": "/kiem-soat-chat-luong-23",
+      "permanent": true
+    },
+    {
+      "source": "/quick-install-butterfly-valve-80.html",
+      "destination": "/van-buom-lap-nhanh-80",
+      "permanent": true
+    },
+    {
+      "source": "/ramadan-mubarak-431.html",
+      "destination": "/chuc-mung-thang-le-ramadan-431",
+      "permanent": true
+    },
+    {
+      "source": "/ramadan-mubarak-445.html",
+      "destination": "/chuc-mung-thang-le-ramadan-445",
+      "permanent": true
+    },
+    {
+      "source": "/rd-25.html",
+      "destination": "/nghien-cuu-phat-trien-r-d-25",
+      "permanent": true
+    },
+    {
+      "source": "/resume-work-after-china-new-year-holiday-430.html",
+      "destination": "/tro-lai-lam-viec-sau-ky-nghi-tet-nguyen-dan-430",
+      "permanent": true
+    },
+    {
+      "source": "/resume-work-from-chinese-new-year-holiday-444.html",
+      "destination": "/tro-lai-lam-viec-sau-ky-nghi-tet-nguyen-dan-444",
+      "permanent": true
+    },
+    {
+      "source": "/retort-sterilizerauto-clave-107.html",
+      "destination": "/noi-hap-tiet-trung-autoclave-107",
+      "permanent": true
+    },
+    {
+      "source": "/reverse-osmosis-purification-system-90.html",
+      "destination": "/he-thong-loc-ro-tham-thau-nguoc-90",
+      "permanent": true
+    },
+    {
+      "source": "/reversing-valve-73.html",
+      "destination": "/van-dao-chieu-73",
+      "permanent": true
+    },
+    {
+      "source": "/robot-case-packing-system-146.html",
+      "destination": "/he-thong-dong-thung-bang-robot-146",
+      "permanent": true
+    },
+    {
+      "source": "/robust-185.html",
+      "destination": "/robust-185",
+      "permanent": true
+    },
+    {
+      "source": "/roller-drum-washing-machine-373.html",
+      "destination": "/may-rua-dang-trong-quay-373",
+      "permanent": true
+    },
+    {
+      "source": "/roller-sorting-machine-376.html",
+      "destination": "/may-phan-loai-con-lan-376",
+      "permanent": true
+    },
+    {
+      "source": "/rotary-cleaning-ball-69.html",
+      "destination": "/qua-cau-phun-rua-quay-69",
+      "permanent": true
+    },
+    {
+      "source": "/rotor-pump-86.html",
+      "destination": "/bom-roto-86",
+      "permanent": true
+    },
+    {
+      "source": "/round-high-speed-emulsification-tank-121.html",
+      "destination": "/bon-nhu-hoa-toc-do-cao-dang-tron-121",
+      "permanent": true
+    },
+    {
+      "source": "/sanitary-centrifugal-pump-88.html",
+      "destination": "/bom-ly-tam-ve-sinh-88",
+      "permanent": true
+    },
+    {
+      "source": "/sanitary-pumps-36.html",
+      "destination": "/bom-ve-sinh-36",
+      "permanent": true
+    },
+    {
+      "source": "/scraper-elevator-378.html",
+      "destination": "/may-nang-lieu-dang-tam-gat-378",
+      "permanent": true
+    },
+    {
+      "source": "/screw-conveyer-377.html",
+      "destination": "/vit-tai-377",
+      "permanent": true
+    },
+    {
+      "source": "/screw-juicer-96.html",
+      "destination": "/may-ep-truc-vit-96",
+      "permanent": true
+    },
+    {
+      "source": "/screw-type-slurry-pump-83.html",
+      "destination": "/bom-dich-set-kieu-truc-vit-83",
+      "permanent": true
+    },
+    {
+      "source": "/sea-buckthorn-processing-line-337.html",
+      "destination": "/day-chuyen-che-bien-hac-mai-bien-337",
+      "permanent": true
+    },
+    {
+      "source": "/search.html",
+      "destination": "/tim-kiem",
+      "permanent": true
+    },
+    {
+      "source": "/service-4.html",
+      "destination": "/dich-vu",
+      "permanent": true
+    },
+    {
+      "source": "/shipping-of-juice-processing-line-433.html",
+      "destination": "/van-chuyen-day-chuyen-che-bien-nuoc-ep-433",
+      "permanent": true
+    },
+    {
+      "source": "/shipping-of-juice-processing-plant-439.html",
+      "destination": "/van-chuyen-day-chuyen-san-xuat-nuoc-ep-439",
+      "permanent": true
+    },
+    {
+      "source": "/shipping-of-milk-powder-production-line-454.html",
+      "destination": "/van-chuyen-day-chuyen-san-xuat-sua-bot-454",
+      "permanent": true
+    },
+    {
+      "source": "/single-layer-storage-tank-133.html",
+      "destination": "/bon-chua-mot-lop-133",
+      "permanent": true
+    },
+    {
+      "source": "/small-integration-cip-system-101.html",
+      "destination": "/he-thong-ve-sinh-cip-tich-hop-co-nho-101",
+      "permanent": true
+    },
+    {
+      "source": "/solution-3.html",
+      "destination": "/giai-phap",
+      "permanent": true
+    },
+    {
+      "source": "/soymilk-processing-line-39.html",
+      "destination": "/day-chuyen-san-xuat-sua-dau-nanh-39",
+      "permanent": true
+    },
+    {
+      "source": "/soymilk-processing-line-45.html",
+      "destination": "/day-chuyen-san-xuat-sua-dau-nanh-45",
+      "permanent": true
+    },
+    {
+      "source": "/square-high-speed-emulsification-tank-122.html",
+      "destination": "/bon-nhu-hoa-toc-do-cao-dang-vuong-122",
+      "permanent": true
+    },
+    {
+      "source": "/stainless-steel-tanks-28.html",
+      "destination": "/bon-inox-28",
+      "permanent": true
+    },
+    {
+      "source": "/steam-boiler-250.html",
+      "destination": "/noi-hoi-250",
+      "permanent": true
+    },
+    {
+      "source": "/sterilization-system-30.html",
+      "destination": "/he-thong-tiet-trung-30",
+      "permanent": true
+    },
+    {
+      "source": "/straw-applicator-264.html",
+      "destination": "/may-gan-ong-hut-264",
+      "permanent": true
+    },
+    {
+      "source": "/sub-vertical-cip-system-102.html",
+      "destination": "/he-thong-ve-sinh-cip-dang-dung-tach-roi-102",
+      "permanent": true
+    },
+    {
+      "source": "/tea-drinks-processing-line-30.html",
+      "destination": "/day-chuyen-san-xuat-do-uong-tra-30",
+      "permanent": true
+    },
+    {
+      "source": "/tea-drinks-processing-line-50.html",
+      "destination": "/day-chuyen-san-xuat-do-uong-tra-50",
+      "permanent": true
+    },
+    {
+      "source": "/the-first-phase-of-th-canton-fair-closed-on-th-april--407.html",
+      "destination": "/dot-1-hoi-cho-canton-lan-thu-125-da-be-mac-ngay-19-4-2019-407",
+      "permanent": true
+    },
+    {
+      "source": "/the-first-phase-of-th-canton-fair-closed-on-th-oct--409.html",
+      "destination": "/dot-1-hoi-cho-canton-lan-thu-126-da-be-mac-ngay-19-10-2019-409",
+      "permanent": true
+    },
+    {
+      "source": "/the-first-phase-of-th-canton-fair-will-close-today-on-th-oct-396.html",
+      "destination": "/dot-1-hoi-cho-canton-lan-thu-124-se-be-mac-hom-nay-ngay-19-10-396",
+      "permanent": true
+    },
+    {
+      "source": "/the-small-scale-milk-yoghurt-juice-combined-production-line-25.html",
+      "destination": "/day-chuyen-san-xuat-ket-hop-sua-sua-chua-nuoc-ep-quy-mo-nho-25",
+      "permanent": true
+    },
+    {
+      "source": "/the-small-scale-milk-yoghurt-juice-combined-production-line-55.html",
+      "destination": "/day-chuyen-ket-hop-sua-sua-chua-va-nuoc-ep-quy-mo-nho-55",
+      "permanent": true
+    },
+    {
+      "source": "/the-th-canton-fair-closed-on-th-april--413.html",
+      "destination": "/hoi-cho-canton-lan-thu-129-da-be-mac-ngay-24-4-2021-413",
+      "permanent": true
+    },
+    {
+      "source": "/the-th-canton-fair-closed-on-th-june--411.html",
+      "destination": "/hoi-cho-canton-lan-thu-127-da-be-mac-ngay-24-6-2020-411",
+      "permanent": true
+    },
+    {
+      "source": "/the-th-canton-fair-closed-on-th-oct--412.html",
+      "destination": "/hoi-cho-canton-lan-thu-128-da-be-mac-ngay-24-10-2020-412",
+      "permanent": true
+    },
+    {
+      "source": "/the-th-canton-fair-closed-on-th-oct--414.html",
+      "destination": "/hoi-cho-canton-lan-thu-130-da-be-mac-ngay-19-10-2021-414",
+      "permanent": true
+    },
+    {
+      "source": "/there-way-ball-valve-with-threaded-connection-78.html",
+      "destination": "/van-bi-ba-nga-noi-ren-78",
+      "permanent": true
+    },
+    {
+      "source": "/threaded-butterfly-valve-81.html",
+      "destination": "/van-buom-noi-ren-81",
+      "permanent": true
+    },
+    {
+      "source": "/tomato-processing-line-273.html",
+      "destination": "/day-chuyen-che-bien-ca-chua-273",
+      "permanent": true
+    },
+    {
+      "source": "/tubular-uht-sterilizer-110.html",
+      "destination": "/may-tiet-trung-uht-dang-ong-110",
+      "permanent": true
+    },
+    {
+      "source": "/ugandan-customers-visited-our-factory-432.html",
+      "destination": "/khach-hang-uganda-den-tham-nha-may-cua-chung-toi-432",
+      "permanent": true
+    },
+    {
+      "source": "/uht-milk-processing-line-41.html",
+      "destination": "/day-chuyen-xu-ly-sua-uht-41",
+      "permanent": true
+    },
+    {
+      "source": "/uht-milk-processing-line-461.html",
+      "destination": "/day-chuyen-xu-ly-sua-uht-461",
+      "permanent": true
+    },
+    {
+      "source": "/uht-milk-processing-line-55.html",
+      "destination": "/day-chuyen-xu-ly-sua-uht-55",
+      "permanent": true
+    },
+    {
+      "source": "/uht-milk-processing-line-delivery-450.html",
+      "destination": "/giao-hang-day-chuyen-xu-ly-sua-uht-450",
+      "permanent": true
+    },
+    {
+      "source": "/unionsms-72.html",
+      "destination": "/rac-co-sms-72",
+      "permanent": true
+    },
+    {
+      "source": "/utilities-60.html",
+      "destination": "/tien-ich-60",
+      "permanent": true
+    },
+    {
+      "source": "/vacuum-degasser-117.html",
+      "destination": "/may-khu-khi-chan-khong-117",
+      "permanent": true
+    },
+    {
+      "source": "/video-5.html",
+      "destination": "/video-5",
+      "permanent": true
+    },
+    {
+      "source": "/vietnam-423.html",
+      "destination": "/viet-nam-423",
+      "permanent": true
+    },
+    {
+      "source": "/wahaha-190.html",
+      "destination": "/wahaha-190",
+      "permanent": true
+    },
+    {
+      "source": "/walnut-milk-processing-line-shipping-435.html",
+      "destination": "/van-chuyen-day-chuyen-san-xuat-sua-oc-cho-435",
+      "permanent": true
+    },
+    {
+      "source": "/walnutalmond-milk-processing-line-284.html",
+      "destination": "/day-chuyen-san-xuat-sua-oc-cho-hanh-nhan-284",
+      "permanent": true
+    },
+    {
+      "source": "/water-chiller-256.html",
+      "destination": "/may-lam-lanh-nuoc-256",
+      "permanent": true
+    },
+    {
+      "source": "/water-powder-mixer-120.html",
+      "destination": "/may-hoa-tron-bot-nuoc-120",
+      "permanent": true
+    },
+    {
+      "source": "/we-will-attend--th-canton-fair-from-th-to-th-oct--258.html",
+      "destination": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-120-tu-ngay-15-den-19-10-201-258",
+      "permanent": true
+    },
+    {
+      "source": "/we-will-attend--th-canton-fair-from-th-to-th-oct--260.html",
+      "destination": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-122-tu-ngay-15-den-19-10-201-260",
+      "permanent": true
+    },
+    {
+      "source": "/we-will-attend-gulfood-manufacturedubai-world-trade-centreform-th-to-th-nov--37.html",
+      "destination": "/chung-toi-se-tham-du-trien-lam-gulfood-manufacturing-trung-tam-thuong-ma-37",
+      "permanent": true
+    },
+    {
+      "source": "/we-will-attend-gulfood-manufacturedubai-world-trade-centreform-th-to-th-oct--18.html",
+      "destination": "/chung-toi-se-tham-du-trien-lam-gulfood-manufacturing-trung-tam-thuong-ma-18",
+      "permanent": true
+    },
+    {
+      "source": "/we-will-attend-th-canton-fair-from-th-to-th-april--257.html",
+      "destination": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-119-tu-ngay-15-den-19-4-2016-257",
+      "permanent": true
+    },
+    {
+      "source": "/we-will-attend-th-canton-fair-from-th-to-th-april--259.html",
+      "destination": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-121-tu-ngay-15-den-19-4-2017-259",
+      "permanent": true
+    },
+    {
+      "source": "/we-will-attend-th-canton-fair-from-th-to-th-april--35.html",
+      "destination": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-117-tu-ngay-15-den-19-4-2015-35",
+      "permanent": true
+    },
+    {
+      "source": "/we-will-attend-th-canton-fair-from-th-to-th-oct--34.html",
+      "destination": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-118-tu-ngay-15-den-19-10-201-34",
+      "permanent": true
+    },
+    {
+      "source": "/we-will-attend-th-canton-fair-from-th-to-th-oct--38.html",
+      "destination": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-116-tu-ngay-15-den-19-10-201-38",
+      "permanent": true
+    },
+    {
+      "source": "/we-will-attend-th-canton-fair-from-th-to-th-oct--40.html",
+      "destination": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-114-tu-ngay-15-den-19-10-201-40",
+      "permanent": true
+    },
+    {
+      "source": "/we-will-attend-the-rd-canton-fair-from-th-to-th-april--393.html",
+      "destination": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-123-tu-ngay-15-den-19-4-2018-393",
+      "permanent": true
+    },
+    {
+      "source": "/we-will-attend-the-th-canton-fair-from-th-to-th-april--404.html",
+      "destination": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-125-tu-ngay-15-den-19-4-2019-404",
+      "permanent": true
+    },
+    {
+      "source": "/we-will-attend-the-th-canton-fair-from-th-to-th-oct--394.html",
+      "destination": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-124-tu-ngay-15-den-19-10-201-394",
+      "permanent": true
+    },
+    {
+      "source": "/welded-butterfly-valve-79.html",
+      "destination": "/van-buom-han-79",
+      "permanent": true
+    },
+    {
+      "source": "/welded-check-valve-75.html",
+      "destination": "/van-mot-chieu-han-75",
+      "permanent": true
+    },
+    {
+      "source": "/why-us-26.html",
+      "destination": "/vi-sao-chon-chung-toi-26",
+      "permanent": true
+    },
+    {
+      "source": "/yogurt-processing-line-42.html",
+      "destination": "/day-chuyen-san-xuat-sua-chua-42",
+      "permanent": true
+    },
+    {
+      "source": "/yogurt-processing-line-54.html",
+      "destination": "/day-chuyen-san-xuat-sua-chua-54",
+      "permanent": true
+    },
+    {
+      "source": "/yogurt-processing-line-shipping-428.html",
+      "destination": "/van-chuyen-day-chuyen-san-xuat-sua-chua-428",
+      "permanent": true
+    },
+    {
+      "source": "/languages/vi",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/languages/vi/:path*",
+      "destination": "/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/languages/:lang",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/languages/:lang/:path*",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/index.php",
+      "destination": "/tim-kiem",
+      "permanent": false
+    },
+    {
+      "source": "/search.php",
+      "destination": "/tim-kiem",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/admin/:path*",
+      "destination": "/api/admin?path=:path*"
+    },
+    {
+      "source": "/",
+      "destination": "/api/render?path=/index.html"
+    },
+    {
+      "source": "/day-chuyen-hoan-chinh-trang-2",
+      "destination": "/api/render?path=/1_2.html"
+    },
+    {
+      "source": "/may-moc-trang-2",
+      "destination": "/api/render?path=/2_2.html"
+    },
+    {
+      "source": "/may-moc-trang-3",
+      "destination": "/api/render?path=/2_3.html"
+    },
+    {
+      "source": "/may-moc-trang-4",
+      "destination": "/api/render?path=/2_4.html"
+    },
+    {
+      "source": "/may-moc-trang-5",
+      "destination": "/api/render?path=/2_5.html"
+    },
+    {
+      "source": "/may-moc-trang-6",
+      "destination": "/api/render?path=/2_6.html"
+    },
+    {
+      "source": "/video-trang-2",
+      "destination": "/api/render?path=/5_2.html"
+    },
+    {
+      "source": "/video-trang-3",
+      "destination": "/api/render?path=/5_3.html"
+    },
+    {
+      "source": "/day-chuyen-hoan-chinh-trang-2-64-2",
+      "destination": "/api/render?path=/64_2.html"
+    },
+    {
+      "source": "/may-moc-trang-2-65-2",
+      "destination": "/api/render?path=/65_2.html"
+    },
+    {
+      "source": "/tin-tuc-trang-2",
+      "destination": "/api/render?path=/67_2.html"
+    },
+    {
+      "source": "/tin-tuc-trang-3",
+      "destination": "/api/render?path=/67_3.html"
+    },
+    {
+      "source": "/tin-tuc-trang-4",
+      "destination": "/api/render?path=/67_4.html"
+    },
+    {
+      "source": "/tin-tuc-trang-5",
+      "destination": "/api/render?path=/67_5.html"
+    },
+    {
+      "source": "/tin-tuc-trang-6",
+      "destination": "/api/render?path=/67_6.html"
+    },
+    {
+      "source": "/tin-tuc-trang-7",
+      "destination": "/api/render?path=/67_7.html"
+    },
+    {
+      "source": "/gioi-thieu",
+      "destination": "/api/render?path=/about-us-6.html"
+    },
+    {
+      "source": "/may-nen-khi-252",
+      "destination": "/api/render?path=/air-compressor-252.html"
+    },
+    {
+      "source": "/may-say-khi-253",
+      "destination": "/api/render?path=/air-dryer-machine-253.html"
+    },
+    {
+      "source": "/day-chuyen-che-bien-tao-le-279",
+      "destination": "/api/render?path=/apple-pear-processing-line-279.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-do-uong-tu-mo-man-dao-281",
+      "destination": "/api/render?path=/apricot-plum-peach-beverage-processing-line-281.html"
+    },
+    {
+      "source": "/may-chiet-rot-hop-giay-tiet-trung-cho-khach-hang-tai-an-do-422",
+      "destination": "/api/render?path=/aseptic-brick-carton-filling-machine-for-customer-in-india-422.html"
+    },
+    {
+      "source": "/may-chiet-rot-hop-giay-tiet-trung-cho-khach-hang-tai-turkmenistan-424",
+      "destination": "/api/render?path=/aseptic-brick-carton-filling-machine-for-customer-in-turkmenistan-424.html"
+    },
+    {
+      "source": "/may-chiet-rot-hop-giay-tiet-trung-tai-viet-nam-421",
+      "destination": "/api/render?path=/aseptic-brick-carton-filling-machine-in-vietnam-421.html"
+    },
+    {
+      "source": "/vat-lieu-dong-goi-hop-giay-tiet-trung-dang-brick-371",
+      "destination": "/api/render?path=/aseptic-brick-carton-packaging-material-371.html"
+    },
+    {
+      "source": "/may-chiet-rot-hop-tiet-trung-69",
+      "destination": "/api/render?path=/aseptic-carton-filling-machine-69.html"
+    },
+    {
+      "source": "/may-chiet-rot-hop-tiet-trung-cho-hop-1000ml-sq-449",
+      "destination": "/api/render?path=/aseptic-carton-filling-machine-for-ml-sq-449.html"
+    },
+    {
+      "source": "/kiem-tra-may-chiet-rot-hop-tiet-trung-441",
+      "destination": "/api/render?path=/aseptic-carton-filling-machine-testing-441.html"
+    },
+    {
+      "source": "/vat-lieu-dong-goi-hop-tiet-trung-68",
+      "destination": "/api/render?path=/aseptic-carton-packaging-material-68.html"
+    },
+    {
+      "source": "/may-chiet-rot-tui-lon-tiet-trung-350",
+      "destination": "/api/render?path=/aseptic-large-bag-filling-machine-350.html"
+    },
+    {
+      "source": "/bon-chua-tiet-trung-244",
+      "destination": "/api/render?path=/aseptic-tank-244.html"
+    },
+    {
+      "source": "/may-chiet-rot-va-han-nap-coc-tu-dong-147",
+      "destination": "/api/render?path=/auto-cup-filling--sealing-machine-147.html"
+    },
+    {
+      "source": "/may-chiet-rot-tui-nhua-tiet-trung-tu-dong-140",
+      "destination": "/api/render?path=/automatic-aseptic-plastic-pouch-filling-machine-140.html"
+    },
+    {
+      "source": "/may-lat-chai-tu-dong-103",
+      "destination": "/api/render?path=/automatic-bottle-tilting-machine-103.html"
+    },
+    {
+      "source": "/may-gan-nap-tu-dong-269",
+      "destination": "/api/render?path=/automatic-cap-applicator-269.html"
+    },
+    {
+      "source": "/may-dong-thung-carton-tu-dong-379",
+      "destination": "/api/render?path=/automatic-cartoning-machine-379.html"
+    },
+    {
+      "source": "/may-chiet-rot-tui-nhua-tu-dong-142",
+      "destination": "/api/render?path=/automatic-plastic-pouch-filling-machine-142.html"
+    },
+    {
+      "source": "/may-dong-goi-mang-co-tu-dong-151",
+      "destination": "/api/render?path=/automatic-shrink-packing-machine-151.html"
+    },
+    {
+      "source": "/may-dan-nhan-mang-co-tu-dong-155",
+      "destination": "/api/render?path=/automatic-shrink-sleeve-labelling-machine-155.html"
+    },
+    {
+      "source": "/may-chiet-rot-tui-dung-tu-dong-272",
+      "destination": "/api/render?path=/automatic-stand-up-pouch-filling-machine-272.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-do-uong-tu-viet-quat-mam-xoi-dau-tay-277",
+      "destination": "/api/render?path=/blueberry-raspberry-strawberry-beverage-processing-line-277.html"
+    },
+    {
+      "source": "/khach-hang-bolivia-den-tham-nha-may-cua-chung-toi-418",
+      "destination": "/api/render?path=/bolivian-customer-visited-our-factory-418.html"
+    },
+    {
+      "source": "/bright-dairy-food-189",
+      "destination": "/api/render?path=/bright-dairy--food-189.html"
+    },
+    {
+      "source": "/may-rua-kieu-ban-chai-374",
+      "destination": "/api/render?path=/brush-washing-machine-374.html"
+    },
+    {
+      "source": "/may-rua-suc-khi-375",
+      "destination": "/api/render?path=/bubbling-washing-machine-375.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-bo-33",
+      "destination": "/api/render?path=/butter-processing-line-33.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-bo-47",
+      "destination": "/api/render?path=/butter-processing-line-47.html"
+    },
+    {
+      "source": "/day-chuyen-chiet-rot-lon-158",
+      "destination": "/api/render?path=/can-filling-line-158.html"
+    },
+    {
+      "source": "/thiet-bi-do-uong-co-ga-34",
+      "destination": "/api/render?path=/carbonated-beverage-equipment-34.html"
+    },
+    {
+      "source": "/may-pha-tron-do-uong-co-ga-92",
+      "destination": "/api/render?path=/carbonated-drinks-mixer-92.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-do-uong-co-ga-29",
+      "destination": "/api/render?path=/carbonated-drinks-production-line-29.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-do-uong-co-ga-51",
+      "destination": "/api/render?path=/carbonated-drinks-production-line-51.html"
+    },
+    {
+      "source": "/giai-phap-do-uong-co-ga-14",
+      "destination": "/api/render?path=/carbonated-drinks-solution-14.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-do-uong-ca-rot-345",
+      "destination": "/api/render?path=/carrot-beverage-processing-line-345.html"
+    },
+    {
+      "source": "/du-an-tieu-bieu-56",
+      "destination": "/api/render?path=/case-56.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-pho-mai-36",
+      "destination": "/api/render?path=/cheese-processing-line-36.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-pho-mai-46",
+      "destination": "/api/render?path=/cheese-processing-line-46.html"
+    },
+    {
+      "source": "/thong-bao-nghi-tet-nguyen-dan-429",
+      "destination": "/api/render?path=/chinese-new-year-holiday-notice-429.html"
+    },
+    {
+      "source": "/thong-bao-nghi-tet-nguyen-dan-443",
+      "destination": "/api/render?path=/chinese-new-year-holiday-notice-443.html"
+    },
+    {
+      "source": "/thong-bao-nghi-tet-nguyen-dan-457",
+      "destination": "/api/render?path=/chinese-new-year-holiday-notice-457.html"
+    },
+    {
+      "source": "/he-thong-ve-sinh-cip-31",
+      "destination": "/api/render?path=/cip-cleaning-system-31.html"
+    },
+    {
+      "source": "/bom-tu-moi-cip-87",
+      "destination": "/api/render?path=/cip-self-priming-pump-87.html"
+    },
+    {
+      "source": "/day-chuyen-che-bien-trai-cay-ho-cam-quyt-274",
+      "destination": "/api/render?path=/citrus-processing-line-274.html"
+    },
+    {
+      "source": "/bo-khop-noi-clamp-74",
+      "destination": "/api/render?path=/clamp-ferrule-set-74.html"
+    },
+    {
+      "source": "/coca-cola-186",
+      "destination": "/api/render?path=/coca-cola-186.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-nuoc-dua-sua-dua-283",
+      "destination": "/api/render?path=/coconut-water-milk-processing-line-283.html"
+    },
+    {
+      "source": "/may-nghien-keo-124",
+      "destination": "/api/render?path=/colloid-mill-124.html"
+    },
+    {
+      "source": "/chay-thu-day-chuyen-san-xuat-nuoc-ep-446",
+      "destination": "/api/render?path=/commissioning-of-juice-production-line-446.html"
+    },
+    {
+      "source": "/van-hoa-cong-ty-18",
+      "destination": "/api/render?path=/company-culture-18.html"
+    },
+    {
+      "source": "/gioi-thieu-cong-ty-16",
+      "destination": "/api/render?path=/company-profile-16.html"
+    },
+    {
+      "source": "/day-chuyen-hoan-chinh",
+      "destination": "/api/render?path=/complete-line-1.html"
+    },
+    {
+      "source": "/day-chuyen-hoan-chinh-64",
+      "destination": "/api/render?path=/complete-line-64.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-sua-dac-271",
+      "destination": "/api/render?path=/condensed-milk-processing-line-271.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-sua-dac-44",
+      "destination": "/api/render?path=/condensed-milk-processing-line-44.html"
+    },
+    {
+      "source": "/lien-he",
+      "destination": "/api/render?path=/contact-us-7.html"
+    },
+    {
+      "source": "/ham-thanh-trung-va-lam-nguoi-kieu-phun-lien-tuc-106",
+      "destination": "/api/render?path=/continuous-spraying-type-pasteurization-and-cooling-tunnel-106.html"
+    },
+    {
+      "source": "/may-tiet-trung-ngam-nuoc-lien-tuc-105",
+      "destination": "/api/render?path=/continuous-water-soaking-sterilizer-105.html"
+    },
+    {
+      "source": "/bon-gia-nhiet-va-lam-lanh-130",
+      "destination": "/api/render?path=/cooling-and-heating-tank-130.html"
+    },
+    {
+      "source": "/kho-lanh-254",
+      "destination": "/api/render?path=/cooling-room-254.html"
+    },
+    {
+      "source": "/thap-giai-nhiet-255",
+      "destination": "/api/render?path=/cooling-tower-255.html"
+    },
+    {
+      "source": "/may-ly-tam-tach-kem-123",
+      "destination": "/api/render?path=/cream-separator-123.html"
+    },
+    {
+      "source": "/may-ep-qua-cat-doi-95",
+      "destination": "/api/render?path=/cut-half-juicer-95.html"
+    },
+    {
+      "source": "/giai-phap-san-pham-sua-12",
+      "destination": "/api/render?path=/dairy-product-solution-12.html"
+    },
+    {
+      "source": "/van-mang-76",
+      "destination": "/api/render?path=/diaphragm-valve-76.html"
+    },
+    {
+      "source": "/may-phat-dien-diesel-248",
+      "destination": "/api/render?path=/diesel-generator-248.html"
+    },
+    {
+      "source": "/noi-nau-hai-lop-119",
+      "destination": "/api/render?path=/double-layered-pot-119.html"
+    },
+    {
+      "source": "/bom-tuan-hoan-phot-kep-84",
+      "destination": "/api/render?path=/double-seal-circulative-pump-84.html"
+    },
+    {
+      "source": "/giai-phap-nuoc-uong-15",
+      "destination": "/api/render?path=/drinking-water-solution-15.html"
+    },
+    {
+      "source": "/thiet-bi-xu-ly-nuoc-uong-35",
+      "destination": "/api/render?path=/drinking-water-treatment-equipments-35.html"
+    },
+    {
+      "source": "/he-thong-thap-say-114",
+      "destination": "/api/render?path=/drying-tower-system-114.html"
+    },
+    {
+      "source": "/thiet-bi-nha-may-22",
+      "destination": "/api/render?path=/factory-tools-22.html"
+    },
+    {
+      "source": "/thiet-bi-co-dac-chan-khong-mang-roi-94",
+      "destination": "/api/render?path=/falling-film-vacuum-evaporator-94.html"
+    },
+    {
+      "source": "/bon-len-men-127",
+      "destination": "/api/render?path=/fermentation-tank-127.html"
+    },
+    {
+      "source": "/may-chiet-rot-va-han-mang-nhom-144",
+      "destination": "/api/render?path=/filling-and-aluminum-foil-sealing-machine-144.html"
+    },
+    {
+      "source": "/may-chiet-rot-va-dong-goi-39",
+      "destination": "/api/render?path=/filling-packing-machine-39.html"
+    },
+    {
+      "source": "/bo-loc-71",
+      "destination": "/api/render?path=/filter-71.html"
+    },
+    {
+      "source": "/tam-phan-dong-57",
+      "destination": "/api/render?path=/flow-plate-57.html"
+    },
+    {
+      "source": "/may-say-tang-soi-113",
+      "destination": "/api/render?path=/fluidized-bed-113.html"
+    },
+    {
+      "source": "/thiet-bi-co-dac-chan-khong-tuan-hoan-ngoai-cuong-buc-93",
+      "destination": "/api/render?path=/forced-external-circulation-vacuum-evaporator-93.html"
+    },
+    {
+      "source": "/thiet-bi-che-bien-trai-cay-33",
+      "destination": "/api/render?path=/fruit-processing-equipment-33.html"
+    },
+    {
+      "source": "/day-chuyen-che-bien-trai-cay-62",
+      "destination": "/api/render?path=/fruit-processing-line-62.html"
+    },
+    {
+      "source": "/may-tao-hinh-coc-chiet-rot-va-han-nap-hoan-toan-tu-dong-150",
+      "destination": "/api/render?path=/fully-automatic-cup-forming-filling-sealing-machine-150.html"
+    },
+    {
+      "source": "/khach-hang-ghana-den-tham-nha-may-chung-toi-463",
+      "destination": "/api/render?path=/ghanaian-customer-visited-our-factory-463.html"
+    },
+    {
+      "source": "/may-chiet-rot-chai-thuy-tinh-plc-268",
+      "destination": "/api/render?path=/glass-bottle-filling-machineplc-268.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-do-uong-nho-280",
+      "destination": "/api/render?path=/grape-beverage-processing-line-280.html"
+    },
+    {
+      "source": "/may-gap-xep-chai-vao-thung-do-thung-148",
+      "destination": "/api/render?path=/grasping-carton-fillerdecrater-148.html"
+    },
+    {
+      "source": "/may-nghien-bua-372",
+      "destination": "/api/render?path=/hammer-crusher-372.html"
+    },
+    {
+      "source": "/van-buom-han-co-tay-gat-82",
+      "destination": "/api/render?path=/handle-welded-butterfly-valve-82.html"
+    },
+    {
+      "source": "/chuc-mung-tet-nguyen-dan-2022-nam-dan-415",
+      "destination": "/api/render?path=/happy-chinese-new-year---year-of-the-tiger-415.html"
+    },
+    {
+      "source": "/bom-ly-tam-hieu-suat-cao-89",
+      "destination": "/api/render?path=/high-efficiency-centrifugal-pump-89.html"
+    },
+    {
+      "source": "/bom-ve-sinh-hieu-suat-cao-85",
+      "destination": "/api/render?path=/high-efficiency-sanitary-pump-85.html"
+    },
+    {
+      "source": "/may-dong-hoa-ap-suat-cao-118",
+      "destination": "/api/render?path=/high-pressure-homogenizer-118.html"
+    },
+    {
+      "source": "/may-gan-ong-hut-toc-do-cao-104",
+      "destination": "/api/render?path=/high-speed-straw-applicator-104.html"
+    },
+    {
+      "source": "/thong-bao-nghi-le-quoc-khanh-trung-quoc-452",
+      "destination": "/api/render?path=/holiday-notice-for-chinas-national-day-452.html"
+    },
+    {
+      "source": "/he-thong-sieu-loc-soi-rong-91",
+      "destination": "/api/render?path=/hollow-fiber-ultra-filteration-system-91.html"
+    },
+    {
+      "source": "/bon-lam-lanh-sua-nam-ngang-135",
+      "destination": "/api/render?path=/horizontal-milk-cooling-tank-135.html"
+    },
+    {
+      "source": "/may-dan-nhan-opp-keo-nong-chay-149",
+      "destination": "/api/render?path=/hot-melt-glue-opp-labelling-machine-149.html"
+    },
+    {
+      "source": "/huiyuan-187",
+      "destination": "/api/render?path=/huiyuan-187.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-kem-26",
+      "destination": "/api/render?path=/ice-cream-processing-line-26.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-kem-54",
+      "destination": "/api/render?path=/ice-cream-processing-line-54.html"
+    },
+    {
+      "source": "/phong-u-len-men-249",
+      "destination": "/api/render?path=/incubation-room-249.html"
+    },
+    {
+      "source": "/lap-dat-duong-ong-van-va-phu-kien-37",
+      "destination": "/api/render?path=/installation-pipelines-valves-fittings-37.html"
+    },
+    {
+      "source": "/bon-bao-on-132",
+      "destination": "/api/render?path=/insulated-tank-132.html"
+    },
+    {
+      "source": "/kinh-quan-sat-tich-hop-68",
+      "destination": "/api/render?path=/integrated-sight-glass-68.html"
+    },
+    {
+      "source": "/may-chiet-rot-dang-ap-3-trong-1-154",
+      "destination": "/api/render?path=/isobaric-filling-machine--in--unit-154.html"
+    },
+    {
+      "source": "/may-chiet-rot-hop-giay-tiet-trung-jb-2000-1000-cho-hop-500-1000ml-398",
+      "destination": "/api/render?path=/jb---aseptic-brick-carton-filling-machine-for--ml-398.html"
+    },
+    {
+      "source": "/may-chiet-rot-hop-giay-tiet-trung-jb-6000-1000-cho-hop-500ml-1000ml-390",
+      "destination": "/api/render?path=/jb---aseptic-brick-carton-filling-machine-for-ml-ml-390.html"
+    },
+    {
+      "source": "/may-chiet-rot-hop-giay-tiet-trung-jb-4000-cho-hop-100-330ml-389",
+      "destination": "/api/render?path=/jb--aseptic-brick-carton-aseptic-filling-machine-for----ml-389.html"
+    },
+    {
+      "source": "/may-chiet-rot-hop-giay-tiet-trung-jb-3000-cho-hop-100-330ml-397",
+      "destination": "/api/render?path=/jb--aseptic-brick-carton-aseptic-filling-machine-for----ml-397.html"
+    },
+    {
+      "source": "/may-chiet-rot-hop-giay-tiet-trung-jb-6000-cho-hop-100ml-330ml-391",
+      "destination": "/api/render?path=/jb--aseptic-brick-carton-aseptic-filling-machine-for-ml---ml-391.html"
+    },
+    {
+      "source": "/may-chiet-rot-hop-giay-tiet-trung-jb-7500-cho-hop-100ml-330ml-392",
+      "destination": "/api/render?path=/jb--aseptic-brick-carton-aseptic-filling-machine-for-ml---ml-392.html"
+    },
+    {
+      "source": "/xuong-san-xuat-joylong-456",
+      "destination": "/api/render?path=/joylong-manufacturing-workshop-456.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-nuoc-ep-32",
+      "destination": "/api/render?path=/juice-processing-line-32.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-nuoc-ep-48",
+      "destination": "/api/render?path=/juice-processing-line-48.html"
+    },
+    {
+      "source": "/giao-hang-day-chuyen-che-bien-nuoc-ep-437",
+      "destination": "/api/render?path=/juice-processing-line-delivery-437.html"
+    },
+    {
+      "source": "/van-chuyen-day-chuyen-che-bien-nuoc-ep-426",
+      "destination": "/api/render?path=/juice-processing-line-shipping-426.html"
+    },
+    {
+      "source": "/van-chuyen-day-chuyen-che-bien-nuoc-ep-427",
+      "destination": "/api/render?path=/juice-processing-line-shipping-427.html"
+    },
+    {
+      "source": "/van-chuyen-day-chuyen-che-bien-nuoc-ep-434",
+      "destination": "/api/render?path=/juice-processing-line-shipping-434.html"
+    },
+    {
+      "source": "/giao-hang-day-chuyen-san-xuat-nuoc-ep-453",
+      "destination": "/api/render?path=/juice-production-line-delivery-453.html"
+    },
+    {
+      "source": "/lap-dat-day-chuyen-san-xuat-nuoc-ep-458",
+      "destination": "/api/render?path=/juice-production-line-installation-458.html"
+    },
+    {
+      "source": "/van-chuyen-day-chuyen-san-xuat-nuoc-ep-451",
+      "destination": "/api/render?path=/juice-production-line-shipping-451.html"
+    },
+    {
+      "source": "/giai-phap-nuoc-ep-13",
+      "destination": "/api/render?path=/juice-solution-13.html"
+    },
+    {
+      "source": "/may-chiet-rot-hop-giay-nap-nhon-gable-top-jw-2000-159",
+      "destination": "/api/render?path=/jw--gable-top-carton-filling-machine-159.html"
+    },
+    {
+      "source": "/thong-bao-nghi-le-quoc-te-lao-dong-459",
+      "destination": "/api/render?path=/labor-day-holiday-notice-459.html"
+    },
+    {
+      "source": "/bon-cho-thuc-pham-long-gan-tren-xe-136",
+      "destination": "/api/render?path=/liquid-food-carry-vehicles-tank-136.html"
+    },
+    {
+      "source": "/may-moc",
+      "destination": "/api/render?path=/machinery-2.html"
+    },
+    {
+      "source": "/may-moc-65",
+      "destination": "/api/render?path=/machinery-65.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-nuoc-ep-xoai-dua-278",
+      "destination": "/api/render?path=/mango-pineapple-juice-processing-line-278.html"
+    },
+    {
+      "source": "/mengniu-188",
+      "destination": "/api/render?path=/mengniu-188.html"
+    },
+    {
+      "source": "/giang-sinh-an-lanh-442",
+      "destination": "/api/render?path=/merry-christmas-442.html"
+    },
+    {
+      "source": "/giang-sinh-an-lanh-455",
+      "destination": "/api/render?path=/merry-christmas-455.html"
+    },
+    {
+      "source": "/lien-he-message",
+      "destination": "/api/render?path=/message.html"
+    },
+    {
+      "source": "/giao-hang-may-chiet-rot-sua-bot-448",
+      "destination": "/api/render?path=/milk-powder-filling-machine-delivery-448.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-sua-bot-43",
+      "destination": "/api/render?path=/milk-powder-processing-line-43.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-sua-bot-53",
+      "destination": "/api/render?path=/milk-powder-processing-line-53.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-sua-bot-460",
+      "destination": "/api/render?path=/milk-powder-production-line-460.html"
+    },
+    {
+      "source": "/lap-dat-day-chuyen-xu-ly-sua-438",
+      "destination": "/api/render?path=/milk-processing-line-installation-438.html"
+    },
+    {
+      "source": "/day-chuyen-xu-ly-sua-san-sang-van-chuyen-den-malaysia-420",
+      "destination": "/api/render?path=/milk-processing-line-ready-for-shipping-to-malaysia-420.html"
+    },
+    {
+      "source": "/van-chuyen-day-chuyen-xu-ly-sua-419",
+      "destination": "/api/render?path=/milk-processing-line-shipping-419.html"
+    },
+    {
+      "source": "/van-chuyen-day-chuyen-xu-ly-sua-425",
+      "destination": "/api/render?path=/milk-processing-line-shipping-425.html"
+    },
+    {
+      "source": "/van-chuyen-day-chuyen-xu-ly-sua-447",
+      "destination": "/api/render?path=/milk-processing-line-shipping-447.html"
+    },
+    {
+      "source": "/giao-hang-day-chuyen-san-xuat-sua-462",
+      "destination": "/api/render?path=/milk-production-line-delivery-462.html"
+    },
+    {
+      "source": "/bon-tiep-nhan-sua-141",
+      "destination": "/api/render?path=/milk-receiving-tank-141.html"
+    },
+    {
+      "source": "/bon-can-sua-143",
+      "destination": "/api/render?path=/milk-weight-tank-143.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-nuoc-khoang-28",
+      "destination": "/api/render?path=/mineral-water-production-line-28.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-nuoc-khoang-52",
+      "destination": "/api/render?path=/mineral-water-production-line-52.html"
+    },
+    {
+      "source": "/bon-khuay-tron-128",
+      "destination": "/api/render?path=/mixing-tank-128.html"
+    },
+    {
+      "source": "/khach-hang-myanmar-den-tham-nha-may-cua-chung-toi-440",
+      "destination": "/api/render?path=/myanmar-customers-visited-our-factory-440.html"
+    },
+    {
+      "source": "/khach-hang-moi-den-tham-nha-may-cua-chung-toi-417",
+      "destination": "/api/render?path=/new-customer-visited-our-factory-417.html"
+    },
+    {
+      "source": "/tin-tuc",
+      "destination": "/api/render?path=/news-67.html"
+    },
+    {
+      "source": "/may-chiet-rot-ap-suat-thuong-3-trong-1-152",
+      "destination": "/api/render?path=/normal-presure-filling-machine--in--unit-152.html"
+    },
+    {
+      "source": "/may-chiet-rot-nong-thuong-ap-3-trong-1-153",
+      "destination": "/api/render?path=/normal-presure-hot-filling-machine--in--unit-153.html"
+    },
+    {
+      "source": "/bon-chua-sua-ngoai-troi-125",
+      "destination": "/api/render?path=/outdoor-milk-storage-tank-125.html"
+    },
+    {
+      "source": "/xe-cho-cuon-giay-380",
+      "destination": "/api/render?path=/paper-cart-380.html"
+    },
+    {
+      "source": "/xe-day-cuon-giay-381",
+      "destination": "/api/render?path=/paper-trolley-381.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-do-uong-tu-chanh-day-oi-282",
+      "destination": "/api/render?path=/passion-fruit-guava-beverage-processing-line-282.html"
+    },
+    {
+      "source": "/day-chuyen-xu-ly-sua-thanh-trung-183",
+      "destination": "/api/render?path=/pasteurized-milk-processing-line-183.html"
+    },
+    {
+      "source": "/day-chuyen-xu-ly-sua-thanh-trung-40",
+      "destination": "/api/render?path=/pasteurized-milk-processing-line-40.html"
+    },
+    {
+      "source": "/may-tach-hat-va-cha-qua-98",
+      "destination": "/api/render?path=/pitting-and-pulping-machine-98.html"
+    },
+    {
+      "source": "/tam-108",
+      "destination": "/api/render?path=/plate-108.html"
+    },
+    {
+      "source": "/bo-trao-doi-nhiet-dang-tam-109",
+      "destination": "/api/render?path=/plate-heat-exchange-109.html"
+    },
+    {
+      "source": "/may-thanh-trung-dang-tam-112",
+      "destination": "/api/render?path=/plate-pasteurizer-112.html"
+    },
+    {
+      "source": "/van-khi-nen-77",
+      "destination": "/api/render?path=/pneumatic-valve-77.html"
+    },
+    {
+      "source": "/may-gia-nhiet-so-bo-va-diet-enzyme-99",
+      "destination": "/api/render?path=/preheating-and-killing-enzyme-machine-99.html"
+    },
+    {
+      "source": "/he-thong-chuan-bi-29",
+      "destination": "/api/render?path=/preparation-system-29.html"
+    },
+    {
+      "source": "/cac-du-an-tieu-bieu-da-thuc-hien-184",
+      "destination": "/api/render?path=/previous-successful-cases-184.html"
+    },
+    {
+      "source": "/may-cha-tho-va-cha-tinh-97",
+      "destination": "/api/render?path=/pulpingrefining-machine-97.html"
+    },
+    {
+      "source": "/day-chuyen-xu-ly-nuoc-tinh-khiet-27",
+      "destination": "/api/render?path=/pure-water-processing-line-27.html"
+    },
+    {
+      "source": "/day-chuyen-xu-ly-nuoc-tinh-khiet-53",
+      "destination": "/api/render?path=/pure-water-processing-line-53.html"
+    },
+    {
+      "source": "/kiem-soat-chat-luong-23",
+      "destination": "/api/render?path=/quality-control-23.html"
+    },
+    {
+      "source": "/van-buom-lap-nhanh-80",
+      "destination": "/api/render?path=/quick-install-butterfly-valve-80.html"
+    },
+    {
+      "source": "/chuc-mung-thang-le-ramadan-431",
+      "destination": "/api/render?path=/ramadan-mubarak-431.html"
+    },
+    {
+      "source": "/chuc-mung-thang-le-ramadan-445",
+      "destination": "/api/render?path=/ramadan-mubarak-445.html"
+    },
+    {
+      "source": "/nghien-cuu-phat-trien-r-d-25",
+      "destination": "/api/render?path=/rd-25.html"
+    },
+    {
+      "source": "/tro-lai-lam-viec-sau-ky-nghi-tet-nguyen-dan-430",
+      "destination": "/api/render?path=/resume-work-after-china-new-year-holiday-430.html"
+    },
+    {
+      "source": "/tro-lai-lam-viec-sau-ky-nghi-tet-nguyen-dan-444",
+      "destination": "/api/render?path=/resume-work-from-chinese-new-year-holiday-444.html"
+    },
+    {
+      "source": "/noi-hap-tiet-trung-autoclave-107",
+      "destination": "/api/render?path=/retort-sterilizerauto-clave-107.html"
+    },
+    {
+      "source": "/he-thong-loc-ro-tham-thau-nguoc-90",
+      "destination": "/api/render?path=/reverse-osmosis-purification-system-90.html"
+    },
+    {
+      "source": "/van-dao-chieu-73",
+      "destination": "/api/render?path=/reversing-valve-73.html"
+    },
+    {
+      "source": "/he-thong-dong-thung-bang-robot-146",
+      "destination": "/api/render?path=/robot-case-packing-system-146.html"
+    },
+    {
+      "source": "/robust-185",
+      "destination": "/api/render?path=/robust-185.html"
+    },
+    {
+      "source": "/may-rua-dang-trong-quay-373",
+      "destination": "/api/render?path=/roller-drum-washing-machine-373.html"
+    },
+    {
+      "source": "/may-phan-loai-con-lan-376",
+      "destination": "/api/render?path=/roller-sorting-machine-376.html"
+    },
+    {
+      "source": "/qua-cau-phun-rua-quay-69",
+      "destination": "/api/render?path=/rotary-cleaning-ball-69.html"
+    },
+    {
+      "source": "/bom-roto-86",
+      "destination": "/api/render?path=/rotor-pump-86.html"
+    },
+    {
+      "source": "/bon-nhu-hoa-toc-do-cao-dang-tron-121",
+      "destination": "/api/render?path=/round-high-speed-emulsification-tank-121.html"
+    },
+    {
+      "source": "/bom-ly-tam-ve-sinh-88",
+      "destination": "/api/render?path=/sanitary-centrifugal-pump-88.html"
+    },
+    {
+      "source": "/bom-ve-sinh-36",
+      "destination": "/api/render?path=/sanitary-pumps-36.html"
+    },
+    {
+      "source": "/may-nang-lieu-dang-tam-gat-378",
+      "destination": "/api/render?path=/scraper-elevator-378.html"
+    },
+    {
+      "source": "/vit-tai-377",
+      "destination": "/api/render?path=/screw-conveyer-377.html"
+    },
+    {
+      "source": "/may-ep-truc-vit-96",
+      "destination": "/api/render?path=/screw-juicer-96.html"
+    },
+    {
+      "source": "/bom-dich-set-kieu-truc-vit-83",
+      "destination": "/api/render?path=/screw-type-slurry-pump-83.html"
+    },
+    {
+      "source": "/day-chuyen-che-bien-hac-mai-bien-337",
+      "destination": "/api/render?path=/sea-buckthorn-processing-line-337.html"
+    },
+    {
+      "source": "/tim-kiem",
+      "destination": "/api/render?path=/search.html"
+    },
+    {
+      "source": "/dich-vu",
+      "destination": "/api/render?path=/service-4.html"
+    },
+    {
+      "source": "/van-chuyen-day-chuyen-che-bien-nuoc-ep-433",
+      "destination": "/api/render?path=/shipping-of-juice-processing-line-433.html"
+    },
+    {
+      "source": "/van-chuyen-day-chuyen-san-xuat-nuoc-ep-439",
+      "destination": "/api/render?path=/shipping-of-juice-processing-plant-439.html"
+    },
+    {
+      "source": "/van-chuyen-day-chuyen-san-xuat-sua-bot-454",
+      "destination": "/api/render?path=/shipping-of-milk-powder-production-line-454.html"
+    },
+    {
+      "source": "/bon-chua-mot-lop-133",
+      "destination": "/api/render?path=/single-layer-storage-tank-133.html"
+    },
+    {
+      "source": "/he-thong-ve-sinh-cip-tich-hop-co-nho-101",
+      "destination": "/api/render?path=/small-integration-cip-system-101.html"
+    },
+    {
+      "source": "/giai-phap",
+      "destination": "/api/render?path=/solution-3.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-sua-dau-nanh-39",
+      "destination": "/api/render?path=/soymilk-processing-line-39.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-sua-dau-nanh-45",
+      "destination": "/api/render?path=/soymilk-processing-line-45.html"
+    },
+    {
+      "source": "/bon-nhu-hoa-toc-do-cao-dang-vuong-122",
+      "destination": "/api/render?path=/square-high-speed-emulsification-tank-122.html"
+    },
+    {
+      "source": "/bon-inox-28",
+      "destination": "/api/render?path=/stainless-steel-tanks-28.html"
+    },
+    {
+      "source": "/noi-hoi-250",
+      "destination": "/api/render?path=/steam-boiler-250.html"
+    },
+    {
+      "source": "/he-thong-tiet-trung-30",
+      "destination": "/api/render?path=/sterilization-system-30.html"
+    },
+    {
+      "source": "/may-gan-ong-hut-264",
+      "destination": "/api/render?path=/straw-applicator-264.html"
+    },
+    {
+      "source": "/he-thong-ve-sinh-cip-dang-dung-tach-roi-102",
+      "destination": "/api/render?path=/sub-vertical-cip-system-102.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-do-uong-tra-30",
+      "destination": "/api/render?path=/tea-drinks-processing-line-30.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-do-uong-tra-50",
+      "destination": "/api/render?path=/tea-drinks-processing-line-50.html"
+    },
+    {
+      "source": "/dot-1-hoi-cho-canton-lan-thu-125-da-be-mac-ngay-19-4-2019-407",
+      "destination": "/api/render?path=/the-first-phase-of-th-canton-fair-closed-on-th-april--407.html"
+    },
+    {
+      "source": "/dot-1-hoi-cho-canton-lan-thu-126-da-be-mac-ngay-19-10-2019-409",
+      "destination": "/api/render?path=/the-first-phase-of-th-canton-fair-closed-on-th-oct--409.html"
+    },
+    {
+      "source": "/dot-1-hoi-cho-canton-lan-thu-124-se-be-mac-hom-nay-ngay-19-10-396",
+      "destination": "/api/render?path=/the-first-phase-of-th-canton-fair-will-close-today-on-th-oct-396.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-ket-hop-sua-sua-chua-nuoc-ep-quy-mo-nho-25",
+      "destination": "/api/render?path=/the-small-scale-milk-yoghurt-juice-combined-production-line-25.html"
+    },
+    {
+      "source": "/day-chuyen-ket-hop-sua-sua-chua-va-nuoc-ep-quy-mo-nho-55",
+      "destination": "/api/render?path=/the-small-scale-milk-yoghurt-juice-combined-production-line-55.html"
+    },
+    {
+      "source": "/hoi-cho-canton-lan-thu-129-da-be-mac-ngay-24-4-2021-413",
+      "destination": "/api/render?path=/the-th-canton-fair-closed-on-th-april--413.html"
+    },
+    {
+      "source": "/hoi-cho-canton-lan-thu-127-da-be-mac-ngay-24-6-2020-411",
+      "destination": "/api/render?path=/the-th-canton-fair-closed-on-th-june--411.html"
+    },
+    {
+      "source": "/hoi-cho-canton-lan-thu-128-da-be-mac-ngay-24-10-2020-412",
+      "destination": "/api/render?path=/the-th-canton-fair-closed-on-th-oct--412.html"
+    },
+    {
+      "source": "/hoi-cho-canton-lan-thu-130-da-be-mac-ngay-19-10-2021-414",
+      "destination": "/api/render?path=/the-th-canton-fair-closed-on-th-oct--414.html"
+    },
+    {
+      "source": "/van-bi-ba-nga-noi-ren-78",
+      "destination": "/api/render?path=/there-way-ball-valve-with-threaded-connection-78.html"
+    },
+    {
+      "source": "/van-buom-noi-ren-81",
+      "destination": "/api/render?path=/threaded-butterfly-valve-81.html"
+    },
+    {
+      "source": "/day-chuyen-che-bien-ca-chua-273",
+      "destination": "/api/render?path=/tomato-processing-line-273.html"
+    },
+    {
+      "source": "/may-tiet-trung-uht-dang-ong-110",
+      "destination": "/api/render?path=/tubular-uht-sterilizer-110.html"
+    },
+    {
+      "source": "/khach-hang-uganda-den-tham-nha-may-cua-chung-toi-432",
+      "destination": "/api/render?path=/ugandan-customers-visited-our-factory-432.html"
+    },
+    {
+      "source": "/day-chuyen-xu-ly-sua-uht-41",
+      "destination": "/api/render?path=/uht-milk-processing-line-41.html"
+    },
+    {
+      "source": "/day-chuyen-xu-ly-sua-uht-461",
+      "destination": "/api/render?path=/uht-milk-processing-line-461.html"
+    },
+    {
+      "source": "/day-chuyen-xu-ly-sua-uht-55",
+      "destination": "/api/render?path=/uht-milk-processing-line-55.html"
+    },
+    {
+      "source": "/giao-hang-day-chuyen-xu-ly-sua-uht-450",
+      "destination": "/api/render?path=/uht-milk-processing-line-delivery-450.html"
+    },
+    {
+      "source": "/rac-co-sms-72",
+      "destination": "/api/render?path=/unionsms-72.html"
+    },
+    {
+      "source": "/tien-ich-60",
+      "destination": "/api/render?path=/utilities-60.html"
+    },
+    {
+      "source": "/may-khu-khi-chan-khong-117",
+      "destination": "/api/render?path=/vacuum-degasser-117.html"
+    },
+    {
+      "source": "/video-5",
+      "destination": "/api/render?path=/video-5.html"
+    },
+    {
+      "source": "/viet-nam-423",
+      "destination": "/api/render?path=/vietnam-423.html"
+    },
+    {
+      "source": "/wahaha-190",
+      "destination": "/api/render?path=/wahaha-190.html"
+    },
+    {
+      "source": "/van-chuyen-day-chuyen-san-xuat-sua-oc-cho-435",
+      "destination": "/api/render?path=/walnut-milk-processing-line-shipping-435.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-sua-oc-cho-hanh-nhan-284",
+      "destination": "/api/render?path=/walnutalmond-milk-processing-line-284.html"
+    },
+    {
+      "source": "/may-lam-lanh-nuoc-256",
+      "destination": "/api/render?path=/water-chiller-256.html"
+    },
+    {
+      "source": "/may-hoa-tron-bot-nuoc-120",
+      "destination": "/api/render?path=/water-powder-mixer-120.html"
+    },
+    {
+      "source": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-120-tu-ngay-15-den-19-10-201-258",
+      "destination": "/api/render?path=/we-will-attend--th-canton-fair-from-th-to-th-oct--258.html"
+    },
+    {
+      "source": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-122-tu-ngay-15-den-19-10-201-260",
+      "destination": "/api/render?path=/we-will-attend--th-canton-fair-from-th-to-th-oct--260.html"
+    },
+    {
+      "source": "/chung-toi-se-tham-du-trien-lam-gulfood-manufacturing-trung-tam-thuong-ma-37",
+      "destination": "/api/render?path=/we-will-attend-gulfood-manufacturedubai-world-trade-centreform-th-to-th-nov--37.html"
+    },
+    {
+      "source": "/chung-toi-se-tham-du-trien-lam-gulfood-manufacturing-trung-tam-thuong-ma-18",
+      "destination": "/api/render?path=/we-will-attend-gulfood-manufacturedubai-world-trade-centreform-th-to-th-oct--18.html"
+    },
+    {
+      "source": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-119-tu-ngay-15-den-19-4-2016-257",
+      "destination": "/api/render?path=/we-will-attend-th-canton-fair-from-th-to-th-april--257.html"
+    },
+    {
+      "source": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-121-tu-ngay-15-den-19-4-2017-259",
+      "destination": "/api/render?path=/we-will-attend-th-canton-fair-from-th-to-th-april--259.html"
+    },
+    {
+      "source": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-117-tu-ngay-15-den-19-4-2015-35",
+      "destination": "/api/render?path=/we-will-attend-th-canton-fair-from-th-to-th-april--35.html"
+    },
+    {
+      "source": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-118-tu-ngay-15-den-19-10-201-34",
+      "destination": "/api/render?path=/we-will-attend-th-canton-fair-from-th-to-th-oct--34.html"
+    },
+    {
+      "source": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-116-tu-ngay-15-den-19-10-201-38",
+      "destination": "/api/render?path=/we-will-attend-th-canton-fair-from-th-to-th-oct--38.html"
+    },
+    {
+      "source": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-114-tu-ngay-15-den-19-10-201-40",
+      "destination": "/api/render?path=/we-will-attend-th-canton-fair-from-th-to-th-oct--40.html"
+    },
+    {
+      "source": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-123-tu-ngay-15-den-19-4-2018-393",
+      "destination": "/api/render?path=/we-will-attend-the-rd-canton-fair-from-th-to-th-april--393.html"
+    },
+    {
+      "source": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-125-tu-ngay-15-den-19-4-2019-404",
+      "destination": "/api/render?path=/we-will-attend-the-th-canton-fair-from-th-to-th-april--404.html"
+    },
+    {
+      "source": "/chung-toi-se-tham-du-hoi-cho-canton-lan-thu-124-tu-ngay-15-den-19-10-201-394",
+      "destination": "/api/render?path=/we-will-attend-the-th-canton-fair-from-th-to-th-oct--394.html"
+    },
+    {
+      "source": "/van-buom-han-79",
+      "destination": "/api/render?path=/welded-butterfly-valve-79.html"
+    },
+    {
+      "source": "/van-mot-chieu-han-75",
+      "destination": "/api/render?path=/welded-check-valve-75.html"
+    },
+    {
+      "source": "/vi-sao-chon-chung-toi-26",
+      "destination": "/api/render?path=/why-us-26.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-sua-chua-42",
+      "destination": "/api/render?path=/yogurt-processing-line-42.html"
+    },
+    {
+      "source": "/day-chuyen-san-xuat-sua-chua-54",
+      "destination": "/api/render?path=/yogurt-processing-line-54.html"
+    },
+    {
+      "source": "/van-chuyen-day-chuyen-san-xuat-sua-chua-428",
+      "destination": "/api/render?path=/yogurt-processing-line-shipping-428.html"
+    },
+    {
+      "source": "/:page*.html",
+      "destination": "/api/render?path=/:page*.html"
+    }
   ]
 }

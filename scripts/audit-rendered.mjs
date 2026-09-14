@@ -3,8 +3,10 @@ import { load } from 'cheerio';
 import { CMS } from '../lib/cms.mjs';
 import { renderCmsPage } from '../lib/cms-render.mjs';
 import { closeDatabase, getDb } from '../lib/mongodb.mjs';
+import { PUBLIC_PATHS } from '../lib/public-path-map.mjs';
+import { sourcePathForPublicPath } from '../lib/public-paths.mjs';
 
-const issues = { missingPages: [], duplicateIds: [], missingAlts: [], forms: [], brokenLinks: [] };
+const issues = { missingPages: [], duplicateIds: [], missingAlts: [], forms: [], brokenLinks: [], legacyPublicLinks: [] };
 try {
   const db = await getDb();
   const pages = await db.collection(CMS.pages).find({ enabled: true }, { projection: { path: 1 } }).toArray();
@@ -29,7 +31,9 @@ try {
       });
       $('a[href^="/"]').each((_, node) => {
         const target = String($(node).attr('href') || '').split(/[?#]/)[0];
-        if (target.endsWith('.html') && !paths.has(target)) issues.brokenLinks.push({ page: page.path, target });
+        if (PUBLIC_PATHS[target]) issues.legacyPublicLinks.push({ page: page.path, target });
+        const source = sourcePathForPublicPath(target);
+        if ((source.endsWith('.html') || PUBLIC_PATHS[source]) && !paths.has(source)) issues.brokenLinks.push({ page: page.path, target });
       });
     }));
   }

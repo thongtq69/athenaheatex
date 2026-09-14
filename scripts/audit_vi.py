@@ -171,7 +171,10 @@ def main():
     # every page that has real content must appear in it.
     index_path = DIST / "search-index.json"
     index = json.loads(index_path.read_text(encoding="utf8")) if index_path.exists() else []
-    indexed = {record["path"].lstrip("/") for record in index}
+    public_paths_file = DIST / "public-paths.json"
+    public_paths = json.loads(public_paths_file.read_text(encoding="utf8")) if public_paths_file.exists() else {}
+    source_for_public = {visitor: source for source, visitor in public_paths.items()}
+    indexed = {source_for_public.get(record["path"], record["path"]).lstrip("/") for record in index}
     stub = re.compile(r"^\d+_\d+\.html$")
     unindexed = sorted(
         name for name in built_routes - GENERATED_ROUTES - {"message.html"}

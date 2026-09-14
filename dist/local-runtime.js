@@ -39,7 +39,7 @@
     const fields=new FormData(form);
     if(form.matches('.searchForm')||fields.has('keyword')) {
       event.preventDefault();event.stopImmediatePropagation();
-      location.href='/search.html?q='+encodeURIComponent(fields.get('keyword')||'');return;
+      location.href='/tim-kiem?q='+encodeURIComponent(fields.get('keyword')||'');return;
     }
     if(!form.closest('.crm-form')&&!fields.has('Message'))return;
     event.preventDefault();event.stopImmediatePropagation();

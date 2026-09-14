@@ -6,6 +6,8 @@ import path from 'node:path';
 import { createServer } from '../server.mjs';
 import { clientAddress, isAllowedOrigin, normalizeInquiry } from '../lib/inquiries.mjs';
 import inquiryFunction from '../api/inquiries.mjs';
+import { PUBLIC_PATHS } from '../lib/public-path-map.mjs';
+import { publicPathForSourcePath, sourcePathForPublicPath } from '../lib/public-paths.mjs';
 
 let server,base,dataDir;
 before(async()=>{
@@ -26,6 +28,45 @@ test('the home and search pages are served in Vietnamese with the local runtime'
   assert.doesNotMatch(html,/class="(?:lang|header-lang)"/);
  }
 });
+test('Máy móc uses the Vietnamese public URL and the imported URL redirects',async()=>{
+ const legacy=await fetch(base+'/machinery-2.html',{redirect:'manual'});
+ assert.equal(legacy.status,308);
+ assert.equal(legacy.headers.get('location'),'/may-moc');
+ const page=await fetch(base+'/may-moc');
+ assert.equal(page.status,200);
+ const html=await page.text();
+ assert.match(html, /href="\/may-moc"/);
+ assert.doesNotMatch(html, /href="\/machinery-2\.html"/);
+});
+test('every imported page has one reversible Vietnamese URL and configured Vercel routing',async()=>{
+ const config=JSON.parse(await readFile(path.join(process.cwd(),'vercel.json'),'utf8'));
+ const entries=Object.entries(PUBLIC_PATHS);
+ assert.equal(entries.length,278);
+ assert.equal(new Set(entries.map(([,visitor])=>visitor)).size,entries.length);
+ const redirects=new Map(config.redirects.map(item=>[item.source,item.destination]));
+ const rewrites=new Map(config.rewrites.map(item=>[item.source,item.destination]));
+ for(const [source,visitor] of entries){
+  assert.equal(publicPathForSourcePath(source),visitor);
+  assert.equal(sourcePathForPublicPath(visitor),source);
+  assert.equal(redirects.get(source),visitor);
+  assert.equal(rewrites.get(visitor),`/api/render?path=${source}`);
+ }
+});
+test('main navigation and content routes open at clean URLs; old URLs redirect',async()=>{
+ const samples=['/complete-line-1.html','/solution-3.html','/service-4.html','/news-67.html','/about-us-6.html','/contact-us-7.html','/search.html','/air-compressor-252.html'];
+ for(const source of samples){
+  const visitor=PUBLIC_PATHS[source];
+  const old=await fetch(base+source+'?ref=test',{redirect:'manual'});
+  assert.equal(old.status,308,source);
+  assert.equal(old.headers.get('location'),visitor+'?ref=test',source);
+  const page=await fetch(base+visitor);
+  assert.equal(page.status,200,visitor);
+  assert.match(await page.text(),/<html lang="vi"/,visitor);
+ }
+ const home=await (await fetch(base+'/')).text();
+ for(const visitor of ['/may-moc','/day-chuyen-hoan-chinh','/giai-phap','/dich-vu','/tin-tuc','/gioi-thieu','/lien-he'])assert.ok(home.includes(`href="${visitor}"`),visitor);
+ assert.doesNotMatch(home,/href="\/(?:machinery-2|complete-line-1|solution-3|service-4|news-67|about-us-6|contact-us-7)\.html"/);
+});
 test('legacy contact helper never posts inquiry data to the cloned upstream site',async()=>{
  const script=await (await fetch(base+'/aifeedback/form.js')).text();
  assert.match(script,/\/api\/inquiries/);
@@ -44,7 +85,7 @@ test('search works without an API: the index ships as a static file',async()=>{
  const index=await r.json();
  assert.ok(index.length>200);
  assert.ok(index.every(x=>x.path.startsWith('/')&&!x.path.startsWith('/languages/')&&x.title));
- for(const slug of ['/contact-us-7.html','/service-4.html','/juice-solution-13.html'])
+ for(const slug of ['/lien-he','/dich-vu',PUBLIC_PATHS['/juice-solution-13.html']])
   assert.ok(index.some(x=>x.path===slug),`missing from index: ${slug}`);
  assert.ok(index.every(x=>!/^\/\d+_\d+\.html$/.test(x.path)),'pagination stubs must not be indexed');
  const js=await (await fetch(base+'/search.js')).text();
@@ -69,15 +110,15 @@ test('the helper scripts and share popup carry no English UI text',async()=>{
 });
 test('retired locale routes redirect permanently to their Vietnamese page',async()=>{
  const vi=await fetch(base+'/languages/vi/contact-us-7.html',{redirect:'manual'});
- assert.equal(vi.status,301);assert.equal(vi.headers.get('location'),'/contact-us-7.html');
+ assert.equal(vi.status,301);assert.equal(vi.headers.get('location'),'/lien-he');
  for(const pathname of ['/languages/fr/index.html','/languages/cn/anything-123.html','/languages/vi']) {
   const r=await fetch(base+pathname,{redirect:'manual'});
-  assert.equal(r.status,301);assert.equal(r.headers.get('location'),'/index.html');
+  assert.equal(r.status,301);assert.equal(r.headers.get('location'),'/');
  }
 });
 test('legacy search form redirects to local search',async()=>{
  const r=await fetch(base+'/index.php?ac=search&at=list',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'keyword=milk+cooling',redirect:'manual'});
- assert.equal(r.status,303);assert.equal(r.headers.get('location'),'/search.html?q=milk%20cooling');
+ assert.equal(r.status,303);assert.equal(r.headers.get('location'),'/tim-kiem?q=milk%20cooling');
 });
 test('inquiry validates, persists all fields, and clearly reports local delivery',async()=>{
  const send=input=>fetch(base+'/api/inquiries',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(input)});
