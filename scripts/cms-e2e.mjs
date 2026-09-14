@@ -3,12 +3,18 @@ import { createServer } from '../server.mjs';
 import { ensureCmsSeeded } from '../lib/cms.mjs';
 import { closeDatabase } from '../lib/mongodb.mjs';
 
-if (!process.env.ADMIN_PASSWORD || !process.env.MONGODB_URI) throw new Error('test:cms requires ADMIN_PASSWORD and MONGODB_URI');
-await ensureCmsSeeded();
-const server = createServer({ useDatabase: true, useCms: true });
-server.listen(0, '127.0.0.1');
-await once(server, 'listening');
-const base = `http://127.0.0.1:${server.address().port}`;
+if (!process.env.ADMIN_PASSWORD) throw new Error('test:cms requires ADMIN_PASSWORD');
+const externalBase = String(process.env.CMS_BASE_URL || '').replace(/\/+$/, '');
+let server;
+let base = externalBase;
+if (!externalBase) {
+  if (!process.env.MONGODB_URI) throw new Error('local test:cms requires MONGODB_URI');
+  await ensureCmsSeeded();
+  server = createServer({ useDatabase: true, useCms: true });
+  server.listen(0, '127.0.0.1');
+  await once(server, 'listening');
+  base = `http://127.0.0.1:${server.address().port}`;
+}
 let cookie = '';
 const created = { pages: [], sections: [], products: [], services: [], categories: [], banners: [], media: [] };
 let originalSettings;
@@ -146,6 +152,8 @@ try {
   for (const resource of ['products','services','banners','media','sections','pages','categories']) {
     for (const id of [...created[resource]]) await remove(resource,id).catch(() => {});
   }
-  await new Promise(resolve => server.close(resolve));
-  await closeDatabase();
+  if (server) {
+    await new Promise(resolve => server.close(resolve));
+    await closeDatabase();
+  }
 }
