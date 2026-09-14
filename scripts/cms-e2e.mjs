@@ -1,4 +1,5 @@
 import { once } from 'node:events';
+import { load } from 'cheerio';
 import { createServer } from '../server.mjs';
 import { ensureCmsSeeded } from '../lib/cms.mjs';
 import { closeDatabase } from '../lib/mongodb.mjs';
@@ -65,6 +66,10 @@ try {
 
   result = await request('/api/admin/dashboard');
   check(result.response.ok && result.data.counts.pages >= 280, 'dashboard đọc số liệu database thật');
+  result = await request('/api/admin/products', { method: 'POST', body: { name: `${tag} collision`, path: '/index.html' } });
+  check(result.response.status === 409, 'CREATE sản phẩm từ chối đường dẫn trang đã dùng');
+  result = await request(`/api/admin/products?q=${encodeURIComponent(`${tag} collision`)}`);
+  check(result.response.ok && result.data.total === 0, 'CREATE lỗi không để lại sản phẩm mồ côi');
   result = await request('/api/admin/media?limit=2&skip=2');
   check(result.response.ok && result.data.items.length === 2 && result.data.total >= 432, 'phân trang API chỉ tải số mục cần hiển thị');
   result = await request('/api/admin/media?idsOnly=true');
@@ -74,8 +79,21 @@ try {
   check(Boolean(category._id), 'CREATE danh mục');
   const product = await create('products', { name: `${tag} product`, path: `/${tag}-product.html`, categoryId: category._id, summary: 'URL image test', descriptionHtml: '<p>Nội dung sản phẩm từ CMS</p>', image: 'https://example.com/cms-image-url.jpg', enabled: true, sortOrder: 99999, seo: { title: `${tag} SEO` } });
   check(Boolean(product._id), 'CREATE sản phẩm với URL ảnh');
+  result = await request('/2_2.html');
+  const renderedCategory = load(result.data);
+  check(result.response.ok && renderedCategory('.proDisplay').length === 1 && renderedCategory('[id="pageNum"]').length === 1, 'danh mục import không nhân đôi lưới sản phẩm và phân trang');
+  result = await request('/service-4.html');
+  const renderedService = load(result.data);
+  check(result.response.ok && renderedService('#aside').length === 1 && renderedService('#location').length === 1, 'dịch vụ import không nhân đôi sidebar và breadcrumb');
+  result = await request(`/api/admin/products/${product._id}`, { method: 'PUT', body: { path: '/index.html' } });
+  check(result.response.status === 409, 'UPDATE sản phẩm từ chối đường dẫn trang đã dùng');
+  result = await request(`/api/admin/products/${product._id}`);
+  check(result.data.item.path === `/${tag}-product.html`, 'UPDATE lỗi giữ nguyên sản phẩm và trang public');
   result = await request(`/${tag}-product.html`);
   check(result.response.status === 200 && result.data.includes(`${tag} product`) && result.data.includes('https://example.com/cms-image-url.jpg'), 'Admin → website đồng bộ sản phẩm và URL ảnh');
+  const renderedProduct = load(result.data);
+  check(renderedProduct('[id="pagetitle"]').length <= 1, 'HTML sản phẩm không có ID biểu mẫu trùng');
+  check(renderedProduct('.crm-form form').toArray().every(formNode => renderedProduct(formNode).attr('action') === '/api/inquiries' && renderedProduct(formNode).attr('method') === 'post'), 'biểu mẫu public dùng API cùng website');
 
   result = await request(`/api/admin/products/${product._id}`, { method: 'PUT', body: { name: `${tag} product updated` } });
   check(result.response.ok, 'UPDATE sản phẩm');

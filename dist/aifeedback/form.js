@@ -1,41 +1,13 @@
 $(function(){
-	//$.get('https://www.shjoylong.com/aifeedback/save.php?act=checksend',{},function(data){});
-	var pagetitle='';
-	$('#pagetitle').val(document.title);
+	// Submission is handled by local-runtime.js and persisted through our own API.
+	// Keep a same-origin POST fallback if the runtime handler cannot load.
+	$('.crm-form form').attr({action:'/api/inquiries',method:'post'});
+	$('input[name="pagetitle"]').val(document.title);
 	var crmValidStr = "Trường này là bắt buộc.";
 	var crmEmailStr = "Vui lòng nhập địa chỉ email hợp lệ.";
-	var crmFailedStr = "Gửi email không thành công.";
 		$(".crm-form").find("input[name='Name'],input[name='Email'],textarea[name='Message']").bind("keyup blur",function(){
     	_crminputVali($(this),crmValidStr);
 	});
-		$(".crm-form form").submit(function(){
-		var result = 0;
-		var form = $(this);
-		console.log(form.serialize());
-				form.find("input[name='Name'],input[name='Email'],textarea[name='Message']").each(function(){
-			if(!_crminputVali($(this),crmValidStr)){result = 1;}
-		});
-		            if(result) return false;
-            form.find(".create-form-submit").attr("disabled","disabled").append('<span class="crm-submit-load"></span>');
-            var url = "https://www.shjoylong.com/aifeedback/save.php";
-            $.post(url, form.serialize(), function(result){
-                form.find(".create-form-submit").removeAttr("disabled").find(".crm-submit-load").remove();
-                if(result=='1'){
-                    _crmAlertText(1,'Gửi email thành công!');
-                    form[0].reset();
-                }
-                else if(result=='2'){
-                	_crmAlertText(1,'Nội dung không được phép!');
-                }
-			   else if(result=='3'){
-                	_crmAlertText(1,'Mỗi phút chỉ được gửi một tin nhắn!');
-                }
-                else{ 
-                    _crmAlertText(1,crmFailedStr);
-                }
-            });
-            return false;
-        });
     });
     function _crminputVali(item,text){
         item.parent().find(".crmFormVali-error").remove();

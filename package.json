@@ -13,6 +13,7 @@
     "test": "node --test tests/server.test.mjs",
     "check:services": "node --env-file-if-exists=.env.local scripts/check-services.mjs",
     "audit:cms": "node --env-file-if-exists=.env.local scripts/cms-audit.mjs",
+    "audit:rendered": "node --env-file-if-exists=.env.local scripts/audit-rendered.mjs",
     "cms:seed": "node --env-file-if-exists=.env.local scripts/cms-seed.mjs",
     "test:cms": "node --env-file-if-exists=.env.local scripts/cms-e2e.mjs"
   },

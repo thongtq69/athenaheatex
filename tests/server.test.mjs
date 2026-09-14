@@ -26,6 +26,11 @@ test('the home and search pages are served in Vietnamese with the local runtime'
   assert.doesNotMatch(html,/class="(?:lang|header-lang)"/);
  }
 });
+test('legacy contact helper never posts inquiry data to the cloned upstream site',async()=>{
+ const script=await (await fetch(base+'/aifeedback/form.js')).text();
+ assert.match(script,/\/api\/inquiries/);
+ assert.doesNotMatch(script,/shjoylong\.com|console\.log\(form\.serialize\(\)\)/);
+});
 test('search returns Vietnamese results addressed at root routes',async()=>{
  const r=await fetch(base+'/api/search?q=máy');assert.equal(r.status,200);
  const data=await r.json();assert.ok(data.total>0);
