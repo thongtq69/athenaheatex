@@ -1,0 +1,154 @@
+const $ = selector => document.querySelector(selector);
+const state = { view: 'dashboard', items: [], categories: [], editing: null, admin: null, toastTimer: null };
+const titles = { dashboard:'Tổng quan',pages:'Trang & nội dung',sections:'Section',products:'Sản phẩm',services:'Dịch vụ',categories:'Danh mục',banners:'Banner',media:'Thư viện ảnh',settings:'Liên hệ & SEO',inquiries:'Yêu cầu khách hàng' };
+const esc = value => String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+
+const configs = {
+  pages: { singular:'trang', fields:[
+    ['title','Tiêu đề','text',true],['path','Đường dẫn (.html)','text',true],['type','Loại trang','select',true,['page','product','category']],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],
+    ['seo.title','SEO title','text'],['seo.description','Meta description','textarea'],['seo.keywords','Meta keywords','textarea'],['html','HTML toàn trang','textarea-tall',true]
+  ]},
+  sections:{singular:'section',fields:[['name','Tên section','text',true],['pagePath','Trang áp dụng','text',true],['selector','CSS selector','text',true],['mode','Cách áp dụng','select',true,['inner','replace']],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['html','HTML section','textarea-tall',true]]},
+  products:{singular:'sản phẩm',fields:entityFields(true)},
+  services:{singular:'dịch vụ',fields:entityFields(false)},
+  categories:{singular:'danh mục',fields:[['name','Tên danh mục','text',true],['path','Đường dẫn (.html)','text',true],['parentId','Danh mục cha','category-select'],['kind','Nhóm','select',true,['product','service']],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['image','Ảnh đại diện','image'],['descriptionHtml','HTML mô tả','textarea-tall']]},
+  banners:{singular:'banner',fields:[['title','Tên banner','text',true],['url','Liên kết','text',true],['alt','Alt ảnh','text'],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['image','Ảnh banner','image',true]]},
+  media:{singular:'ảnh',fields:[['name','Tên ảnh','text',true],['alt','Alt ảnh','text'],['enabled','Đang sử dụng','checkbox'],['sortOrder','Thứ tự','number'],['url','Nguồn ảnh','image',true]]},
+  inquiries:{singular:'yêu cầu',fields:[['status','Trạng thái','select',true,['new','processing','done','spam']]]},
+};
+function entityFields(withCategory){const fields=[['name','Tên','text',true],['path','Đường dẫn (.html)','text',true]];if(withCategory)fields.push(['categoryId','Danh mục','category-select']);return [...fields,['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['summary','Mô tả ngắn','textarea'],['image','Ảnh đại diện','image'],['descriptionHtml','HTML nội dung','textarea-tall'],['seo.title','SEO title','text'],['seo.description','Meta description','textarea'],['seo.keywords','Meta keywords','textarea']];}
+
+async function api(path, options={}) {
+  const init = { credentials:'same-origin', ...options };
+  if (init.body && !(init.body instanceof FormData)) { init.headers={...init.headers,'Content-Type':'application/json'}; init.body=JSON.stringify(init.body); }
+  const response = await fetch(`/api/admin${path}`, init);
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw Object.assign(new Error(data.error || `HTTP ${response.status}`),{status:response.status});
+  return data;
+}
+function loading(show){ $('#loading').classList.toggle('hidden',!show); }
+function toast(message,type='success'){const node=$('#toast');node.textContent=message;node.className=`toast ${type==='error'?'error':''}`;clearTimeout(state.toastTimer);state.toastTimer=setTimeout(()=>node.classList.add('hidden'),3500);}
+function getValue(object,path){return path.split('.').reduce((value,key)=>value?.[key],object);}
+function setValue(object,path,value){const keys=path.split('.');let cursor=object;keys.forEach((key,index)=>{if(index===keys.length-1)cursor[key]=value;else cursor=cursor[key]??={};});}
+
+async function boot(){
+  loading(true);
+  try { const {admin}=await api('/session'); state.admin=admin; showApp(); await navigate('dashboard'); }
+  catch { $('#loginView').classList.remove('hidden'); }
+  finally { loading(false); }
+}
+function showApp(){ $('#loginView').classList.add('hidden');$('#appView').classList.remove('hidden');$('#adminName').textContent=state.admin?.username||'Admin'; }
+
+$('#loginForm').addEventListener('submit',async event=>{
+  event.preventDefault();loading(true);$('#loginError').classList.add('hidden');
+  try{const values=Object.fromEntries(new FormData(event.currentTarget));const {admin}=await api('/login',{method:'POST',body:values});state.admin=admin;showApp();await navigate('dashboard');toast('Đăng nhập thành công.');}
+  catch(error){$('#loginError').textContent=error.message;$('#loginError').classList.remove('hidden');}
+  finally{loading(false);}
+});
+$('#logoutBtn').addEventListener('click',async()=>{loading(true);try{await api('/logout',{method:'POST'});}finally{location.reload();}});
+$('#nav').addEventListener('click',event=>{const button=event.target.closest('[data-view]');if(button)navigate(button.dataset.view);});
+$('#menuBtn').addEventListener('click',()=>$('.sidebar').classList.toggle('open'));
+
+async function navigate(view){
+  state.view=view;state.editing=null;document.querySelectorAll('#nav [data-view]').forEach(button=>button.classList.toggle('active',button.dataset.view===view));
+  $('#viewTitle').textContent=titles[view];$('.sidebar').classList.remove('open');loading(true);
+  try{if(view==='dashboard')await renderDashboard();else if(view==='settings')await renderSettings();else await renderResource(view);}
+  catch(error){$('#content').innerHTML=`<div class="panel empty">${esc(error.message)}</div>`;toast(error.message,'error');if(error.status===401)setTimeout(()=>location.reload(),800);}
+  finally{loading(false);}
+}
+
+async function renderDashboard(){
+  const {counts,seed}=await api('/dashboard');
+  const cards=[['Trang',counts.pages],['Section',counts.sections],['Sản phẩm',counts.products],['Dịch vụ',counts.services],['Danh mục',counts.categories],['Banner',counts.banners],['Ảnh',counts.media],['Yêu cầu',counts.inquiries]];
+  $('#content').innerHTML=`<div class="stats">${cards.map(([label,value])=>`<div class="stat"><strong>${Number(value||0).toLocaleString('vi-VN')}</strong><span>${esc(label)}</span></div>`).join('')}</div><div class="panel"><div class="panel-head"><h2>Trạng thái dữ liệu</h2></div><div style="padding:20px"><p><span class="badge">MongoDB CMS đang hoạt động</span></p><p class="muted">Website gốc đã import ${esc(seed?.counts?.pages??counts.pages)} trang. Mọi thao tác Admin gọi API thật và được render trực tiếp ra website public.</p><p><a href="/api/health" target="_blank">Kiểm tra health API ↗</a></p></div></div>`;
+}
+
+async function renderResource(resource,q=''){
+  const result=await api(`/${resource}?limit=500&q=${encodeURIComponent(q)}`);state.items=result.items;
+  const canAdd=resource!=='inquiries';
+  $('#content').innerHTML=`<div class="panel"><div class="toolbar"><input id="searchInput" placeholder="Tìm kiếm…" value="${esc(q)}"><button id="searchBtn" class="secondary">Tìm</button>${canAdd?`<button id="addBtn" class="primary">+ Thêm ${esc(configs[resource].singular)}</button>`:''}</div><div class="table-wrap">${table(resource,result.items)}</div></div>`;
+  $('#searchBtn').onclick=()=>renderResource(resource,$('#searchInput').value.trim());
+  $('#searchInput').onkeydown=event=>{if(event.key==='Enter')renderResource(resource,event.currentTarget.value.trim());};
+  if(canAdd)$('#addBtn').onclick=()=>openEditor(resource);
+  bindRows(resource);
+}
+
+function table(resource,items){
+  if(!items.length)return '<div class="empty">Chưa có dữ liệu.</div>';
+  return `<table><thead><tr><th>Nội dung</th><th>Đường dẫn / thông tin</th><th>Trạng thái</th><th>Thứ tự</th><th style="text-align:right">Thao tác</th></tr></thead><tbody>${items.map((item,index)=>row(resource,item,index)).join('')}</tbody></table>`;
+}
+function row(resource,item,index){
+  const name=item.title||item.name||item.email||item.path||item.url||'Không tên';
+  const secondary=item.path||item.url||item.email||item.pagePath||item.company||'';
+  const image=item.image||((resource==='media')?item.url:'');
+  const status=resource==='inquiries'?item.status:(item.enabled===false?'Đang tắt':'Đang bật');
+  const statusClass=(item.enabled===false||['spam'].includes(item.status))?'off':'';
+  const preview=item.path?`<a href="${esc(item.path)}" target="_blank">Xem ↗</a>`:image?`<a href="${esc(image)}" target="_blank">Ảnh ↗</a>`:'';
+  const toggle=('enabled'in item)?`<button data-action="toggle">${item.enabled===false?'Bật':'Tắt'}</button>`:'';
+  const orderButtons=resource==='inquiries'?'':`<button data-action="up" ${index===0?'disabled':''}>↑</button><button data-action="down" ${index===state.items.length-1?'disabled':''}>↓</button>`;
+  return `<tr data-id="${item._id}"><td>${image?`<img class="thumb" src="${esc(image)}" alt="">`:''}<b>${esc(name)}</b><small>${esc(item.type||item.kind||item.sourceType||'')}</small></td><td><small>${esc(secondary)}</small></td><td><span class="badge ${statusClass}">${esc(status||'new')}</span></td><td>${esc(item.sortOrder??'—')}</td><td><div class="actions">${preview}${toggle}${orderButtons}<button data-action="edit">Sửa</button><button data-action="delete">Xoá</button></div></td></tr>`;
+}
+function bindRows(resource){
+  $('#content').querySelectorAll('tr[data-id]').forEach(row=>row.addEventListener('click',async event=>{
+    const action=event.target.closest('[data-action]')?.dataset.action;if(!action)return;const id=row.dataset.id;const item=state.items.find(entry=>entry._id===id);
+    try{
+      if(action==='edit')return openEditor(resource,id);
+      if(action==='delete')return removeItem(resource,item);
+      if(action==='toggle'){loading(true);await api(`/${resource}/${id}`,{method:'PUT',body:{enabled:item.enabled===false}});toast('Đã cập nhật trạng thái.');return renderResource(resource);}
+      if(action==='up'||action==='down'){const index=state.items.findIndex(entry=>entry._id===id);const target=index+(action==='up'?-1:1);if(target<0||target>=state.items.length)return;const ids=state.items.map(entry=>entry._id);[ids[index],ids[target]]=[ids[target],ids[index]];loading(true);await api(`/${resource}/reorder`,{method:'POST',body:{ids}});toast('Đã lưu thứ tự mới.');return renderResource(resource);}
+    }catch(error){toast(error.message,'error');}finally{loading(false);}
+  }));
+}
+async function removeItem(resource,item){
+  if(!confirm(`Xoá vĩnh viễn “${item.title||item.name||item.email||item.path}”? Thao tác này không thể hoàn tác.`))return;
+  loading(true);try{await api(`/${resource}/${item._id}?confirm=true`,{method:'DELETE'});toast('Đã xoá nội dung.');await renderResource(resource);}catch(error){toast(error.message,'error');}finally{loading(false);}
+}
+
+async function openEditor(resource,id=null){
+  loading(true);
+  try{
+    if(resource==='products'||resource==='categories')state.categories=(await api('/categories?limit=500')).items;
+    const item=id?(await api(`/${resource}/${id}`)).item:{enabled:true,sortOrder:state.items.length};state.editing={resource,id,item};
+    $('#editorEyebrow').textContent=titles[resource].toUpperCase();$('#editorTitle').textContent=id?'Chỉnh sửa':'Thêm mới';
+    $('#editorFields').innerHTML=configs[resource].fields.map(field=>fieldHtml(field,item)).join('');
+    bindImageInputs();$('#editorDialog').showModal();
+  }catch(error){toast(error.message,'error');}finally{loading(false);}
+}
+function fieldHtml([name,label,type,required=false,options=[]],item){
+  const value=getValue(item,name);const full=['textarea','textarea-tall','image'].includes(type);
+  if(type==='checkbox')return `<label class="field check"><input data-path="${name}" type="checkbox" ${value!==false?'checked':''}> ${esc(label)}</label>`;
+  if(type==='category-select')return `<label class="field"><span>${esc(label)}</span><select data-path="${name}"><option value="">— Không chọn —</option>${state.categories.filter(category=>category._id!==item._id).map(category=>`<option value="${esc(category._id)}" ${value===category._id?'selected':''}>${esc(category.name)} (${esc(category.path)})</option>`).join('')}</select></label>`;
+  if(type==='select')return `<label class="field"><span>${esc(label)}</span><select data-path="${name}" ${required?'required':''}>${options.map(option=>`<option value="${esc(option)}" ${value===option?'selected':''}>${esc(option)}</option>`).join('')}</select></label>`;
+  if(type==='image')return `<div class="field full image-field" data-image-field="${name}"><span>${esc(label)}${required?' *':''}</span><div class="image-inputs"><input class="image-url" placeholder="Nhập URL hoặc /đường-dẫn/ảnh.jpg" value="${esc(value||'')}"><input class="image-file" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"></div><small>Chỉ dùng một nguồn: nhập URL hoặc chọn file upload (tối đa 10 MB).</small><img class="image-preview" src="${esc(value||'')}" alt="Preview"></div>`;
+  if(type.startsWith('textarea'))return `<label class="field full"><span>${esc(label)}${required?' *':''}</span><textarea data-path="${name}" class="${type==='textarea-tall'?'tall':''}" ${required?'required':''}>${esc(value||'')}</textarea></label>`;
+  return `<label class="field ${full?'full':''}"><span>${esc(label)}${required?' *':''}</span><input data-path="${name}" type="${type}" value="${esc(value??'')}" ${required?'required':''}></label>`;
+}
+function bindImageInputs(){
+  document.querySelectorAll('.image-field').forEach(field=>{const url=field.querySelector('.image-url'),file=field.querySelector('.image-file'),preview=field.querySelector('.image-preview');
+    url.addEventListener('input',()=>{if(url.value.trim())file.value='';preview.src=url.value.trim();});
+    file.addEventListener('change',()=>{if(file.files[0]){url.value='';preview.src=URL.createObjectURL(file.files[0]);}});
+  });
+}
+$('#closeEditor').onclick=$('#cancelEditor').onclick=()=>$('#editorDialog').close();
+$('#editorForm').addEventListener('submit',async event=>{
+  event.preventDefault();const {resource,id}=state.editing;loading(true);
+  try{
+    const payload={};$('#editorFields').querySelectorAll('[data-path]').forEach(input=>setValue(payload,input.dataset.path,input.type==='checkbox'?input.checked:input.type==='number'?Number(input.value):input.value));
+    for(const field of $('#editorFields').querySelectorAll('[data-image-field]')){
+      const name=field.dataset.imageField,url=field.querySelector('.image-url').value.trim(),file=field.querySelector('.image-file').files[0];
+      if(url&&file)throw new Error('Mỗi ảnh chỉ được chọn URL hoặc file, không chọn cả hai.');
+      if(file){const form=new FormData();form.append('file',file);form.append('name',payload.title||payload.name||file.name);form.append('alt',payload.alt||payload.name||'');const uploaded=await api('/media/upload',{method:'POST',body:form});setValue(payload,name,uploaded.item.url);}
+      else setValue(payload,name,url);
+    }
+    await api(`/${resource}${id?`/${id}`:''}`,{method:id?'PUT':'POST',body:payload});$('#editorDialog').close();toast(id?'Đã lưu thay đổi.':'Đã tạo nội dung mới.');await renderResource(resource);
+  }catch(error){toast(error.message,'error');}finally{loading(false);}
+});
+
+const settingFields=[['siteName','Tên website','text'],['phone','Điện thoại','text'],['mobile','Di động','text'],['fax','Fax','text'],['email','Email','email'],['secondaryEmail','Email phụ','email'],['whatsapp','WhatsApp (kèm mã quốc gia)','text'],['address','Địa chỉ','textarea'],['copyright','Copyright','text'],['defaultSeo.title','SEO title mặc định','text'],['defaultSeo.description','Meta description mặc định','textarea'],['defaultSeo.keywords','Meta keywords mặc định','textarea']];
+async function renderSettings(){
+  const {item}=await api('/settings');
+  $('#content').innerHTML=`<form id="settingsForm" class="panel"><div class="panel-head"><h2>Thông tin liên hệ và SEO toàn site</h2></div><div class="form-grid settings-grid">${settingFields.map(field=>fieldHtml(field,item)).join('')}</div><div class="dialog-actions"><button class="primary" type="submit">Lưu & đồng bộ website</button></div></form>`;
+  $('#settingsForm').onsubmit=async event=>{event.preventDefault();const payload={};event.currentTarget.querySelectorAll('[data-path]').forEach(input=>setValue(payload,input.dataset.path,input.value));loading(true);try{await api('/settings',{method:'PUT',body:payload});toast('Đã đồng bộ thông tin toàn website.');}catch(error){toast(error.message,'error');}finally{loading(false);}};
+}
+
+boot();

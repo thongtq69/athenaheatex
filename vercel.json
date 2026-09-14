@@ -1,7 +1,13 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": null,
+  "rewrites": [
+    { "source": "/api/admin/:path*", "destination": "/api/admin?path=:path*" },
+    { "source": "/", "destination": "/api/render?path=/index.html" },
+    { "source": "^/(?<page>.+\\.html)$", "destination": "/api/render?path=/$page" }
+  ],
   "redirects": [
     { "source": "/languages/vi", "destination": "/index.html", "permanent": true },
     { "source": "/languages/vi/:path*", "destination": "/:path*", "permanent": true },

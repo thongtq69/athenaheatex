@@ -3,6 +3,7 @@ data/
 node_modules/
 *.log
 __pycache__/
+.venv/
 
 .vercel
 .env*

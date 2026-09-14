@@ -1,0 +1,1444 @@
+{
+  "generatedAt": "2026-09-14T03:01:28.742Z",
+  "source": {
+    "htmlPages": 280,
+    "files": 790,
+    "htmlSizeMB": 7.08,
+    "images": 2644,
+    "forms": 697,
+    "productPages": 136,
+    "categoryPages": 37
+  },
+  "architectureBeforeCms": {
+    "staticHtmlContent": true,
+    "repeatedHeaderFooterContact": true,
+    "publicInquiryBackend": true,
+    "adminOrContentApi": false
+  },
+  "database": {
+    "seed": {
+      "seeded": false,
+      "pages": 280,
+      "sections": 281,
+      "products": 136,
+      "services": 1,
+      "categories": 37,
+      "banners": 3,
+      "media": 432
+    },
+    "counts": {
+      "pages": 280,
+      "sections": 281,
+      "products": 136,
+      "services": 1,
+      "categories": 37,
+      "banners": 3,
+      "media": 432,
+      "inquiries": 0
+    }
+  },
+  "contactsRepeatedInHtml": [
+    {
+      "value": "mailto:info@shjoylong.com",
+      "count": 974
+    },
+    {
+      "value": "tel:+86-21-50911019",
+      "count": 559
+    },
+    {
+      "value": "tel:+86-18616619098",
+      "count": 416
+    },
+    {
+      "value": "mailto:shjoylong@gmail.com",
+      "count": 1
+    },
+    {
+      "value": "tel:+86-008618616619098",
+      "count": 1
+    }
+  ],
+  "findingCounts": {
+    "brokenInternalLinks": 0,
+    "missingImageAlt": 979,
+    "formsWithoutAction": 418,
+    "duplicateIds": 137
+  },
+  "findingSamplesLimitedTo": 100,
+  "findings": {
+    "brokenInternalLinks": [],
+    "missingImageAlt": [
+      {
+        "page": "/1_2.html",
+        "src": "/upfile/2024/08/05/20240805134450_969.jpg"
+      },
+      {
+        "page": "/1_2.html",
+        "src": "/templates/default/images/wx.png"
+      },
+      {
+        "page": "/2_2.html",
+        "src": "/upfile/2024/08/05/20240805134450_969.jpg"
+      },
+      {
+        "page": "/2_2.html",
+        "src": "/templates/default/images/wx.png"
+      },
+      {
+        "page": "/2_3.html",
+        "src": "/upfile/2024/08/05/20240805134450_969.jpg"
+      },
+      {
+        "page": "/2_3.html",
+        "src": "/templates/default/images/wx.png"
+      },
+      {
+        "page": "/2_4.html",
+        "src": "/upfile/2024/08/05/20240805134450_969.jpg"
+      },
+      {
+        "page": "/2_4.html",
+        "src": "/templates/default/images/wx.png"
+      },
+      {
+        "page": "/2_5.html",
+        "src": "/upfile/2024/08/05/20240805134450_969.jpg"
+      },
+      {
+        "page": "/2_5.html",
+        "src": "/templates/default/images/wx.png"
+      },
+      {
+        "page": "/2_6.html",
+        "src": "/upfile/2024/08/05/20240805134450_969.jpg"
+      },
+      {
+        "page": "/2_6.html",
+        "src": "/templates/default/images/wx.png"
+      },
+      {
+        "page": "/404.html",
+        "src": "/upfile/2024/08/05/20240805134450_969.jpg"
+      },
+      {
+        "page": "/404.html",
+        "src": "/templates/default/images/wx.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2024/08/05/20240805134450_969.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/28/20180328155310_129.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/28/20180328155641_636.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/28/20180328160247_240.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/28/20180328155924_339.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/29/20180329094624_936.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/05/07/20180507095741_741.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/05/07/20180507095833_306.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/29/20180329093709_316.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/29/20180329093734_579.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/29/20180329093910_157.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/29/20180329093645_872.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/29/20180329093847_830.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/28/20180328173747_662.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/28/20180328173431_755.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/29/20180329093504_775.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/29/20180329094537_788.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/28/20180328165501_792.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/28/20180328173527_685.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/28/20180328173632_102.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/28/20180328173714_334.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/upfile/2018/03/29/20180329093322_427.jpg"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_2.html",
+        "src": "/templates/default/images/wx.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2024/08/05/20240805134450_969.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/03/29/20180329093229_174.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/03/28/20180328170744_400.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/05/07/20180507110707_482.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/05/07/20180507110518_848.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/05/07/20180507110337_569.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/05/07/20180507105737_559.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/05/07/20180507105244_608.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/05/07/20180507105123_497.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/05/07/20180507105016_533.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/03/29/20180329093536_235.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/03/29/20180329093159_217.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/03/28/20180328174544_274.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/03/29/20180329092915_747.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/03/28/20180328174515_732.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/03/29/20180329093123_871.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/03/29/20180329094454_545.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/03/29/20180329093013_186.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/03/29/20180329093258_860.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/03/28/20180328171528_703.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/03/28/20180328170823_589.jpg"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/templates/default/images/i10.png"
+      },
+      {
+        "page": "/5_3.html",
+        "src": "/upfile/2018/03/28/20180328171443_862.jpg"
+      }
+    ],
+    "formsWithoutAction": [
+      "/1_2.html",
+      "/2_2.html",
+      "/2_3.html",
+      "/2_4.html",
+      "/2_5.html",
+      "/2_6.html",
+      "/404.html",
+      "/5_2.html",
+      "/5_3.html",
+      "/64_2.html",
+      "/65_2.html",
+      "/67_2.html",
+      "/67_3.html",
+      "/67_4.html",
+      "/67_5.html",
+      "/67_6.html",
+      "/67_7.html",
+      "/about-us-6.html",
+      "/air-compressor-252.html",
+      "/air-compressor-252.html",
+      "/air-dryer-machine-253.html",
+      "/air-dryer-machine-253.html",
+      "/apple-pear-processing-line-279.html",
+      "/apple-pear-processing-line-279.html",
+      "/apricot-plum-peach-beverage-processing-line-281.html",
+      "/apricot-plum-peach-beverage-processing-line-281.html",
+      "/aseptic-brick-carton-filling-machine-for-customer-in-india-422.html",
+      "/aseptic-brick-carton-filling-machine-for-customer-in-turkmenistan-424.html",
+      "/aseptic-brick-carton-filling-machine-in-vietnam-421.html",
+      "/aseptic-brick-carton-packaging-material-371.html",
+      "/aseptic-brick-carton-packaging-material-371.html",
+      "/aseptic-carton-filling-machine-69.html",
+      "/aseptic-carton-filling-machine-for-ml-sq-449.html",
+      "/aseptic-carton-filling-machine-testing-441.html",
+      "/aseptic-carton-packaging-material-68.html",
+      "/aseptic-large-bag-filling-machine-350.html",
+      "/aseptic-large-bag-filling-machine-350.html",
+      "/aseptic-tank-244.html",
+      "/aseptic-tank-244.html",
+      "/auto-cup-filling--sealing-machine-147.html",
+      "/auto-cup-filling--sealing-machine-147.html",
+      "/automatic-aseptic-plastic-pouch-filling-machine-140.html",
+      "/automatic-aseptic-plastic-pouch-filling-machine-140.html",
+      "/automatic-bottle-tilting-machine-103.html",
+      "/automatic-bottle-tilting-machine-103.html",
+      "/automatic-cap-applicator-269.html",
+      "/automatic-cap-applicator-269.html",
+      "/automatic-cartoning-machine-379.html",
+      "/automatic-cartoning-machine-379.html",
+      "/automatic-plastic-pouch-filling-machine-142.html",
+      "/automatic-plastic-pouch-filling-machine-142.html",
+      "/automatic-shrink-packing-machine-151.html",
+      "/automatic-shrink-packing-machine-151.html",
+      "/automatic-shrink-sleeve-labelling-machine-155.html",
+      "/automatic-shrink-sleeve-labelling-machine-155.html",
+      "/automatic-stand-up-pouch-filling-machine-272.html",
+      "/automatic-stand-up-pouch-filling-machine-272.html",
+      "/blueberry-raspberry-strawberry-beverage-processing-line-277.html",
+      "/blueberry-raspberry-strawberry-beverage-processing-line-277.html",
+      "/bolivian-customer-visited-our-factory-418.html",
+      "/bright-dairy--food-189.html",
+      "/brush-washing-machine-374.html",
+      "/brush-washing-machine-374.html",
+      "/bubbling-washing-machine-375.html",
+      "/bubbling-washing-machine-375.html",
+      "/butter-processing-line-33.html",
+      "/butter-processing-line-33.html",
+      "/butter-processing-line-47.html",
+      "/can-filling-line-158.html",
+      "/can-filling-line-158.html",
+      "/carbonated-beverage-equipment-34.html",
+      "/carbonated-drinks-mixer-92.html",
+      "/carbonated-drinks-mixer-92.html",
+      "/carbonated-drinks-production-line-29.html",
+      "/carbonated-drinks-production-line-29.html",
+      "/carbonated-drinks-production-line-51.html",
+      "/carbonated-drinks-solution-14.html",
+      "/carrot-beverage-processing-line-345.html",
+      "/carrot-beverage-processing-line-345.html",
+      "/case-56.html",
+      "/cheese-processing-line-36.html",
+      "/cheese-processing-line-36.html",
+      "/cheese-processing-line-46.html",
+      "/chinese-new-year-holiday-notice-429.html",
+      "/chinese-new-year-holiday-notice-443.html",
+      "/chinese-new-year-holiday-notice-457.html",
+      "/cip-cleaning-system-31.html",
+      "/cip-self-priming-pump-87.html",
+      "/cip-self-priming-pump-87.html",
+      "/citrus-processing-line-274.html",
+      "/citrus-processing-line-274.html",
+      "/clamp-ferrule-set-74.html",
+      "/clamp-ferrule-set-74.html",
+      "/coca-cola-186.html",
+      "/coconut-water-milk-processing-line-283.html",
+      "/coconut-water-milk-processing-line-283.html",
+      "/colloid-mill-124.html",
+      "/colloid-mill-124.html",
+      "/commissioning-of-juice-production-line-446.html",
+      "/company-culture-18.html",
+      "/company-profile-16.html",
+      "/complete-line-1.html",
+      "/complete-line-64.html",
+      "/condensed-milk-processing-line-271.html",
+      "/condensed-milk-processing-line-271.html",
+      "/condensed-milk-processing-line-44.html",
+      "/contact-us-7.html",
+      "/contact-us-7.html",
+      "/continuous-spraying-type-pasteurization-and-cooling-tunnel-106.html",
+      "/continuous-spraying-type-pasteurization-and-cooling-tunnel-106.html",
+      "/continuous-water-soaking-sterilizer-105.html",
+      "/continuous-water-soaking-sterilizer-105.html",
+      "/cooling-and-heating-tank-130.html",
+      "/cooling-and-heating-tank-130.html",
+      "/cooling-room-254.html",
+      "/cooling-room-254.html",
+      "/cooling-tower-255.html",
+      "/cooling-tower-255.html",
+      "/cream-separator-123.html",
+      "/cream-separator-123.html",
+      "/cut-half-juicer-95.html",
+      "/cut-half-juicer-95.html",
+      "/dairy-product-solution-12.html",
+      "/diaphragm-valve-76.html",
+      "/diaphragm-valve-76.html",
+      "/diesel-generator-248.html",
+      "/diesel-generator-248.html",
+      "/double-layered-pot-119.html",
+      "/double-layered-pot-119.html",
+      "/double-seal-circulative-pump-84.html",
+      "/double-seal-circulative-pump-84.html",
+      "/drinking-water-solution-15.html",
+      "/drinking-water-treatment-equipments-35.html",
+      "/drying-tower-system-114.html",
+      "/drying-tower-system-114.html",
+      "/factory-tools-22.html",
+      "/falling-film-vacuum-evaporator-94.html",
+      "/falling-film-vacuum-evaporator-94.html",
+      "/fermentation-tank-127.html",
+      "/fermentation-tank-127.html",
+      "/filling-and-aluminum-foil-sealing-machine-144.html",
+      "/filling-and-aluminum-foil-sealing-machine-144.html",
+      "/filling-packing-machine-39.html",
+      "/filter-71.html",
+      "/filter-71.html",
+      "/flow-plate-57.html",
+      "/flow-plate-57.html",
+      "/fluidized-bed-113.html",
+      "/fluidized-bed-113.html",
+      "/forced-external-circulation-vacuum-evaporator-93.html",
+      "/forced-external-circulation-vacuum-evaporator-93.html",
+      "/fruit-processing-equipment-33.html",
+      "/fruit-processing-line-62.html",
+      "/fully-automatic-cup-forming-filling-sealing-machine-150.html",
+      "/fully-automatic-cup-forming-filling-sealing-machine-150.html",
+      "/ghanaian-customer-visited-our-factory-463.html",
+      "/glass-bottle-filling-machineplc-268.html",
+      "/glass-bottle-filling-machineplc-268.html",
+      "/grape-beverage-processing-line-280.html",
+      "/grape-beverage-processing-line-280.html",
+      "/grasping-carton-fillerdecrater-148.html",
+      "/grasping-carton-fillerdecrater-148.html",
+      "/hammer-crusher-372.html",
+      "/hammer-crusher-372.html",
+      "/handle-welded-butterfly-valve-82.html",
+      "/handle-welded-butterfly-valve-82.html",
+      "/happy-chinese-new-year---year-of-the-tiger-415.html",
+      "/high-efficiency-centrifugal-pump-89.html",
+      "/high-efficiency-centrifugal-pump-89.html",
+      "/high-efficiency-sanitary-pump-85.html",
+      "/high-efficiency-sanitary-pump-85.html",
+      "/high-pressure-homogenizer-118.html",
+      "/high-pressure-homogenizer-118.html",
+      "/high-speed-straw-applicator-104.html",
+      "/high-speed-straw-applicator-104.html",
+      "/holiday-notice-for-chinas-national-day-452.html",
+      "/hollow-fiber-ultra-filteration-system-91.html",
+      "/hollow-fiber-ultra-filteration-system-91.html",
+      "/horizontal-milk-cooling-tank-135.html",
+      "/horizontal-milk-cooling-tank-135.html",
+      "/hot-melt-glue-opp-labelling-machine-149.html",
+      "/hot-melt-glue-opp-labelling-machine-149.html",
+      "/huiyuan-187.html",
+      "/ice-cream-processing-line-26.html",
+      "/ice-cream-processing-line-26.html",
+      "/ice-cream-processing-line-54.html",
+      "/incubation-room-249.html",
+      "/incubation-room-249.html",
+      "/index.html",
+      "/installation-pipelines-valves-fittings-37.html",
+      "/insulated-tank-132.html",
+      "/insulated-tank-132.html",
+      "/integrated-sight-glass-68.html",
+      "/integrated-sight-glass-68.html",
+      "/isobaric-filling-machine--in--unit-154.html",
+      "/isobaric-filling-machine--in--unit-154.html",
+      "/jb---aseptic-brick-carton-filling-machine-for--ml-398.html",
+      "/jb---aseptic-brick-carton-filling-machine-for--ml-398.html",
+      "/jb---aseptic-brick-carton-filling-machine-for-ml-ml-390.html",
+      "/jb---aseptic-brick-carton-filling-machine-for-ml-ml-390.html",
+      "/jb--aseptic-brick-carton-aseptic-filling-machine-for----ml-389.html",
+      "/jb--aseptic-brick-carton-aseptic-filling-machine-for----ml-389.html",
+      "/jb--aseptic-brick-carton-aseptic-filling-machine-for----ml-397.html",
+      "/jb--aseptic-brick-carton-aseptic-filling-machine-for----ml-397.html",
+      "/jb--aseptic-brick-carton-aseptic-filling-machine-for-ml---ml-391.html",
+      "/jb--aseptic-brick-carton-aseptic-filling-machine-for-ml---ml-391.html",
+      "/jb--aseptic-brick-carton-aseptic-filling-machine-for-ml---ml-392.html",
+      "/jb--aseptic-brick-carton-aseptic-filling-machine-for-ml---ml-392.html",
+      "/joylong-manufacturing-workshop-456.html",
+      "/juice-processing-line-32.html",
+      "/juice-processing-line-32.html",
+      "/juice-processing-line-48.html",
+      "/juice-processing-line-delivery-437.html",
+      "/juice-processing-line-shipping-426.html",
+      "/juice-processing-line-shipping-427.html",
+      "/juice-processing-line-shipping-434.html",
+      "/juice-production-line-delivery-453.html",
+      "/juice-production-line-installation-458.html",
+      "/juice-production-line-shipping-451.html",
+      "/juice-solution-13.html",
+      "/jw--gable-top-carton-filling-machine-159.html",
+      "/jw--gable-top-carton-filling-machine-159.html",
+      "/labor-day-holiday-notice-459.html",
+      "/liquid-food-carry-vehicles-tank-136.html",
+      "/liquid-food-carry-vehicles-tank-136.html",
+      "/machinery-2.html",
+      "/machinery-65.html",
+      "/mango-pineapple-juice-processing-line-278.html",
+      "/mango-pineapple-juice-processing-line-278.html",
+      "/mengniu-188.html",
+      "/merry-christmas-442.html",
+      "/merry-christmas-455.html",
+      "/message.html",
+      "/milk-powder-filling-machine-delivery-448.html",
+      "/milk-powder-processing-line-43.html",
+      "/milk-powder-processing-line-53.html",
+      "/milk-powder-processing-line-53.html",
+      "/milk-powder-production-line-460.html",
+      "/milk-processing-line-installation-438.html",
+      "/milk-processing-line-ready-for-shipping-to-malaysia-420.html",
+      "/milk-processing-line-shipping-419.html",
+      "/milk-processing-line-shipping-425.html",
+      "/milk-processing-line-shipping-447.html",
+      "/milk-production-line-delivery-462.html",
+      "/milk-receiving-tank-141.html",
+      "/milk-receiving-tank-141.html",
+      "/milk-weight-tank-143.html",
+      "/milk-weight-tank-143.html",
+      "/mineral-water-production-line-28.html",
+      "/mineral-water-production-line-28.html",
+      "/mineral-water-production-line-52.html",
+      "/mixing-tank-128.html",
+      "/mixing-tank-128.html",
+      "/myanmar-customers-visited-our-factory-440.html",
+      "/new-customer-visited-our-factory-417.html",
+      "/news-67.html",
+      "/normal-presure-filling-machine--in--unit-152.html",
+      "/normal-presure-filling-machine--in--unit-152.html",
+      "/normal-presure-hot-filling-machine--in--unit-153.html",
+      "/normal-presure-hot-filling-machine--in--unit-153.html",
+      "/outdoor-milk-storage-tank-125.html",
+      "/outdoor-milk-storage-tank-125.html",
+      "/paper-cart-380.html",
+      "/paper-cart-380.html",
+      "/paper-trolley-381.html",
+      "/paper-trolley-381.html",
+      "/passion-fruit-guava-beverage-processing-line-282.html",
+      "/passion-fruit-guava-beverage-processing-line-282.html",
+      "/pasteurized-milk-processing-line-183.html",
+      "/pasteurized-milk-processing-line-183.html",
+      "/pasteurized-milk-processing-line-40.html",
+      "/pitting-and-pulping-machine-98.html",
+      "/pitting-and-pulping-machine-98.html",
+      "/plate-108.html",
+      "/plate-108.html",
+      "/plate-heat-exchange-109.html",
+      "/plate-heat-exchange-109.html",
+      "/plate-pasteurizer-112.html",
+      "/plate-pasteurizer-112.html",
+      "/pneumatic-valve-77.html",
+      "/pneumatic-valve-77.html",
+      "/preheating-and-killing-enzyme-machine-99.html",
+      "/preheating-and-killing-enzyme-machine-99.html",
+      "/preparation-system-29.html",
+      "/previous-successful-cases-184.html",
+      "/pulpingrefining-machine-97.html",
+      "/pulpingrefining-machine-97.html",
+      "/pure-water-processing-line-27.html",
+      "/pure-water-processing-line-27.html",
+      "/pure-water-processing-line-53.html",
+      "/quality-control-23.html",
+      "/quick-install-butterfly-valve-80.html",
+      "/quick-install-butterfly-valve-80.html",
+      "/ramadan-mubarak-431.html",
+      "/ramadan-mubarak-445.html",
+      "/rd-25.html",
+      "/resume-work-after-china-new-year-holiday-430.html",
+      "/resume-work-from-chinese-new-year-holiday-444.html",
+      "/retort-sterilizerauto-clave-107.html",
+      "/retort-sterilizerauto-clave-107.html",
+      "/reverse-osmosis-purification-system-90.html",
+      "/reverse-osmosis-purification-system-90.html",
+      "/reversing-valve-73.html",
+      "/reversing-valve-73.html",
+      "/robot-case-packing-system-146.html",
+      "/robot-case-packing-system-146.html",
+      "/robust-185.html",
+      "/roller-drum-washing-machine-373.html",
+      "/roller-drum-washing-machine-373.html",
+      "/roller-sorting-machine-376.html",
+      "/roller-sorting-machine-376.html",
+      "/rotary-cleaning-ball-69.html",
+      "/rotary-cleaning-ball-69.html",
+      "/rotor-pump-86.html",
+      "/rotor-pump-86.html",
+      "/round-high-speed-emulsification-tank-121.html",
+      "/round-high-speed-emulsification-tank-121.html",
+      "/sanitary-centrifugal-pump-88.html",
+      "/sanitary-centrifugal-pump-88.html",
+      "/sanitary-pumps-36.html",
+      "/scraper-elevator-378.html",
+      "/scraper-elevator-378.html",
+      "/screw-conveyer-377.html",
+      "/screw-conveyer-377.html",
+      "/screw-juicer-96.html",
+      "/screw-juicer-96.html",
+      "/screw-type-slurry-pump-83.html",
+      "/screw-type-slurry-pump-83.html",
+      "/sea-buckthorn-processing-line-337.html",
+      "/sea-buckthorn-processing-line-337.html",
+      "/search.html",
+      "/search.html",
+      "/service-4.html",
+      "/shipping-of-juice-processing-line-433.html",
+      "/shipping-of-juice-processing-plant-439.html",
+      "/shipping-of-milk-powder-production-line-454.html",
+      "/single-layer-storage-tank-133.html",
+      "/single-layer-storage-tank-133.html",
+      "/small-integration-cip-system-101.html",
+      "/small-integration-cip-system-101.html",
+      "/solution-3.html",
+      "/soymilk-processing-line-39.html",
+      "/soymilk-processing-line-39.html",
+      "/soymilk-processing-line-45.html",
+      "/square-high-speed-emulsification-tank-122.html",
+      "/square-high-speed-emulsification-tank-122.html",
+      "/stainless-steel-tanks-28.html",
+      "/steam-boiler-250.html",
+      "/steam-boiler-250.html",
+      "/sterilization-system-30.html",
+      "/straw-applicator-264.html",
+      "/straw-applicator-264.html",
+      "/sub-vertical-cip-system-102.html",
+      "/sub-vertical-cip-system-102.html",
+      "/tea-drinks-processing-line-30.html",
+      "/tea-drinks-processing-line-30.html",
+      "/tea-drinks-processing-line-50.html",
+      "/the-first-phase-of-th-canton-fair-closed-on-th-april--407.html",
+      "/the-first-phase-of-th-canton-fair-closed-on-th-oct--409.html",
+      "/the-first-phase-of-th-canton-fair-will-close-today-on-th-oct-396.html",
+      "/the-small-scale-milk-yoghurt-juice-combined-production-line-25.html",
+      "/the-small-scale-milk-yoghurt-juice-combined-production-line-25.html",
+      "/the-small-scale-milk-yoghurt-juice-combined-production-line-55.html",
+      "/the-th-canton-fair-closed-on-th-april--413.html",
+      "/the-th-canton-fair-closed-on-th-june--411.html",
+      "/the-th-canton-fair-closed-on-th-oct--412.html",
+      "/the-th-canton-fair-closed-on-th-oct--414.html",
+      "/there-way-ball-valve-with-threaded-connection-78.html",
+      "/there-way-ball-valve-with-threaded-connection-78.html",
+      "/threaded-butterfly-valve-81.html",
+      "/threaded-butterfly-valve-81.html",
+      "/tomato-processing-line-273.html",
+      "/tomato-processing-line-273.html",
+      "/tubular-uht-sterilizer-110.html",
+      "/tubular-uht-sterilizer-110.html",
+      "/ugandan-customers-visited-our-factory-432.html",
+      "/uht-milk-processing-line-41.html",
+      "/uht-milk-processing-line-461.html",
+      "/uht-milk-processing-line-55.html",
+      "/uht-milk-processing-line-55.html",
+      "/uht-milk-processing-line-delivery-450.html",
+      "/unionsms-72.html",
+      "/unionsms-72.html",
+      "/utilities-60.html",
+      "/vacuum-degasser-117.html",
+      "/vacuum-degasser-117.html",
+      "/video-5.html",
+      "/vietnam-423.html",
+      "/wahaha-190.html",
+      "/walnut-milk-processing-line-shipping-435.html",
+      "/walnutalmond-milk-processing-line-284.html",
+      "/walnutalmond-milk-processing-line-284.html",
+      "/water-chiller-256.html",
+      "/water-chiller-256.html",
+      "/water-powder-mixer-120.html",
+      "/water-powder-mixer-120.html",
+      "/we-will-attend--th-canton-fair-from-th-to-th-oct--258.html",
+      "/we-will-attend--th-canton-fair-from-th-to-th-oct--260.html",
+      "/we-will-attend-gulfood-manufacturedubai-world-trade-centreform-th-to-th-nov--37.html",
+      "/we-will-attend-gulfood-manufacturedubai-world-trade-centreform-th-to-th-oct--18.html",
+      "/we-will-attend-th-canton-fair-from-th-to-th-april--257.html",
+      "/we-will-attend-th-canton-fair-from-th-to-th-april--259.html",
+      "/we-will-attend-th-canton-fair-from-th-to-th-april--35.html",
+      "/we-will-attend-th-canton-fair-from-th-to-th-oct--34.html",
+      "/we-will-attend-th-canton-fair-from-th-to-th-oct--38.html",
+      "/we-will-attend-th-canton-fair-from-th-to-th-oct--40.html",
+      "/we-will-attend-the-rd-canton-fair-from-th-to-th-april--393.html",
+      "/we-will-attend-the-th-canton-fair-from-th-to-th-april--404.html",
+      "/we-will-attend-the-th-canton-fair-from-th-to-th-oct--394.html",
+      "/welded-butterfly-valve-79.html",
+      "/welded-butterfly-valve-79.html",
+      "/welded-check-valve-75.html",
+      "/welded-check-valve-75.html",
+      "/why-us-26.html",
+      "/yogurt-processing-line-42.html",
+      "/yogurt-processing-line-54.html",
+      "/yogurt-processing-line-54.html",
+      "/yogurt-processing-line-shipping-428.html"
+    ],
+    "duplicateIds": [
+      {
+        "page": "/air-compressor-252.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/air-dryer-machine-253.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/apple-pear-processing-line-279.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/apricot-plum-peach-beverage-processing-line-281.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/aseptic-brick-carton-packaging-material-371.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/aseptic-large-bag-filling-machine-350.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/aseptic-tank-244.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/auto-cup-filling--sealing-machine-147.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/automatic-aseptic-plastic-pouch-filling-machine-140.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/automatic-bottle-tilting-machine-103.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/automatic-cap-applicator-269.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/automatic-cartoning-machine-379.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/automatic-plastic-pouch-filling-machine-142.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/automatic-shrink-packing-machine-151.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/automatic-shrink-sleeve-labelling-machine-155.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/automatic-stand-up-pouch-filling-machine-272.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/blueberry-raspberry-strawberry-beverage-processing-line-277.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/brush-washing-machine-374.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/bubbling-washing-machine-375.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/butter-processing-line-33.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/can-filling-line-158.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/carbonated-drinks-mixer-92.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/carbonated-drinks-production-line-29.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/carrot-beverage-processing-line-345.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/cheese-processing-line-36.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/cip-self-priming-pump-87.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/citrus-processing-line-274.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/clamp-ferrule-set-74.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/coconut-water-milk-processing-line-283.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/colloid-mill-124.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/condensed-milk-processing-line-271.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/contact-us-7.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/continuous-spraying-type-pasteurization-and-cooling-tunnel-106.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/continuous-water-soaking-sterilizer-105.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/cooling-and-heating-tank-130.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/cooling-room-254.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/cooling-tower-255.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/cream-separator-123.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/cut-half-juicer-95.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/diaphragm-valve-76.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/diesel-generator-248.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/double-layered-pot-119.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/double-seal-circulative-pump-84.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/drying-tower-system-114.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/falling-film-vacuum-evaporator-94.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/fermentation-tank-127.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/filling-and-aluminum-foil-sealing-machine-144.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/filter-71.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/flow-plate-57.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/fluidized-bed-113.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/forced-external-circulation-vacuum-evaporator-93.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/fully-automatic-cup-forming-filling-sealing-machine-150.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/glass-bottle-filling-machineplc-268.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/grape-beverage-processing-line-280.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/grasping-carton-fillerdecrater-148.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/hammer-crusher-372.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/handle-welded-butterfly-valve-82.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/high-efficiency-centrifugal-pump-89.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/high-efficiency-sanitary-pump-85.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/high-pressure-homogenizer-118.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/high-speed-straw-applicator-104.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/hollow-fiber-ultra-filteration-system-91.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/horizontal-milk-cooling-tank-135.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/hot-melt-glue-opp-labelling-machine-149.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/ice-cream-processing-line-26.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/incubation-room-249.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/insulated-tank-132.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/integrated-sight-glass-68.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/isobaric-filling-machine--in--unit-154.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/jb---aseptic-brick-carton-filling-machine-for--ml-398.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/jb---aseptic-brick-carton-filling-machine-for-ml-ml-390.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/jb--aseptic-brick-carton-aseptic-filling-machine-for----ml-389.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/jb--aseptic-brick-carton-aseptic-filling-machine-for----ml-397.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/jb--aseptic-brick-carton-aseptic-filling-machine-for-ml---ml-391.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/jb--aseptic-brick-carton-aseptic-filling-machine-for-ml---ml-392.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/juice-processing-line-32.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/jw--gable-top-carton-filling-machine-159.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/liquid-food-carry-vehicles-tank-136.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/mango-pineapple-juice-processing-line-278.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/milk-powder-processing-line-53.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/milk-receiving-tank-141.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/milk-weight-tank-143.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/mineral-water-production-line-28.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/mixing-tank-128.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/normal-presure-filling-machine--in--unit-152.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/normal-presure-hot-filling-machine--in--unit-153.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/outdoor-milk-storage-tank-125.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/paper-cart-380.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/paper-trolley-381.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/passion-fruit-guava-beverage-processing-line-282.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/pasteurized-milk-processing-line-183.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/pitting-and-pulping-machine-98.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/plate-108.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/plate-heat-exchange-109.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/plate-pasteurizer-112.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/pneumatic-valve-77.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/preheating-and-killing-enzyme-machine-99.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/pulpingrefining-machine-97.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/pure-water-processing-line-27.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/quick-install-butterfly-valve-80.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/retort-sterilizerauto-clave-107.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/reverse-osmosis-purification-system-90.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/reversing-valve-73.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/robot-case-packing-system-146.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/roller-drum-washing-machine-373.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/roller-sorting-machine-376.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/rotary-cleaning-ball-69.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/rotor-pump-86.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/round-high-speed-emulsification-tank-121.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/sanitary-centrifugal-pump-88.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/scraper-elevator-378.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/screw-conveyer-377.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/screw-juicer-96.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/screw-type-slurry-pump-83.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/sea-buckthorn-processing-line-337.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/single-layer-storage-tank-133.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/small-integration-cip-system-101.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/soymilk-processing-line-39.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/square-high-speed-emulsification-tank-122.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/steam-boiler-250.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/straw-applicator-264.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/sub-vertical-cip-system-102.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/tea-drinks-processing-line-30.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/the-small-scale-milk-yoghurt-juice-combined-production-line-25.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/there-way-ball-valve-with-threaded-connection-78.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/threaded-butterfly-valve-81.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/tomato-processing-line-273.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/tubular-uht-sterilizer-110.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/uht-milk-processing-line-55.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/unionsms-72.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/vacuum-degasser-117.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/walnutalmond-milk-processing-line-284.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/water-chiller-256.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/water-powder-mixer-120.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/welded-butterfly-valve-79.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/welded-check-valve-75.html",
+        "id": "pagetitle"
+      },
+      {
+        "page": "/yogurt-processing-line-54.html",
+        "id": "pagetitle"
+      }
+    ]
+  }
+}

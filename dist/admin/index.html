@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Athena Heat Ex — Admin CMS</title>
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+  <div id="loading" class="loading hidden"><span></span><b>Đang xử lý…</b></div>
+  <div id="toast" class="toast hidden" role="status"></div>
+
+  <main id="loginView" class="login-shell hidden">
+    <form id="loginForm" class="login-card">
+      <div class="brand-mark">A</div>
+      <p class="eyebrow">ATHENA HEAT EX</p>
+      <h1>Đăng nhập quản trị</h1>
+      <p class="muted">Nội dung thay đổi tại đây được lưu vào MongoDB và hiển thị trực tiếp trên website.</p>
+      <label>Tên đăng nhập<input name="username" autocomplete="username" required></label>
+      <label>Mật khẩu<input name="password" type="password" autocomplete="current-password" required></label>
+      <p id="loginError" class="form-error hidden"></p>
+      <button class="primary wide" type="submit">Đăng nhập</button>
+      <a class="public-link" href="/index.html">← Xem website public</a>
+    </form>
+  </main>
+
+  <div id="appView" class="app-shell hidden">
+    <aside class="sidebar">
+      <div class="brand"><span>A</span><div><b>Athena Heat Ex</b><small>Content Management</small></div></div>
+      <nav id="nav">
+        <button data-view="dashboard" class="active">Tổng quan</button>
+        <button data-view="pages">Trang &amp; nội dung</button>
+        <button data-view="sections">Section</button>
+        <button data-view="products">Sản phẩm</button>
+        <button data-view="services">Dịch vụ</button>
+        <button data-view="categories">Danh mục</button>
+        <button data-view="banners">Banner</button>
+        <button data-view="media">Thư viện ảnh</button>
+        <button data-view="settings">Liên hệ &amp; SEO</button>
+        <button data-view="inquiries">Yêu cầu khách hàng</button>
+      </nav>
+      <div class="sidebar-bottom"><a href="/index.html" target="_blank">Mở website ↗</a><button id="logoutBtn">Đăng xuất</button></div>
+    </aside>
+    <section class="workspace">
+      <header class="topbar"><button id="menuBtn" class="menu-btn">☰</button><div><p class="eyebrow">ADMIN / CMS</p><h1 id="viewTitle">Tổng quan</h1></div><div id="adminName" class="admin-chip"></div></header>
+      <div id="content" class="content"></div>
+    </section>
+  </div>
+
+  <dialog id="editorDialog">
+    <form id="editorForm" method="dialog">
+      <div class="dialog-head"><div><p class="eyebrow" id="editorEyebrow">NỘI DUNG</p><h2 id="editorTitle">Thêm mới</h2></div><button type="button" class="icon-btn" id="closeEditor" aria-label="Đóng">×</button></div>
+      <div id="editorFields" class="form-grid"></div>
+      <div class="dialog-actions"><button type="button" class="secondary" id="cancelEditor">Huỷ</button><button type="submit" class="primary">Lưu thay đổi</button></div>
+    </form>
+  </dialog>
+  <script type="module" src="/admin/admin.js"></script>
+</body>
+</html>
