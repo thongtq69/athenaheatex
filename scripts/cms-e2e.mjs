@@ -71,7 +71,7 @@ try {
   check(result.response.status === 308 && result.response.headers.get('location') === '/may-moc', 'đường dẫn Máy móc cũ chuyển sang /may-moc');
   result = await request('/may-moc');
   check(result.response.ok && result.data.includes('href="/may-moc"') && !result.data.includes('href="/machinery-2.html"') && result.data.includes('rel="canonical"'), 'Máy móc hiển thị tại URL tiếng Việt với liên kết và canonical đúng');
-  result = await request('/api/admin/products', { method: 'POST', body: { name: `${tag} collision`, path: '/index.html' } });
+  result = await request('/api/admin/products', { method: 'POST', body: { name: `${tag} collision`, path: '/index.html', image: 'https://example.com/collision.jpg' } });
   check(result.response.status === 409, 'CREATE sản phẩm từ chối đường dẫn trang đã dùng');
   result = await request(`/api/admin/products?q=${encodeURIComponent(`${tag} collision`)}`);
   check(result.response.ok && result.data.total === 0, 'CREATE lỗi không để lại sản phẩm mồ côi');
@@ -84,6 +84,16 @@ try {
   check(Boolean(category._id), 'CREATE danh mục');
   const product = await create('products', { name: `${tag} product`, path: `/${tag}-product.html`, categoryId: category._id, summary: 'URL image test', descriptionHtml: '<p>Nội dung sản phẩm từ CMS</p>', image: 'https://example.com/cms-image-url.jpg', enabled: true, sortOrder: 99999, seo: { title: `${tag} SEO` } });
   check(Boolean(product._id), 'CREATE sản phẩm với URL ảnh');
+  result = await request('/api/admin/products', { method: 'POST', body: { name: '', path: '', image: '' } });
+  check(result.response.status === 400, 'ảnh đại diện vẫn bắt buộc khi không nhập URL và không upload file');
+  const optionalProduct = await create('products', { name: '', path: '', image: 'https://example.com/optional-product.jpg', enabled: true, sortOrder: 99998 });
+  check(optionalProduct.name === '' && /^\/san-pham(?:-\d+)?\.html$/.test(optionalProduct.path), 'tên và đường dẫn được phép để trống, đường dẫn public tự tạo duy nhất');
+  const secondOptionalProduct = await create('products', { name: '', path: '', image: 'https://example.com/optional-product-2.jpg', enabled: true, sortOrder: 99997 });
+  check(secondOptionalProduct.path !== optionalProduct.path, 'nhiều sản phẩm cùng để trống đường dẫn vẫn được lưu với URL không trùng');
+  result = await request(optionalProduct.path);
+  check(result.response.ok && result.data.includes('https://example.com/optional-product.jpg'), 'sản phẩm chỉ có URL ảnh được lưu và đồng bộ ra website');
+  result = await request(`/api/admin/products/${optionalProduct._id}`, { method: 'PUT', body: { name: '', path: '' } });
+  check(result.response.ok && result.data.item.path === optionalProduct.path, 'chỉnh sửa để trống tên và đường dẫn vẫn lưu, giữ nguyên URL public');
   result = await request(PUBLIC_PATHS['/2_2.html']);
   const renderedCategory = load(result.data);
   check(result.response.ok && renderedCategory('.proDisplay').length === 1 && renderedCategory('[id="pageNum"]').length === 1, 'danh mục import không nhân đôi lưới sản phẩm và phân trang');
@@ -156,6 +166,8 @@ try {
   await request('/api/admin/settings', { method: 'PUT', body: originalSettings });
   originalSettings = null;
 
+  await remove('products', secondOptionalProduct._id);
+  await remove('products', optionalProduct._id);
   await remove('products', product._id);
   result = await request(`/${tag}-product.html`);
   check(result.response.status === 404, 'DELETE sản phẩm xoá trang public tương ứng');

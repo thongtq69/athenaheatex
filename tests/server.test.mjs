@@ -28,6 +28,14 @@ test('the home and search pages are served in Vietnamese with the local runtime'
   assert.doesNotMatch(html,/class="(?:lang|header-lang)"/);
  }
 });
+test('the deployed product editor marks only the representative image as required',async()=>{
+ const source=await readFile(path.join(process.cwd(),'admin','admin.js'),'utf8');
+ const built=await readFile(path.join(process.cwd(),'dist','admin','admin.js'),'utf8');
+ assert.equal(built,source);
+ assert.match(source,/products:\{singular:'sản phẩm',fields:entityFields\(\{withCategory:true,requireIdentity:false,requireImage:true\}\)\}/);
+ assert.match(source,/data-image-required="\$\{required\}"/);
+ assert.match(source,/!url&&!file/);
+});
 test('Máy móc uses the Vietnamese public URL and the imported URL redirects',async()=>{
  const legacy=await fetch(base+'/machinery-2.html',{redirect:'manual'});
  assert.equal(legacy.status,308);

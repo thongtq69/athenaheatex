@@ -10,14 +10,14 @@ const configs = {
     ['seo.title','SEO title','text'],['seo.description','Meta description','textarea'],['seo.keywords','Meta keywords','textarea'],['html','HTML toàn trang','textarea-tall',true]
   ]},
   sections:{singular:'section',fields:[['name','Tên section','text',true],['pagePath','Trang áp dụng','text',true],['selector','CSS selector','text',true],['mode','Cách áp dụng','select',true,['inner','replace']],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['html','HTML section','textarea-tall',true]]},
-  products:{singular:'sản phẩm',fields:entityFields(true)},
-  services:{singular:'dịch vụ',fields:entityFields(false)},
+  products:{singular:'sản phẩm',fields:entityFields({withCategory:true,requireIdentity:false,requireImage:true})},
+  services:{singular:'dịch vụ',fields:entityFields({withCategory:false,requireIdentity:true,requireImage:false})},
   categories:{singular:'danh mục',fields:[['name','Tên danh mục','text',true],['path','Đường dẫn (.html)','text',true],['parentId','Danh mục cha','category-select'],['kind','Nhóm','select',true,['product','service']],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['image','Ảnh đại diện','image'],['descriptionHtml','HTML mô tả','textarea-tall']]},
   banners:{singular:'banner',fields:[['title','Tên banner','text',true],['url','Liên kết','text',true],['alt','Alt ảnh','text'],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['image','Ảnh banner','image',true]]},
   media:{singular:'ảnh',fields:[['name','Tên ảnh','text',true],['alt','Alt ảnh','text'],['enabled','Đang sử dụng','checkbox'],['sortOrder','Thứ tự','number'],['url','Nguồn ảnh','image',true]]},
   inquiries:{singular:'yêu cầu',fields:[['status','Trạng thái','select',true,['new','processing','done','spam']]]},
 };
-function entityFields(withCategory){const fields=[['name','Tên','text',true],['path','Đường dẫn (.html)','text',true]];if(withCategory)fields.push(['categoryId','Danh mục','category-select']);return [...fields,['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['summary','Mô tả ngắn','textarea'],['image','Ảnh đại diện','image'],['descriptionHtml','HTML nội dung','textarea-tall'],['seo.title','SEO title','text'],['seo.description','Meta description','textarea'],['seo.keywords','Meta keywords','textarea']];}
+function entityFields({withCategory,requireIdentity,requireImage}){const fields=[['name','Tên','text',requireIdentity],['path','Đường dẫn (.html)','text',requireIdentity]];if(withCategory)fields.push(['categoryId','Danh mục','category-select']);return [...fields,['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['summary','Mô tả ngắn','textarea'],['image','Ảnh đại diện','image',requireImage],['descriptionHtml','HTML nội dung','textarea-tall'],['seo.title','SEO title','text'],['seo.description','Meta description','textarea'],['seo.keywords','Meta keywords','textarea']];}
 
 async function api(path, options={}) {
   const init = { credentials:'same-origin', ...options };
@@ -170,9 +170,9 @@ function fieldHtml([name,label,type,required=false,options=[]],item){
   if(type==='checkbox')return `<label class="field check"><input data-path="${name}" type="checkbox" ${value!==false?'checked':''}> ${esc(label)}</label>`;
   if(type==='category-select')return `<label class="field"><span>${esc(label)}</span><select data-path="${name}"><option value="">— Không chọn —</option>${state.categories.filter(category=>category._id!==item._id).map(category=>`<option value="${esc(category._id)}" ${value===category._id?'selected':''}>${esc(category.name)} (${esc(category.path)})</option>`).join('')}</select></label>`;
   if(type==='select')return `<label class="field"><span>${esc(label)}</span><select data-path="${name}" ${required?'required':''}>${options.map(option=>`<option value="${esc(option)}" ${value===option?'selected':''}>${esc(option)}</option>`).join('')}</select></label>`;
-  if(type==='image')return `<div class="field full image-field" data-image-field="${name}"><span>${esc(label)}${required?' *':''}</span><div class="image-inputs"><input class="image-url" placeholder="Nhập URL hoặc /đường-dẫn/ảnh.jpg" value="${esc(value||'')}"><input class="image-file" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"></div><small>Chỉ dùng một nguồn: nhập URL hoặc chọn file upload (tối đa 10 MB).</small><img class="image-preview" src="${esc(value||'')}" alt="Preview"></div>`;
+  if(type==='image')return `<div class="field full image-field" data-image-field="${name}" data-image-required="${required}" ${required?'aria-required="true"':''}><span>${esc(label)}${required?' *':''}</span><div class="image-inputs"><input class="image-url" placeholder="Nhập URL hoặc /đường-dẫn/ảnh.jpg" value="${esc(value||'')}"><input class="image-file" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"></div><small>${required?'Bắt buộc chọn một trong hai: nhập URL hoặc chọn file upload':'Chỉ dùng một nguồn: nhập URL hoặc chọn file upload'} (tối đa 10 MB).</small><img class="image-preview" src="${esc(value||'')}" alt="Preview"></div>`;
   if(type.startsWith('textarea'))return `<label class="field full"><span>${esc(label)}${required?' *':''}</span><textarea data-path="${name}" class="${type==='textarea-tall'?'tall':''}" ${required?'required':''}>${esc(value||'')}</textarea></label>`;
-  return `<label class="field ${full?'full':''}"><span>${esc(label)}${required?' *':''}</span><input data-path="${name}" type="${type}" value="${esc(value??'')}" ${required?'required':''}></label>`;
+  return `<label class="field ${full?'full':''}"><span>${esc(label)}${required?' *':''}</span><input data-path="${name}" type="${type}" value="${esc(value??'')}" ${name==='path'&&!required?'placeholder="Để trống để hệ thống tự tạo"':''} ${required?'required':''}></label>`;
 }
 function bindImageInputs(){
   document.querySelectorAll('.image-field').forEach(field=>{const url=field.querySelector('.image-url'),file=field.querySelector('.image-file'),preview=field.querySelector('.image-preview');
@@ -188,6 +188,7 @@ $('#editorForm').addEventListener('submit',async event=>{
     for(const field of $('#editorFields').querySelectorAll('[data-image-field]')){
       const name=field.dataset.imageField,url=field.querySelector('.image-url').value.trim(),file=field.querySelector('.image-file').files[0];
       if(url&&file)throw new Error('Mỗi ảnh chỉ được chọn URL hoặc file, không chọn cả hai.');
+      if(field.dataset.imageRequired==='true'&&!url&&!file)throw new Error('Vui lòng nhập URL ảnh hoặc chọn một file ảnh đại diện.');
       if(file){if(file.size>10*1024*1024)throw new Error('Ảnh vượt quá 10 MB. Vui lòng chọn ảnh nhỏ hơn.');const form=new FormData();form.append('file',file);form.append('name',payload.title||payload.name||file.name);form.append('alt',payload.alt||payload.name||'');const uploaded=await api('/media/upload',{method:'POST',body:form});setValue(payload,name,uploaded.item.url);}
       else setValue(payload,name,url);
     }
