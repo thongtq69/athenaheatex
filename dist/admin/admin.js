@@ -1,6 +1,6 @@
 const $ = selector => document.querySelector(selector);
 const PAGE_SIZE = 40;
-const state = { view: 'dashboard', items: [], categories: [], categoriesLoaded: false, list: null, listRequest: 0, listAbort: null, navigation: 0, searchTimer: null, editing: null, admin: null, toastTimer: null };
+const state = { view: 'dashboard', loadedView: null, dashboardCache: null, resourceCache: new Map(), items: [], categories: [], categoriesLoaded: false, list: null, listRequest: 0, listAbort: null, navigation: 0, searchTimer: null, editing: null, admin: null, toastTimer: null };
 const titles = { dashboard:'Tổng quan',pages:'Trang & nội dung',sections:'Section',products:'Sản phẩm',services:'Dịch vụ',categories:'Danh mục',banners:'Banner',media:'Thư viện ảnh',settings:'Liên hệ & SEO',inquiries:'Yêu cầu khách hàng' };
 const esc = value => String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 
@@ -25,6 +25,7 @@ async function api(path, options={}) {
   const response = await fetch(`/api/admin${path}`, init);
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw Object.assign(new Error(data.error || `HTTP ${response.status}`),{status:response.status});
+  if (init.method && !['GET','HEAD'].includes(init.method.toUpperCase())) {state.dashboardCache=null;state.resourceCache.clear();}
   return data;
 }
 function loading(show){ $('#loading').classList.toggle('hidden',!show); }
@@ -48,24 +49,32 @@ $('#loginForm').addEventListener('submit',async event=>{
 });
 $('#logoutBtn').addEventListener('click',async()=>{loading(true);try{await api('/logout',{method:'POST'});}finally{location.reload();}});
 $('#nav').addEventListener('click',event=>{const button=event.target.closest('[data-view]');if(button)navigate(button.dataset.view);});
+$('#content').addEventListener('click',event=>{const card=event.target.closest('button.stat[data-view]');if(card)navigate(card.dataset.view);});
 $('#menuBtn').addEventListener('click',()=>$('.sidebar').classList.toggle('open'));
 
 async function navigate(view){
   if(!titles[view])return;
+  if(view===state.view&&(state.loadedView===view||$('#content').classList.contains('view-pending')))return;
   const navigation=++state.navigation;
   clearTimeout(state.searchTimer);state.listAbort?.abort();
   state.view=view;state.editing=null;document.querySelectorAll('#nav [data-view]').forEach(button=>button.classList.toggle('active',button.dataset.view===view));
-  $('#viewTitle').textContent=titles[view];$('.sidebar').classList.remove('open');
-  $('#content').innerHTML='<div class="panel content-loading" role="status">Đang tải nội dung…</div>';
-  try{if(view==='dashboard')await renderDashboard(navigation);else if(view==='settings')await renderSettings(navigation);else await renderResource(view,'',0,navigation);}
-  catch(error){if(navigation!==state.navigation||error.name==='AbortError')return;$('#content').innerHTML=`<div class="panel empty">${esc(error.message)}</div>`;toast(error.message,'error');if(error.status===401)setTimeout(()=>location.reload(),800);}
+  $('.sidebar').classList.remove('open');
+  $('#content').classList.add('view-pending');$('#content').setAttribute('aria-busy','true');$('#viewLoading').classList.remove('hidden');
+  try{
+    if(view==='dashboard')await renderDashboard(navigation);else if(view==='settings')await renderSettings(navigation);else await renderResource(view,'',0,navigation);
+    if(navigation===state.navigation){state.loadedView=view;$('#viewTitle').textContent=titles[view];}
+  }
+  catch(error){if(navigation!==state.navigation||error.name==='AbortError')return;state.loadedView=null;$('#content').innerHTML=`<div class="panel empty">${esc(error.message)}</div>`;$('#viewTitle').textContent=titles[view];toast(error.message,'error');if(error.status===401)setTimeout(()=>location.reload(),800);}
+  finally{if(navigation===state.navigation){$('#content').classList.remove('view-pending');$('#content').removeAttribute('aria-busy');$('#viewLoading').classList.add('hidden');}}
 }
 
 async function renderDashboard(navigation=state.navigation){
-  const {counts,seed}=await api('/dashboard');
+  const cached=state.dashboardCache;
+  const counts=cached&&Date.now()-cached.at<15_000?cached.counts:(await api('/dashboard')).counts;
   if(navigation!==state.navigation)return;
-  const cards=[['Trang',counts.pages],['Section',counts.sections],['Sản phẩm',counts.products],['Dịch vụ',counts.services],['Danh mục',counts.categories],['Banner',counts.banners],['Ảnh',counts.media],['Yêu cầu',counts.inquiries]];
-  $('#content').innerHTML=`<div class="stats">${cards.map(([label,value])=>`<div class="stat"><strong>${Number(value||0).toLocaleString('vi-VN')}</strong><span>${esc(label)}</span></div>`).join('')}</div><div class="panel"><div class="panel-head"><h2>Trạng thái dữ liệu</h2></div><div style="padding:20px"><p><span class="badge">MongoDB CMS đang hoạt động</span></p><p class="muted">Website gốc đã import ${esc(seed?.counts?.pages??counts.pages)} trang. Mọi thao tác Admin gọi API thật và được render trực tiếp ra website public.</p><p><a href="/api/health" target="_blank">Kiểm tra health API ↗</a></p></div></div>`;
+  state.dashboardCache={counts,at:Date.now()};
+  const cards=[['pages','Trang'],['sections','Section'],['products','Sản phẩm'],['services','Dịch vụ'],['categories','Danh mục'],['banners','Banner'],['media','Ảnh'],['inquiries','Yêu cầu khách hàng']];
+  $('#content').innerHTML=`<div class="stats">${cards.map(([resource,label])=>`<button type="button" class="stat" data-view="${resource}" aria-label="Mở ${esc(titles[resource])}: ${Number(counts[resource]||0).toLocaleString('vi-VN')} mục"><strong>${Number(counts[resource]||0).toLocaleString('vi-VN')}</strong><span>${esc(label)}</span><span class="stat-arrow" aria-hidden="true">↗</span></button>`).join('')}</div>`;
 }
 
 async function renderResource(resource,q=state.list?.resource===resource?state.list.q:'',page=state.list?.resource===resource?state.list.page:0,navigation=state.navigation){
@@ -76,8 +85,11 @@ async function renderResource(resource,q=state.list?.resource===resource?state.l
   $('#content').classList.add('is-updating');
   try{
   const skip=page*PAGE_SIZE;
-  const result=await api(`/${resource}?limit=${PAGE_SIZE}&skip=${skip}&q=${encodeURIComponent(q)}`,{signal:controller.signal});
+  const cacheKey=JSON.stringify([resource,q,page]);
+  const cached=state.resourceCache.get(cacheKey);
+  const result=cached&&Date.now()-cached.at<15_000?cached.result:await api(`/${resource}?limit=${PAGE_SIZE}&skip=${skip}&q=${encodeURIComponent(q)}`,{signal:controller.signal});
   if(request!==state.listRequest||navigation!==state.navigation)return;
+  if(!cached||result!==cached.result){state.resourceCache.set(cacheKey,{result,at:Date.now()});if(state.resourceCache.size>16)state.resourceCache.delete(state.resourceCache.keys().next().value);}
   if(page>0&&result.total<=skip)return renderResource(resource,q,Math.max(0,Math.ceil(result.total/PAGE_SIZE)-1),navigation);
   state.items=result.items;state.list={resource,q,page,total:result.total};
   const canAdd=resource!=='inquiries';
