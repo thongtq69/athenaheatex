@@ -1,5 +1,6 @@
 const $ = selector => document.querySelector(selector);
-const state = { view: 'dashboard', items: [], categories: [], editing: null, admin: null, toastTimer: null };
+const PAGE_SIZE = 40;
+const state = { view: 'dashboard', items: [], categories: [], categoriesLoaded: false, list: null, listRequest: 0, listAbort: null, navigation: 0, searchTimer: null, editing: null, admin: null, toastTimer: null };
 const titles = { dashboard:'Tổng quan',pages:'Trang & nội dung',sections:'Section',products:'Sản phẩm',services:'Dịch vụ',categories:'Danh mục',banners:'Banner',media:'Thư viện ảnh',settings:'Liên hệ & SEO',inquiries:'Yêu cầu khách hàng' };
 const esc = value => String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 
@@ -50,34 +51,55 @@ $('#nav').addEventListener('click',event=>{const button=event.target.closest('[d
 $('#menuBtn').addEventListener('click',()=>$('.sidebar').classList.toggle('open'));
 
 async function navigate(view){
+  if(!titles[view])return;
+  const navigation=++state.navigation;
+  clearTimeout(state.searchTimer);state.listAbort?.abort();
   state.view=view;state.editing=null;document.querySelectorAll('#nav [data-view]').forEach(button=>button.classList.toggle('active',button.dataset.view===view));
-  $('#viewTitle').textContent=titles[view];$('.sidebar').classList.remove('open');loading(true);
-  try{if(view==='dashboard')await renderDashboard();else if(view==='settings')await renderSettings();else await renderResource(view);}
-  catch(error){$('#content').innerHTML=`<div class="panel empty">${esc(error.message)}</div>`;toast(error.message,'error');if(error.status===401)setTimeout(()=>location.reload(),800);}
-  finally{loading(false);}
+  $('#viewTitle').textContent=titles[view];$('.sidebar').classList.remove('open');
+  $('#content').innerHTML='<div class="panel content-loading" role="status">Đang tải nội dung…</div>';
+  try{if(view==='dashboard')await renderDashboard(navigation);else if(view==='settings')await renderSettings(navigation);else await renderResource(view,'',0,navigation);}
+  catch(error){if(navigation!==state.navigation||error.name==='AbortError')return;$('#content').innerHTML=`<div class="panel empty">${esc(error.message)}</div>`;toast(error.message,'error');if(error.status===401)setTimeout(()=>location.reload(),800);}
 }
 
-async function renderDashboard(){
+async function renderDashboard(navigation=state.navigation){
   const {counts,seed}=await api('/dashboard');
+  if(navigation!==state.navigation)return;
   const cards=[['Trang',counts.pages],['Section',counts.sections],['Sản phẩm',counts.products],['Dịch vụ',counts.services],['Danh mục',counts.categories],['Banner',counts.banners],['Ảnh',counts.media],['Yêu cầu',counts.inquiries]];
   $('#content').innerHTML=`<div class="stats">${cards.map(([label,value])=>`<div class="stat"><strong>${Number(value||0).toLocaleString('vi-VN')}</strong><span>${esc(label)}</span></div>`).join('')}</div><div class="panel"><div class="panel-head"><h2>Trạng thái dữ liệu</h2></div><div style="padding:20px"><p><span class="badge">MongoDB CMS đang hoạt động</span></p><p class="muted">Website gốc đã import ${esc(seed?.counts?.pages??counts.pages)} trang. Mọi thao tác Admin gọi API thật và được render trực tiếp ra website public.</p><p><a href="/api/health" target="_blank">Kiểm tra health API ↗</a></p></div></div>`;
 }
 
-async function renderResource(resource,q=''){
-  const result=await api(`/${resource}?limit=500&q=${encodeURIComponent(q)}`);state.items=result.items;
+async function renderResource(resource,q=state.list?.resource===resource?state.list.q:'',page=state.list?.resource===resource?state.list.page:0,navigation=state.navigation){
+  const request=++state.listRequest;
+  state.listAbort?.abort();
+  const controller=new AbortController();state.listAbort=controller;
+  const searchFocused=document.activeElement?.id==='searchInput';
+  $('#content').classList.add('is-updating');
+  try{
+  const skip=page*PAGE_SIZE;
+  const result=await api(`/${resource}?limit=${PAGE_SIZE}&skip=${skip}&q=${encodeURIComponent(q)}`,{signal:controller.signal});
+  if(request!==state.listRequest||navigation!==state.navigation)return;
+  if(page>0&&result.total<=skip)return renderResource(resource,q,Math.max(0,Math.ceil(result.total/PAGE_SIZE)-1),navigation);
+  state.items=result.items;state.list={resource,q,page,total:result.total};
   const canAdd=resource!=='inquiries';
-  $('#content').innerHTML=`<div class="panel"><div class="toolbar"><input id="searchInput" placeholder="Tìm kiếm…" value="${esc(q)}"><button id="searchBtn" class="secondary">Tìm</button>${canAdd?`<button id="addBtn" class="primary">+ Thêm ${esc(configs[resource].singular)}</button>`:''}</div><div class="table-wrap">${table(resource,result.items)}</div></div>`;
-  $('#searchBtn').onclick=()=>renderResource(resource,$('#searchInput').value.trim());
-  $('#searchInput').onkeydown=event=>{if(event.key==='Enter')renderResource(resource,event.currentTarget.value.trim());};
+  const totalPages=Math.ceil(result.total/PAGE_SIZE);
+  $('#content').innerHTML=`<div class="panel"><div class="toolbar"><input id="searchInput" placeholder="Tìm kiếm…" value="${esc(q)}"><button id="searchBtn" class="secondary">Tìm</button>${canAdd?`<button id="addBtn" class="primary">+ Thêm ${esc(configs[resource].singular)}</button>`:''}</div><div class="table-wrap">${table(resource,result.items,page*PAGE_SIZE,result.total)}</div><div class="pagination"><span>${result.total?`${skip+1}–${skip+result.items.length}`:'0'} / ${result.total} mục</span><div><button id="prevPage" class="secondary" ${page===0?'disabled':''}>← Trước</button><span>Trang ${totalPages?page+1:0}/${totalPages}</span><button id="nextPage" class="secondary" ${page+1>=totalPages?'disabled':''}>Tiếp →</button></div></div></div>`;
+  $('#searchBtn').onclick=()=>renderResource(resource,$('#searchInput').value.trim(),0).catch(showListError);
+  $('#searchInput').oninput=event=>{clearTimeout(state.searchTimer);state.listAbort?.abort();++state.listRequest;const value=event.currentTarget.value.trim();state.searchTimer=setTimeout(()=>renderResource(resource,value,0).catch(showListError),300);};
+  $('#searchInput').onkeydown=event=>{if(event.key==='Enter'){clearTimeout(state.searchTimer);renderResource(resource,event.currentTarget.value.trim(),0).catch(showListError);}};
+  if(searchFocused){$('#searchInput').focus();$('#searchInput').setSelectionRange($('#searchInput').value.length,$('#searchInput').value.length);}
+  $('#prevPage').onclick=()=>renderResource(resource,q,page-1).catch(showListError);
+  $('#nextPage').onclick=()=>renderResource(resource,q,page+1).catch(showListError);
   if(canAdd)$('#addBtn').onclick=()=>openEditor(resource);
   bindRows(resource);
+  }finally{if(request===state.listRequest)$('#content').classList.remove('is-updating');}
 }
+function showListError(error){if(error.name!=='AbortError')toast(error.message,'error');}
 
-function table(resource,items){
+function table(resource,items,offset=0,total=items.length){
   if(!items.length)return '<div class="empty">Chưa có dữ liệu.</div>';
-  return `<table><thead><tr><th>Nội dung</th><th>Đường dẫn / thông tin</th><th>Trạng thái</th><th>Thứ tự</th><th style="text-align:right">Thao tác</th></tr></thead><tbody>${items.map((item,index)=>row(resource,item,index)).join('')}</tbody></table>`;
+  return `<table><thead><tr><th>Nội dung</th><th>Đường dẫn / thông tin</th><th>Trạng thái</th><th>Thứ tự</th><th style="text-align:right">Thao tác</th></tr></thead><tbody>${items.map((item,index)=>row(resource,item,index,offset,total)).join('')}</tbody></table>`;
 }
-function row(resource,item,index){
+function row(resource,item,index,offset,total){
   const name=item.title||item.name||item.email||item.path||item.url||'Không tên';
   const secondary=item.path||item.url||item.email||item.pagePath||item.company||'';
   const image=item.image||((resource==='media')?item.url:'');
@@ -85,30 +107,47 @@ function row(resource,item,index){
   const statusClass=(item.enabled===false||['spam'].includes(item.status))?'off':'';
   const preview=item.path?`<a href="${esc(item.path)}" target="_blank">Xem ↗</a>`:image?`<a href="${esc(image)}" target="_blank">Ảnh ↗</a>`:'';
   const toggle=('enabled'in item)?`<button data-action="toggle">${item.enabled===false?'Bật':'Tắt'}</button>`:'';
-  const orderButtons=resource==='inquiries'?'':`<button data-action="up" ${index===0?'disabled':''}>↑</button><button data-action="down" ${index===state.items.length-1?'disabled':''}>↓</button>`;
-  return `<tr data-id="${item._id}"><td>${image?`<img class="thumb" src="${esc(image)}" alt="">`:''}<b>${esc(name)}</b><small>${esc(item.type||item.kind||item.sourceType||'')}</small></td><td><small>${esc(secondary)}</small></td><td><span class="badge ${statusClass}">${esc(status||'new')}</span></td><td>${esc(item.sortOrder??'—')}</td><td><div class="actions">${preview}${toggle}${orderButtons}<button data-action="edit">Sửa</button><button data-action="delete">Xoá</button></div></td></tr>`;
+  const orderButtons=resource==='inquiries'?'':`<button data-action="up" ${offset+index===0?'disabled':''}>↑</button><button data-action="down" ${offset+index===total-1?'disabled':''}>↓</button>`;
+  return `<tr data-id="${item._id}"><td>${image?`<img class="thumb" src="${esc(image)}" alt="" loading="lazy" decoding="async">`:''}<b>${esc(name)}</b><small>${esc(item.type||item.kind||item.sourceType||'')}</small></td><td><small>${esc(secondary)}</small></td><td><span class="badge ${statusClass}">${esc(status||'new')}</span></td><td>${esc(item.sortOrder??'—')}</td><td><div class="actions">${preview}${toggle}${orderButtons}<button data-action="edit">Sửa</button><button data-action="delete">Xoá</button></div></td></tr>`;
 }
 function bindRows(resource){
-  $('#content').querySelectorAll('tr[data-id]').forEach(row=>row.addEventListener('click',async event=>{
-    const action=event.target.closest('[data-action]')?.dataset.action;if(!action)return;const id=row.dataset.id;const item=state.items.find(entry=>entry._id===id);
+  const body=$('#content tbody');if(!body)return;
+  body.onclick=async event=>{
+    const action=event.target.closest('[data-action]')?.dataset.action;if(!action)return;const id=event.target.closest('tr[data-id]')?.dataset.id;const item=state.items.find(entry=>entry._id===id);
+    if(!item)return;
     try{
       if(action==='edit')return openEditor(resource,id);
       if(action==='delete')return removeItem(resource,item);
       if(action==='toggle'){loading(true);await api(`/${resource}/${id}`,{method:'PUT',body:{enabled:item.enabled===false}});toast('Đã cập nhật trạng thái.');return renderResource(resource);}
-      if(action==='up'||action==='down'){const index=state.items.findIndex(entry=>entry._id===id);const target=index+(action==='up'?-1:1);if(target<0||target>=state.items.length)return;const ids=state.items.map(entry=>entry._id);[ids[index],ids[target]]=[ids[target],ids[index]];loading(true);await api(`/${resource}/reorder`,{method:'POST',body:{ids}});toast('Đã lưu thứ tự mới.');return renderResource(resource);}
+      if(action==='up'||action==='down'){
+        loading(true);
+        const {items}=await api(`/${resource}?idsOnly=true`);
+        const ids=items.map(entry=>entry._id);
+        const visibleIds=state.list.q?(await api(`/${resource}?idsOnly=true&q=${encodeURIComponent(state.list.q)}`)).items.map(entry=>entry._id):ids;
+        const position=visibleIds.indexOf(id);
+        const neighbor=visibleIds[position+(action==='up'?-1:1)];
+        if(position<0||!neighbor)return;
+        const first=ids.indexOf(id),second=ids.indexOf(neighbor);
+        if(first<0||second<0)return;
+        [ids[first],ids[second]]=[ids[second],ids[first]];
+        await api(`/${resource}/reorder`,{method:'POST',body:{ids}});
+        toast('Đã lưu thứ tự mới.');return renderResource(resource);
+      }
     }catch(error){toast(error.message,'error');}finally{loading(false);}
-  }));
+  };
 }
 async function removeItem(resource,item){
   if(!confirm(`Xoá vĩnh viễn “${item.title||item.name||item.email||item.path}”? Thao tác này không thể hoàn tác.`))return;
-  loading(true);try{await api(`/${resource}/${item._id}?confirm=true`,{method:'DELETE'});toast('Đã xoá nội dung.');await renderResource(resource);}catch(error){toast(error.message,'error');}finally{loading(false);}
+  loading(true);try{await api(`/${resource}/${item._id}?confirm=true`,{method:'DELETE'});if(resource==='categories')state.categoriesLoaded=false;toast('Đã xoá nội dung.');await renderResource(resource);}catch(error){toast(error.message,'error');}finally{loading(false);}
 }
 
 async function openEditor(resource,id=null){
   loading(true);
   try{
-    if(resource==='products'||resource==='categories')state.categories=(await api('/categories?limit=500')).items;
-    const item=id?(await api(`/${resource}/${id}`)).item:{enabled:true,sortOrder:state.items.length};state.editing={resource,id,item};
+    const needsCategories=(resource==='products'||resource==='categories')&&!state.categoriesLoaded;
+    const [categories,detail]=await Promise.all([needsCategories?api('/categories?limit=500'):null,id?api(`/${resource}/${id}`):null]);
+    if(categories){state.categories=categories.items;state.categoriesLoaded=true;}
+    const item=detail?.item||{enabled:true,sortOrder:state.list?.total??state.items.length};state.editing={resource,id,item};
     $('#editorEyebrow').textContent=titles[resource].toUpperCase();$('#editorTitle').textContent=id?'Chỉnh sửa':'Thêm mới';
     $('#editorFields').innerHTML=configs[resource].fields.map(field=>fieldHtml(field,item)).join('');
     bindImageInputs();$('#editorDialog').showModal();
@@ -140,13 +179,14 @@ $('#editorForm').addEventListener('submit',async event=>{
       if(file){const form=new FormData();form.append('file',file);form.append('name',payload.title||payload.name||file.name);form.append('alt',payload.alt||payload.name||'');const uploaded=await api('/media/upload',{method:'POST',body:form});setValue(payload,name,uploaded.item.url);}
       else setValue(payload,name,url);
     }
-    await api(`/${resource}${id?`/${id}`:''}`,{method:id?'PUT':'POST',body:payload});$('#editorDialog').close();toast(id?'Đã lưu thay đổi.':'Đã tạo nội dung mới.');await renderResource(resource);
+    await api(`/${resource}${id?`/${id}`:''}`,{method:id?'PUT':'POST',body:payload});if(resource==='categories')state.categoriesLoaded=false;$('#editorDialog').close();toast(id?'Đã lưu thay đổi.':'Đã tạo nội dung mới.');await renderResource(resource);
   }catch(error){toast(error.message,'error');}finally{loading(false);}
 });
 
 const settingFields=[['siteName','Tên website','text'],['phone','Điện thoại','text'],['mobile','Di động','text'],['fax','Fax','text'],['email','Email','email'],['secondaryEmail','Email phụ','email'],['whatsapp','WhatsApp (kèm mã quốc gia)','text'],['address','Địa chỉ','textarea'],['copyright','Copyright','text'],['defaultSeo.title','SEO title mặc định','text'],['defaultSeo.description','Meta description mặc định','textarea'],['defaultSeo.keywords','Meta keywords mặc định','textarea']];
-async function renderSettings(){
+async function renderSettings(navigation=state.navigation){
   const {item}=await api('/settings');
+  if(navigation!==state.navigation)return;
   $('#content').innerHTML=`<form id="settingsForm" class="panel"><div class="panel-head"><h2>Thông tin liên hệ và SEO toàn site</h2></div><div class="form-grid settings-grid">${settingFields.map(field=>fieldHtml(field,item)).join('')}</div><div class="dialog-actions"><button class="primary" type="submit">Lưu & đồng bộ website</button></div></form>`;
   $('#settingsForm').onsubmit=async event=>{event.preventDefault();const payload={};event.currentTarget.querySelectorAll('[data-path]').forEach(input=>setValue(payload,input.dataset.path,input.value));loading(true);try{await api('/settings',{method:'PUT',body:payload});toast('Đã đồng bộ thông tin toàn website.');}catch(error){toast(error.message,'error');}finally{loading(false);}};
 }

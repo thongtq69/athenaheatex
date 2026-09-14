@@ -65,6 +65,10 @@ try {
 
   result = await request('/api/admin/dashboard');
   check(result.response.ok && result.data.counts.pages >= 280, 'dashboard đọc số liệu database thật');
+  result = await request('/api/admin/media?limit=2&skip=2');
+  check(result.response.ok && result.data.items.length === 2 && result.data.total >= 432, 'phân trang API chỉ tải số mục cần hiển thị');
+  result = await request('/api/admin/media?idsOnly=true');
+  check(result.response.ok && result.data.items.length >= 432 && result.data.items.every(item => item._id && !item.url), 'API sắp xếp chỉ tải ID, không tải ảnh');
 
   const category = await create('categories', { name: `${tag} category`, path: `/${tag}-category.html`, kind: 'product', enabled: true, sortOrder: 99999, descriptionHtml: '<p>Danh mục kiểm thử</p>' });
   check(Boolean(category._id), 'CREATE danh mục');
