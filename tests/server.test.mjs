@@ -67,6 +67,14 @@ test('CMS HTML is normalized before storage and clean HTML is preserved byte-for
  assert.equal(replacedMedia.publicId,undefined);
  assert.equal(replacedMedia.width,undefined);
 });
+
+test('legacy public pages always include the base stylesheet required for layout',()=>{
+ const raw='<!doctype html><html><head><link href="/templates/default/css/main.css" rel="stylesheet"></head><body><div class="mo-header"></div><main>Máy móc</main></body></html>';
+ const normalized=normalizeDocumentHtml(raw,'Máy móc');
+ assert.match(normalized,/href="\/templates\/default\/css\/public\.css"/);
+ assert.ok(normalized.indexOf('public.css')<normalized.indexOf('main.css'));
+ assert.equal((normalized.match(/public\.css/g)||[]).length,1);
+});
 test('Máy móc uses the Vietnamese public URL and the imported URL redirects',async()=>{
  const legacy=await fetch(base+'/machinery-2.html',{redirect:'manual'});
  assert.equal(legacy.status,308);

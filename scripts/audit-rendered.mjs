@@ -7,7 +7,7 @@ import { PUBLIC_PATHS } from '../lib/public-path-map.mjs';
 import { sourcePathForPublicPath } from '../lib/public-paths.mjs';
 
 const issues = {
-  missingPages: [], duplicateIds: [], missingAlts: [], forms: [], brokenLinks: [], legacyPublicLinks: [],
+  missingPages: [], missingBaseStyles: [], duplicateIds: [], missingAlts: [], forms: [], brokenLinks: [], legacyPublicLinks: [],
   missingMediaRecords: [], disabledMediaInUse: [], missingEntityPages: [], mismatchedEntityPages: [], orphanEntityPages: [],
 };
 try {
@@ -21,6 +21,9 @@ try {
       const html = await renderCmsPage(page.path);
       if (!html) { issues.missingPages.push(page.path); return; }
       const $ = load(html);
+      if ($('.mo-header,#header,#nav,#footer').length && !$('link[rel="stylesheet"][href="/templates/default/css/public.css"]').length) {
+        issues.missingBaseStyles.push(page.path);
+      }
       const ids = new Set();
       $('[id]').each((_, node) => {
         const id = $(node).attr('id');

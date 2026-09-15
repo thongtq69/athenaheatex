@@ -8,7 +8,7 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const base = String(process.env.SITE_BASE_URL || 'https://athenaheatex.vercel.app').replace(/\/+$/, '');
 const routes = [...new Set(['/', ...Object.values(PUBLIC_PATHS), '/404.html'])];
 const issues = {
-  failedPages: [], nonCmsPages: [], missingLang: [], missingHeadings: [], missingAlts: [],
+  failedPages: [], nonCmsPages: [], missingLang: [], missingHeadings: [], missingBaseStyles: [], missingAlts: [],
   duplicateIds: [], invalidForms: [], unnamedFields: [], legacyLinks: [], brokenAssets: [],
 };
 const assets = new Set();
@@ -40,6 +40,9 @@ await parallel(routes, 8, async route => {
   if (!$('meta[name="cms-rendered"]').length && route !== '/404.html') issues.nonCmsPages.push(route);
   if ($('html').attr('lang') !== 'vi') issues.missingLang.push(route);
   if (!$('h1').length) issues.missingHeadings.push(route);
+  if ($('.mo-header,#header,#nav,#footer').length && !$('link[rel="stylesheet"][href="/templates/default/css/public.css"]').length) {
+    issues.missingBaseStyles.push(route);
+  }
   $('img').each((_, node) => {
     const src = String($(node).attr('src') || '').trim();
     if (src) assets.add(new URL(src, response.url).href);
