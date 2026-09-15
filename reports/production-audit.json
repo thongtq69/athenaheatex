@@ -1,18 +1,22 @@
 {
-  "generatedAt": "2026-09-15T05:49:50.150Z",
+  "generatedAt": "2026-09-15T14:11:38.133Z",
   "base": "https://athenaheatex.vercel.app",
   "pagesChecked": 280,
-  "assetsChecked": 450,
+  "assetsChecked": 453,
   "counts": {
     "failedPages": 0,
     "nonCmsPages": 0,
     "missingLang": 0,
     "missingHeadings": 0,
+    "missingBaseStyles": 0,
+    "missingMainStyles": 0,
+    "rawMarkupText": 0,
     "missingAlts": 0,
     "duplicateIds": 0,
     "invalidForms": 0,
     "unnamedFields": 0,
     "legacyLinks": 0,
+    "adminShell": 0,
     "brokenAssets": 0
   },
   "samples": {
@@ -20,11 +24,15 @@
     "nonCmsPages": [],
     "missingLang": [],
     "missingHeadings": [],
+    "missingBaseStyles": [],
+    "missingMainStyles": [],
+    "rawMarkupText": [],
     "missingAlts": [],
     "duplicateIds": [],
     "invalidForms": [],
     "unnamedFields": [],
     "legacyLinks": [],
+    "adminShell": [],
     "brokenAssets": []
   }
 }

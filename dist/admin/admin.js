@@ -1,6 +1,6 @@
 const $ = selector => document.querySelector(selector);
 const PAGE_SIZE = 40;
-const state = { view: 'dashboard', loadedView: null, dashboardCache: null, resourceCache: new Map(), items: [], categories: [], categoriesLoaded: false, list: null, listRequest: 0, listAbort: null, navigation: 0, searchTimer: null, editing: null, admin: null, toastTimer: null };
+const state = { view: 'dashboard', loadedView: null, dashboardCache: null, resourceCache: new Map(), items: [], categories: [], categoriesLoaded: false, products: [], productsLoaded: false, list: null, listRequest: 0, listAbort: null, navigation: 0, searchTimer: null, editing: null, admin: null, toastTimer: null };
 const titles = { dashboard:'Tổng quan',pages:'Trang & nội dung',sections:'Section',products:'Sản phẩm',services:'Dịch vụ',categories:'Danh mục',banners:'Banner',media:'Thư viện ảnh',settings:'Liên hệ & SEO',inquiries:'Yêu cầu khách hàng' };
 const hints = { dashboard:'Quản lý và đồng bộ website từ một nơi',pages:'Chỉnh sửa trang, tiêu đề và nội dung hiển thị',sections:'Quản lý các khối nội dung được đặt trên trang',products:'Thêm, sửa, ẩn và sắp xếp sản phẩm',services:'Quản lý dịch vụ đang hiển thị trên website',categories:'Quản lý nhóm sản phẩm và nhóm dịch vụ',banners:'Quản lý ảnh lớn và liên kết ở đầu trang',media:'Tìm và quản lý toàn bộ ảnh đã lưu',settings:'Cập nhật thông tin liên hệ và SEO toàn website',inquiries:'Xem và xử lý yêu cầu khách gửi'};
 const esc = value => String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
@@ -13,7 +13,7 @@ const configs = {
   sections:{singular:'section',fields:[['name','Tên section','text',true],['pagePath','Trang áp dụng','text',true],['selector','Vị trí trên trang','text',true],['mode','Cách áp dụng','select',true,['inner','replace']],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['html','Nội dung section','richtext',true]]},
   products:{singular:'sản phẩm',fields:entityFields({withCategory:true,requireIdentity:false,requireImage:true})},
   services:{singular:'dịch vụ',fields:entityFields({withCategory:false,requireIdentity:false,requireImage:true})},
-  categories:{singular:'danh mục',fields:[['name','Tên danh mục','text'],['path','Đường dẫn trang','text'],['parentId','Danh mục cha','category-select'],['kind','Nhóm','select',false,['product','service']],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['image','Ảnh đại diện','image',true],['descriptionHtml','Nội dung mô tả','richtext']]},
+  categories:{singular:'danh mục',fields:[['name','Tên danh mục','text'],['path','Đường dẫn trang','text'],['parentId','Danh mục cha','category-select'],['kind','Nhóm','select',false,['product','service']],['productPaths','Sản phẩm trong danh mục','product-multi-select'],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['image','Ảnh đại diện','image',true],['descriptionHtml','Nội dung mô tả','richtext']]},
   banners:{singular:'banner',fields:[['title','Tên banner','text',true],['url','Liên kết','text',true],['alt','Alt ảnh','text'],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['image','Ảnh banner','image',true]]},
   media:{singular:'ảnh',fields:[['name','Tên ảnh','text',true],['alt','Alt ảnh','text'],['enabled','Đang sử dụng','checkbox'],['sortOrder','Thứ tự','number'],['url','Nguồn ảnh','image',true]]},
   inquiries:{singular:'yêu cầu',fields:[['status','Trạng thái','select',true,['new','processing','done','spam']]]},
@@ -208,8 +208,10 @@ async function openEditor(resource,id=null){
   loading(true);
   try{
     const needsCategories=(resource==='products'||resource==='categories')&&!state.categoriesLoaded;
-    const [categories,detail]=await Promise.all([needsCategories?api('/categories?limit=500'):null,id?api(`/${resource}/${id}`):null]);
+    const needsProducts=resource==='categories'&&!state.productsLoaded;
+    const [categories,products,detail]=await Promise.all([needsCategories?api('/categories?limit=500'):null,needsProducts?api('/products?limit=500'):null,id?api(`/${resource}/${id}`):null]);
     if(categories){state.categories=categories.items;state.categoriesLoaded=true;}
+    if(products){state.products=products.items;state.productsLoaded=true;}
     const item=detail?.item||{enabled:true,sortOrder:state.list?.total??state.items.length};state.editing={resource,id,item};
     $('#editorEyebrow').textContent=titles[resource].toUpperCase();$('#editorTitle').textContent=id?'Chỉnh sửa':'Thêm mới';
     $('#editorFields').innerHTML=configs[resource].fields.map(field=>fieldHtml(field,item)).join('');
@@ -220,6 +222,7 @@ function fieldHtml([name,label,type,required=false,options=[]],item){
   const value=getValue(item,name);const full=['textarea','textarea-tall','image'].includes(type);
   if(type==='checkbox')return `<label class="field check"><input data-path="${name}" type="checkbox" ${value!==false?'checked':''}> ${esc(label)}</label>`;
   if(type==='category-select')return `<label class="field"><span>${esc(label)}</span><select data-path="${name}"><option value="">— Không chọn —</option>${state.categories.filter(category=>category._id!==item._id).map(category=>`<option value="${esc(category._id)}" ${value===category._id?'selected':''}>${esc(category.name)} (${esc(category.path)})</option>`).join('')}</select></label>`;
+  if(type==='product-multi-select'){const selected=new Set(Array.isArray(value)?value:[]);return `<label class="field full"><span>${esc(label)}</span><select data-path="${name}" multiple size="8" aria-label="${esc(label)}">${state.products.map(product=>`<option value="${esc(product.path)}" ${selected.has(product.path)?'selected':''}>${esc(product.name)} (${esc(product.path)})</option>`).join('')}</select><small>Giữ Ctrl/Cmd để chọn nhiều sản phẩm. Các sản phẩm có thể xuất hiện ở nhiều danh mục.</small></label>`;}
   if(type==='select')return `<label class="field"><span>${esc(label)}</span><select data-path="${name}" ${required?'required':''}>${options.map(option=>`<option value="${esc(option)}" ${value===option?'selected':''}>${esc(option)}</option>`).join('')}</select></label>`;
   if(type==='image')return `<div class="field full image-field" data-image-field="${name}" data-image-required="${required}" ${required?'aria-required="true"':''}><span>${esc(label)}${required?' *':''}</span><div class="image-inputs"><input class="image-url" aria-label="${esc(label)} bằng URL" placeholder="Nhập URL hoặc /đường-dẫn/ảnh.jpg" value="${esc(value||'')}"><input class="image-file" aria-label="${esc(label)} từ tệp" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"></div><small>${required?'Bắt buộc chọn một trong hai: nhập URL hoặc chọn file upload':'Chỉ dùng một nguồn: nhập URL hoặc chọn file upload'} (tối đa 10 MB).</small><img class="image-preview" src="${esc(value||'')}" alt="Xem trước ${esc(label)}"></div>`;
   if(type==='richtext'||type==='document-editor')return richEditorHtml(name,label,type,value,required);
@@ -236,7 +239,7 @@ $('#closeEditor').onclick=$('#cancelEditor').onclick=()=>$('#editorDialog').clos
 $('#editorForm').addEventListener('submit',async event=>{
   event.preventDefault();const {resource,id}=state.editing;loading(true);
   try{
-    const payload={};$('#editorFields').querySelectorAll('[data-path]').forEach(input=>setValue(payload,input.dataset.path,input.type==='checkbox'?input.checked:input.type==='number'?Number(input.value):input.value));
+    const payload={};$('#editorFields').querySelectorAll('[data-path]').forEach(input=>setValue(payload,input.dataset.path,input.multiple?[...input.selectedOptions].map(option=>option.value):input.type==='checkbox'?input.checked:input.type==='number'?Number(input.value):input.value));
     $('#editorFields').querySelectorAll('[data-rich-path]').forEach(field=>setValue(payload,field.dataset.richPath,serializeRichField(field)));
     for(const field of $('#editorFields').querySelectorAll('[data-image-field]')){
       const name=field.dataset.imageField,url=field.querySelector('.image-url').value.trim(),file=field.querySelector('.image-file').files[0];
