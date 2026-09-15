@@ -27,6 +27,7 @@
     <aside class="sidebar">
       <div class="brand"><span>A</span><div><b>ATHENAHEATEX</b><small>Content Management</small></div></div>
       <nav id="nav" aria-label="Quản lý nội dung">
+        <p class="nav-heading">Nội dung website</p>
         <button data-view="dashboard" class="active">Tổng quan</button>
         <button data-view="pages">Trang &amp; nội dung</button>
         <button data-view="sections">Section</button>
@@ -35,13 +36,14 @@
         <button data-view="categories">Danh mục</button>
         <button data-view="banners">Banner</button>
         <button data-view="media">Thư viện ảnh</button>
+        <p class="nav-heading">Hệ thống</p>
         <button data-view="settings">Liên hệ &amp; SEO</button>
         <button data-view="inquiries">Yêu cầu khách hàng</button>
       </nav>
       <div class="sidebar-bottom"><a href="/index.html" target="_blank">Mở website ↗</a><button id="logoutBtn">Đăng xuất</button></div>
     </aside>
     <section class="workspace">
-      <header class="topbar"><button id="menuBtn" class="menu-btn" aria-label="Mở menu quản trị">☰</button><div><p class="eyebrow">ADMIN / CMS</p><h1 id="viewTitle">Tổng quan</h1></div><span id="viewLoading" class="view-loading hidden" role="status">Đang tải…</span><div id="adminName" class="admin-chip"></div></header>
+      <header class="topbar"><button id="menuBtn" class="menu-btn" aria-label="Mở menu quản trị">☰</button><div class="topbar-copy"><p class="eyebrow">ADMIN / CMS</p><h1 id="viewTitle">Tổng quan</h1><p id="viewHint" class="view-hint">Quản lý và đồng bộ website từ một nơi</p></div><span id="viewLoading" class="view-loading hidden" role="status">Đang tải…</span><div class="topbar-actions"><span class="connection-pill"><i></i> API đang kết nối</span><div id="adminName" class="admin-chip"></div></div></header>
       <div id="content" class="content"></div>
     </section>
   </div>

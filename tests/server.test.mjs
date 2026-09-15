@@ -37,7 +37,7 @@ test('the deployed entity editors mark only the representative image as required
  assert.equal(built,source);
  assert.match(source,/products:\{singular:'sản phẩm',fields:entityFields\(\{withCategory:true,requireIdentity:false,requireImage:true\}\)\}/);
  assert.match(source,/services:\{singular:'dịch vụ',fields:entityFields\(\{withCategory:false,requireIdentity:false,requireImage:true\}\)\}/);
- assert.match(source,/categories:\{singular:'danh mục',fields:\[\['name','Tên danh mục','text'\],\['path','Đường dẫn \(\.html\)','text'\]/);
+ assert.match(source,/categories:\{singular:'danh mục',fields:\[\['name','Tên danh mục','text'\],\['path','Đường dẫn trang','text'\]/);
  assert.match(source,/\['image','Ảnh đại diện','image',true\]/);
  assert.match(source,/data-image-required="\$\{required\}"/);
  assert.match(source,/!url&&!file/);
@@ -48,9 +48,11 @@ test('the deployed entity editors mark only the representative image as required
  assert.match(source,/\['html','Nội dung trang','document-editor',true\]/);
  assert.match(source,/\['descriptionHtml','Nội dung chi tiết','richtext'\]/);
  assert.match(source,/contenteditable="true"/);
- assert.match(source,/Mã nguồn nâng cao — chỉ dành cho kỹ thuật/);
+ assert.match(source,/data-command="insertImage"/);
  assert.match(source,/serializeRichField/);
  assert.doesNotMatch(source,/\['html','HTML toàn trang'/);
+ assert.doesNotMatch(source,/source-details/);
+ assert.doesNotMatch(source,/Đường dẫn \(\.html\)/);
 });
 test('CMS HTML is normalized before storage and clean HTML is preserved byte-for-byte',()=>{
  const dirty='<!doctype html><html><body><div id="x"></div><div id="x"></div><img src="/a.jpg"><div class="crm-form"><form><input name="Name" placeholder="*Họ tên"><input name="Email" placeholder="*E-mail" type="text"><textarea name="Message" placeholder="*Lời nhắn"></textarea></form></div></body></html>';

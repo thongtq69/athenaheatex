@@ -2,22 +2,23 @@ const $ = selector => document.querySelector(selector);
 const PAGE_SIZE = 40;
 const state = { view: 'dashboard', loadedView: null, dashboardCache: null, resourceCache: new Map(), items: [], categories: [], categoriesLoaded: false, list: null, listRequest: 0, listAbort: null, navigation: 0, searchTimer: null, editing: null, admin: null, toastTimer: null };
 const titles = { dashboard:'Tổng quan',pages:'Trang & nội dung',sections:'Section',products:'Sản phẩm',services:'Dịch vụ',categories:'Danh mục',banners:'Banner',media:'Thư viện ảnh',settings:'Liên hệ & SEO',inquiries:'Yêu cầu khách hàng' };
+const hints = { dashboard:'Quản lý và đồng bộ website từ một nơi',pages:'Chỉnh sửa trang, tiêu đề và nội dung hiển thị',sections:'Quản lý các khối nội dung được đặt trên trang',products:'Thêm, sửa, ẩn và sắp xếp sản phẩm',services:'Quản lý dịch vụ đang hiển thị trên website',categories:'Quản lý nhóm sản phẩm và nhóm dịch vụ',banners:'Quản lý ảnh lớn và liên kết ở đầu trang',media:'Tìm và quản lý toàn bộ ảnh đã lưu',settings:'Cập nhật thông tin liên hệ và SEO toàn website',inquiries:'Xem và xử lý yêu cầu khách gửi'};
 const esc = value => String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 
 const configs = {
   pages: { singular:'trang', fields:[
-    ['title','Tiêu đề','text',true],['path','Đường dẫn (.html)','text',true],['type','Loại trang','select',true,['page','product','category']],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],
-    ['seo.title','SEO title','text'],['seo.description','Meta description','textarea'],['seo.keywords','Meta keywords','textarea'],['html','Nội dung trang','document-editor',true]
+    ['title','Tiêu đề','text',true],['path','Đường dẫn trang','text',true],['type','Loại trang','select',true,['page','product','category']],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],
+    ['seo.title','Tiêu đề tìm kiếm','text'],['seo.description','Mô tả tìm kiếm','textarea'],['seo.keywords','Từ khóa tìm kiếm','textarea'],['html','Nội dung trang','document-editor',true]
   ]},
-  sections:{singular:'section',fields:[['name','Tên section','text',true],['pagePath','Trang áp dụng','text',true],['selector','CSS selector','text',true],['mode','Cách áp dụng','select',true,['inner','replace']],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['html','Nội dung section','richtext',true]]},
+  sections:{singular:'section',fields:[['name','Tên section','text',true],['pagePath','Trang áp dụng','text',true],['selector','Vị trí trên trang','text',true],['mode','Cách áp dụng','select',true,['inner','replace']],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['html','Nội dung section','richtext',true]]},
   products:{singular:'sản phẩm',fields:entityFields({withCategory:true,requireIdentity:false,requireImage:true})},
   services:{singular:'dịch vụ',fields:entityFields({withCategory:false,requireIdentity:false,requireImage:true})},
-  categories:{singular:'danh mục',fields:[['name','Tên danh mục','text'],['path','Đường dẫn (.html)','text'],['parentId','Danh mục cha','category-select'],['kind','Nhóm','select',false,['product','service']],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['image','Ảnh đại diện','image',true],['descriptionHtml','Nội dung mô tả','richtext']]},
+  categories:{singular:'danh mục',fields:[['name','Tên danh mục','text'],['path','Đường dẫn trang','text'],['parentId','Danh mục cha','category-select'],['kind','Nhóm','select',false,['product','service']],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['image','Ảnh đại diện','image',true],['descriptionHtml','Nội dung mô tả','richtext']]},
   banners:{singular:'banner',fields:[['title','Tên banner','text',true],['url','Liên kết','text',true],['alt','Alt ảnh','text'],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['image','Ảnh banner','image',true]]},
   media:{singular:'ảnh',fields:[['name','Tên ảnh','text',true],['alt','Alt ảnh','text'],['enabled','Đang sử dụng','checkbox'],['sortOrder','Thứ tự','number'],['url','Nguồn ảnh','image',true]]},
   inquiries:{singular:'yêu cầu',fields:[['status','Trạng thái','select',true,['new','processing','done','spam']]]},
 };
-function entityFields({withCategory,requireIdentity,requireImage}){const fields=[['name','Tên','text',requireIdentity],['path','Đường dẫn (.html)','text',requireIdentity]];if(withCategory)fields.push(['categoryId','Danh mục','category-select']);return [...fields,['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['summary','Mô tả ngắn','textarea'],['image','Ảnh đại diện','image',requireImage],['descriptionHtml','Nội dung chi tiết','richtext'],['seo.title','SEO title','text'],['seo.description','Meta description','textarea'],['seo.keywords','Meta keywords','textarea']];}
+function entityFields({withCategory,requireIdentity,requireImage}){const fields=[['name','Tên','text',requireIdentity],['path','Đường dẫn trang','text',requireIdentity]];if(withCategory)fields.push(['categoryId','Danh mục','category-select']);return [...fields,['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['summary','Mô tả ngắn','textarea'],['image','Ảnh đại diện','image',requireImage],['descriptionHtml','Nội dung chi tiết','richtext'],['seo.title','Tiêu đề tìm kiếm','text'],['seo.description','Mô tả tìm kiếm','textarea'],['seo.keywords','Từ khóa tìm kiếm','textarea']];}
 
 async function api(path, options={}) {
   const init = { credentials:'same-origin', ...options };
@@ -49,7 +50,7 @@ $('#loginForm').addEventListener('submit',async event=>{
 });
 $('#logoutBtn').addEventListener('click',async()=>{loading(true);try{await api('/logout',{method:'POST'});}finally{location.reload();}});
 $('#nav').addEventListener('click',event=>{const button=event.target.closest('[data-view]');if(button)navigate(button.dataset.view);});
-$('#content').addEventListener('click',event=>{const card=event.target.closest('button.stat[data-view]');if(card)navigate(card.dataset.view);});
+$('#content').addEventListener('click',event=>{const card=event.target.closest('[data-view]');if(card)navigate(card.dataset.view);});
 $('#menuBtn').addEventListener('click',()=>$('.sidebar').classList.toggle('open'));
 
 async function navigate(view){
@@ -62,9 +63,9 @@ async function navigate(view){
   $('#content').classList.add('view-pending');$('#content').setAttribute('aria-busy','true');$('#viewLoading').classList.remove('hidden');
   try{
     if(view==='dashboard')await renderDashboard(navigation);else if(view==='settings')await renderSettings(navigation);else await renderResource(view,'',0,navigation);
-    if(navigation===state.navigation){state.loadedView=view;$('#viewTitle').textContent=titles[view];}
+    if(navigation===state.navigation){state.loadedView=view;$('#viewTitle').textContent=titles[view];$('#viewHint').textContent=hints[view]||'';}
   }
-  catch(error){if(navigation!==state.navigation||error.name==='AbortError')return;state.loadedView=null;$('#content').innerHTML=`<div class="panel empty">${esc(error.message)}</div>`;$('#viewTitle').textContent=titles[view];toast(error.message,'error');if(error.status===401)setTimeout(()=>location.reload(),800);}
+  catch(error){if(navigation!==state.navigation||error.name==='AbortError')return;state.loadedView=null;$('#content').innerHTML=`<div class="panel empty">${esc(error.message)}</div>`;$('#viewTitle').textContent=titles[view];$('#viewHint').textContent=hints[view]||'';toast(error.message,'error');if(error.status===401)setTimeout(()=>location.reload(),800);}
   finally{if(navigation===state.navigation){$('#content').classList.remove('view-pending');$('#content').removeAttribute('aria-busy');$('#viewLoading').classList.add('hidden');}}
 }
 
@@ -74,7 +75,8 @@ async function renderDashboard(navigation=state.navigation){
   if(navigation!==state.navigation)return;
   state.dashboardCache={counts,at:Date.now()};
   const cards=[['pages','Trang'],['sections','Section'],['products','Sản phẩm'],['services','Dịch vụ'],['categories','Danh mục'],['banners','Banner'],['media','Ảnh'],['inquiries','Yêu cầu khách hàng']];
-  $('#content').innerHTML=`<div class="stats">${cards.map(([resource,label])=>`<button type="button" class="stat" data-view="${resource}" aria-label="Mở ${esc(titles[resource])}: ${Number(counts[resource]||0).toLocaleString('vi-VN')} mục"><strong>${Number(counts[resource]||0).toLocaleString('vi-VN')}</strong><span>${esc(label)}</span><span class="stat-arrow" aria-hidden="true">↗</span></button>`).join('')}</div>`;
+  const quick=[['products','Sản phẩm','Thêm hoặc đổi ảnh sản phẩm','＋'],['banners','Banner','Đổi ảnh đầu trang chủ','▣'],['media','Thư viện ảnh','Tìm ảnh đang được dùng','◈'],['settings','Liên hệ & SEO','Sửa thông tin toàn site','⚙']];
+  $('#content').innerHTML=`<section class="dashboard-welcome"><div><p class="eyebrow">KHU VỰC QUẢN TRỊ</p><h2>Xin chào, ${esc(state.admin?.username||'Admin')}</h2><p>Mọi thay đổi được lưu qua API và đồng bộ trực tiếp ra website. Chọn một lối tắt bên phải để bắt đầu.</p></div><div class="welcome-actions"><button type="button" data-view="products">Mở sản phẩm</button><button type="button" data-view="pages">Mở trang</button></div></section><p class="dashboard-label">Tổng quan dữ liệu</p><div class="stats">${cards.map(([resource,label])=>`<button type="button" class="stat" data-view="${resource}" aria-label="Mở ${esc(titles[resource])}: ${Number(counts[resource]||0).toLocaleString('vi-VN')} mục"><strong>${Number(counts[resource]||0).toLocaleString('vi-VN')}</strong><span>${esc(label)}</span><span class="stat-arrow" aria-hidden="true">↗</span></button>`).join('')}</div><div class="dashboard-grid"><section class="panel"><div class="panel-head"><div><p class="eyebrow">LỐI TẮT</p><h2>Thao tác thường dùng</h2></div><span class="sync-badge">Dữ liệu trực tiếp</span></div><div class="quick-list">${quick.map(([resource,label,detail,icon])=>`<button type="button" class="quick-link" data-view="${resource}"><span class="quick-icon" aria-hidden="true">${icon}</span><span><b>${label}</b><small>${detail}</small></span></button>`).join('')}</div></section><section class="panel"><div class="panel-head"><div><p class="eyebrow">GỢI Ý</p><h2>Quy trình an toàn</h2></div></div><ol class="guide-list"><li><b>Tìm đúng mục</b><span>Chọn menu theo loại nội dung cần sửa.</span></li><li><b>Sửa bằng trình trực quan</b><span>Gõ chữ, định dạng và chọn ảnh mà không cần biết mã.</span></li><li><b>Lưu rồi kiểm tra</b><span>Bấm Xem và tải lại trang để xác nhận thay đổi.</span></li></ol></section></div>`;
 }
 
 async function renderResource(resource,q=state.list?.resource===resource?state.list.q:'',page=state.list?.resource===resource?state.list.page:0,navigation=state.navigation){
@@ -94,7 +96,7 @@ async function renderResource(resource,q=state.list?.resource===resource?state.l
   state.items=result.items;state.list={resource,q,page,total:result.total};
   const canAdd=resource!=='inquiries';
   const totalPages=Math.ceil(result.total/PAGE_SIZE);
-  $('#content').innerHTML=`<div class="panel"><div class="toolbar"><input id="searchInput" aria-label="Tìm kiếm trong ${esc(titles[resource])}" placeholder="Tìm kiếm…" value="${esc(q)}"><button id="searchBtn" class="secondary">Tìm</button>${canAdd?`<button id="addBtn" class="primary">+ Thêm ${esc(configs[resource].singular)}</button>`:''}</div><div class="table-wrap">${table(resource,result.items,page*PAGE_SIZE,result.total)}</div><div class="pagination"><span>${result.total?`${skip+1}–${skip+result.items.length}`:'0'} / ${result.total} mục</span><div><button id="prevPage" class="secondary" ${page===0?'disabled':''}>← Trước</button><span>Trang ${totalPages?page+1:0}/${totalPages}</span><button id="nextPage" class="secondary" ${page+1>=totalPages?'disabled':''}>Tiếp →</button></div></div></div>`;
+  $('#content').innerHTML=`<div class="panel"><div class="panel-head"><div class="resource-heading"><div><p class="eyebrow">QUẢN LÝ NỘI DUNG</p><h2>${esc(titles[resource])}</h2><p>${esc(hints[resource]||'')}</p></div></div><span class="sync-badge">API trực tiếp</span></div><div class="toolbar"><input id="searchInput" aria-label="Tìm kiếm trong ${esc(titles[resource])}" placeholder="Tìm theo tên hoặc đường dẫn…" value="${esc(q)}"><button id="searchBtn" class="secondary">Tìm kiếm</button>${canAdd?`<button id="addBtn" class="primary">+ Thêm ${esc(configs[resource].singular)}</button>`:''}</div><div class="table-wrap">${table(resource,result.items,page*PAGE_SIZE,result.total)}</div><div class="pagination"><span>${result.total?`${skip+1}–${skip+result.items.length}`:'0'} / ${result.total} mục</span><div><button id="prevPage" class="secondary" ${page===0?'disabled':''}>← Trước</button><span>Trang ${totalPages?page+1:0}/${totalPages}</span><button id="nextPage" class="secondary" ${page+1>=totalPages?'disabled':''}>Tiếp →</button></div></div></div>`;
   $('#searchBtn').onclick=()=>renderResource(resource,$('#searchInput').value.trim(),0).catch(showListError);
   $('#searchInput').oninput=event=>{clearTimeout(state.searchTimer);state.listAbort?.abort();++state.listRequest;const value=event.currentTarget.value.trim();state.searchTimer=setTimeout(()=>renderResource(resource,value,0).catch(showListError),300);};
   $('#searchInput').onkeydown=event=>{if(event.key==='Enter'){clearTimeout(state.searchTimer);renderResource(resource,event.currentTarget.value.trim(),0).catch(showListError);}};
@@ -126,7 +128,7 @@ function safeVisualFragment(source){
 function richEditorHtml(name,label,type,value,required){
   const source=String(value||'');
   const region=type==='document-editor'?documentRegion(source):{selector:'',html:safeVisualFragment(source)};
-  return `<div class="field full rich-field" data-rich-path="${esc(name)}" data-rich-kind="${esc(type)}" data-rich-selector="${esc(region.selector)}"><span>${esc(label)}${required?' *':''}</span><div class="rich-toolbar" role="toolbar" aria-label="Định dạng ${esc(label)}"><button type="button" data-command="bold" title="In đậm"><b>B</b></button><button type="button" data-command="italic" title="In nghiêng"><i>I</i></button><button type="button" data-command="insertUnorderedList" title="Danh sách dấu chấm">• Danh sách</button><button type="button" data-command="insertOrderedList" title="Danh sách số">1. Danh sách</button><button type="button" data-command="createLink" title="Thêm liên kết">Liên kết</button><button type="button" data-command="removeFormat" title="Xoá định dạng">Xoá định dạng</button></div><div class="rich-surface" contenteditable="true" role="textbox" aria-multiline="true" aria-label="${esc(label)}">${region.html}</div><details class="source-details"><summary>Mã nguồn nâng cao — chỉ dành cho kỹ thuật</summary><p>Phần này được đóng mặc định. Chỉ chỉnh sửa khi cần can thiệp HTML chuyên sâu.</p><textarea class="rich-source" aria-label="Mã nguồn ${esc(label)}">${esc(source)}</textarea></details></div>`;
+  return `<div class="field full rich-field" data-rich-path="${esc(name)}" data-rich-kind="${esc(type)}" data-rich-selector="${esc(region.selector)}"><span>${esc(label)}${required?' *':''}</span><p class="field-help">Bấm vào vùng nội dung để gõ. Dùng các nút bên trên để định dạng chữ, tạo danh sách, thêm liên kết hoặc chèn ảnh.</p><div class="rich-toolbar" role="toolbar" aria-label="Định dạng ${esc(label)}"><button type="button" data-command="bold" title="In đậm"><b>B</b></button><button type="button" data-command="italic" title="In nghiêng"><i>I</i></button><button type="button" data-command="insertUnorderedList" title="Danh sách dấu chấm">• Danh sách</button><button type="button" data-command="insertOrderedList" title="Danh sách số">1. Danh sách</button><button type="button" data-command="createLink" title="Thêm liên kết">Liên kết</button><button type="button" data-command="insertImage" title="Chèn ảnh">Ảnh</button><button type="button" data-command="removeFormat" title="Xoá định dạng">Xoá định dạng</button></div><div class="rich-surface" contenteditable="true" role="textbox" aria-multiline="true" aria-label="${esc(label)}" data-placeholder="Bắt đầu nhập nội dung…">${region.html}</div><input type="hidden" class="rich-source" value="${esc(source)}"></div>`;
 }
 function serializeRichField(field){
   const surface=field.querySelector('.rich-surface');
@@ -139,34 +141,20 @@ function serializeRichField(field){
   region.innerHTML=surface.innerHTML;
   return '<!DOCTYPE html>\n'+document.documentElement.outerHTML;
 }
-function applyRichSource(field){
-  const source=field.querySelector('.rich-source');
-  const surface=field.querySelector('.rich-surface');
-  if(field.dataset.richKind==='document-editor'){
-    const region=documentRegion(source.value);
-    field.dataset.richSelector=region.selector;
-    surface.innerHTML=region.html;
-  }else surface.innerHTML=safeVisualFragment(source.value);
-  source.dataset.dirty='false';surface.dataset.dirty='false';
-}
 function bindRichEditors(){
   document.querySelectorAll('.rich-field').forEach(field=>{
-    const surface=field.querySelector('.rich-surface'),source=field.querySelector('.rich-source'),details=field.querySelector('.source-details');
+    const surface=field.querySelector('.rich-surface'),source=field.querySelector('.rich-source');
     field.querySelector('.rich-toolbar').addEventListener('click',event=>{
       const button=event.target.closest('[data-command]');if(!button)return;
       surface.focus();
       const command=button.dataset.command;
-      const value=command==='createLink'?prompt('Nhập đường dẫn liên kết (https://… hoặc /duong-dan):','https://'):null;
+      const value=['createLink','insertImage'].includes(command)?prompt(command==='createLink'?'Nhập đường dẫn liên kết (https://… hoặc /duong-dan):':'Dán đường dẫn ảnh (https://… hoặc /duong-dan/anh.jpg):','https://'):null;
       if(command==='createLink'&&!value)return;
+      if(command==='insertImage'&&(!value||!/^https?:\/\//i.test(value)&&!value.startsWith('/'))){if(value)toast('Đường dẫn ảnh cần bắt đầu bằng https:// hoặc /','error');return;}
       document.execCommand(command,false,value);
       surface.dataset.dirty='true';
     });
-    source.addEventListener('input',()=>{source.dataset.dirty='true';});
     surface.addEventListener('input',()=>{surface.dataset.dirty='true';});
-    details.addEventListener('toggle',()=>{
-      if(details.open){source.value=serializeRichField(field);source.dataset.dirty='false';}
-      else if(source.dataset.dirty==='true')applyRichSource(field);
-    });
   });
 }
 
