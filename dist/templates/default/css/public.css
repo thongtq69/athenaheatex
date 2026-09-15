@@ -126,6 +126,7 @@ body {color:#444;line-height:1.6667;background:#fff;font-size:12px;-webkit-font-
 
 #logo { float: left; }
 #logo > a { width: 85px;}
+#logo img { width: auto; height: auto; max-width: 481px; max-height: 78px; object-fit: contain; }
 
 .lang { font-size: 12px; line-height: 1.2; }
 .lang img { height: 14px; vertical-align: bottom; margin-right: 6px; }

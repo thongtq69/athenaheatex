@@ -75,6 +75,11 @@ test('legacy public pages always include the base stylesheet required for layout
  assert.ok(normalized.indexOf('public.css')<normalized.indexOf('main.css'));
  assert.equal((normalized.match(/public\.css/g)||[]).length,1);
 });
+
+test('the shared header constrains large logos uploaded from admin',async()=>{
+ const css=await (await fetch(base+'/templates/default/css/public.css')).text();
+ assert.match(css,/#logo img\s*\{[^}]*max-width:\s*481px;[^}]*max-height:\s*78px;/);
+});
 test('Máy móc uses the Vietnamese public URL and the imported URL redirects',async()=>{
  const legacy=await fetch(base+'/machinery-2.html',{redirect:'manual'});
  assert.equal(legacy.status,308);
