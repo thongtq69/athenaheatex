@@ -7,7 +7,7 @@ import { healthReport } from './lib/health.mjs';
 import { isDatabaseConfigured } from './lib/mongodb.mjs';
 import { ensureCmsSeeded } from './lib/cms.mjs';
 import { renderCmsPage } from './lib/cms-render.mjs';
-import { publicPathForSourcePath, rewritePublicLinks, sourcePathForPublicPath } from './lib/public-paths.mjs';
+import { publicPathForAliasPath, publicPathForSourcePath, rewritePublicLinks, sourcePathForPublicPath } from './lib/public-paths.mjs';
 import { handleAdminApi } from './lib/admin-api.mjs';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
@@ -70,6 +70,8 @@ export function createServer({dataDir=path.join(root,'data'),useDatabase=isDatab
     const target=legacyLocaleTarget(decodeURIComponent(url.pathname));
     if(target){res.writeHead(301,{Location:publicPathForSourcePath(target)});return res.end();}
    }
+   const aliasTarget=publicPathForAliasPath(url.pathname);
+   if(aliasTarget){res.writeHead(308,{Location:aliasTarget+url.search});return res.end();}
    const visitorPath=publicPathForSourcePath(url.pathname);
    if(visitorPath!==url.pathname && url.pathname!=='/index.html') {res.writeHead(308,{Location:visitorPath+url.search});return res.end();}
    if(url.pathname==='/admin'){res.writeHead(308,{Location:'/admin/'});return res.end();}

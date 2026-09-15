@@ -11,6 +11,7 @@ import { PUBLIC_PATHS } from '../lib/public-path-map.mjs';
 import { publicPathForSourcePath, sourcePathForPublicPath } from '../lib/public-paths.mjs';
 import { normalizeResource } from '../lib/admin-api.mjs';
 import { normalizeDocumentHtml, normalizeFragmentHtml } from '../lib/html-normalize.mjs';
+import { extractProductContent } from '../lib/product-content.mjs';
 
 let server,base,dataDir;
 before(async()=>{
@@ -35,9 +36,12 @@ test('the deployed entity editors mark only the representative image as required
  const source=await readFile(path.join(process.cwd(),'admin','admin.js'),'utf8');
  const built=await readFile(path.join(process.cwd(),'dist','admin','admin.js'),'utf8');
  assert.equal(built,source);
- assert.match(source,/products:\{singular:'sản phẩm',fields:entityFields\(\{withCategory:true,requireIdentity:false,requireImage:true\}\)\}/);
+ assert.match(source,/\['specifications','Thông số kỹ thuật','specifications'\]/);
+ assert.match(source,/\['videos','Video sản phẩm','videos'\]/);
+ assert.match(source,/\['gallery','Ảnh bổ sung','gallery'\]/);
  assert.match(source,/services:\{singular:'dịch vụ',fields:entityFields\(\{withCategory:false,requireIdentity:false,requireImage:true\}\)\}/);
- assert.match(source,/categories:\{singular:'danh mục',fields:\[\['name','Tên danh mục','text'\],\['path','Đường dẫn trang','text'\]/);
+ assert.match(source,/categories:\{singular:'danh mục',fields:\[\['name','Tên danh mục','text'\],\['parentId'/);
+ assert.doesNotMatch(source,/\['sortOrder','Thứ tự','number'\]/);
  assert.match(source,/\['image','Ảnh đại diện','image',true\]/);
  assert.match(source,/data-image-required="\$\{required\}"/);
  assert.match(source,/!url&&!file/);
@@ -102,11 +106,12 @@ test('Máy móc uses the Vietnamese public URL and the imported URL redirects',a
  assert.equal($('#pageNum a[title="1"]').attr('href'),'/may-moc');
 });
 test('machine category pages show their imported product cards and page 1 remains reachable',async()=>{
- for(const [path,minimum] of [['/may-chiet-rot-hop-tiet-trung-69',12],['/may-chiet-rot-va-dong-goi-39',18],['/bon-inox-28',11]]){
+ for(const [source,minimum] of [['/aseptic-carton-filling-machine-69.html',12],['/filling-packing-machine-39.html',18],['/stainless-steel-tanks-28.html',11]]){
+  const path=PUBLIC_PATHS[source];
   const response=await fetch(base+path);assert.equal(response.status,200,path);
   const $=load(await response.text());assert.ok($('.proDisplay .box').length>=minimum,path);
  }
- for(const route of ['/may-moc-trang-2','/may-moc-trang-6']){
+ for(const route of [PUBLIC_PATHS['/2_2.html'],PUBLIC_PATHS['/2_6.html']]){
   const response=await fetch(base+route);assert.equal(response.status,200,route);
   const $=load(await response.text());assert.ok($('.proDisplay .box').length>0,route);
   assert.equal($('#pageNum a[title="1"]').attr('href'),'/may-moc',route);
@@ -125,6 +130,23 @@ test('every imported page has one reversible Vietnamese URL and configured Verce
   assert.equal(redirects.get(source),visitor);
   assert.equal(rewrites.get(visitor),`/api/render?path=${source}`);
  }
+});
+test('old numbered visitor URLs redirect while new URLs omit imported record IDs',async()=>{
+ const old=await fetch(base+'/day-chuyen-san-xuat-sua-bot-43?ref=old',{redirect:'manual'});
+ assert.equal(old.status,308);assert.equal(old.headers.get('location'),PUBLIC_PATHS['/milk-powder-processing-line-43.html']+'?ref=old');
+ assert.equal(publicPathForSourcePath('/san-pham-moi.html'),'/san-pham-moi');
+ assert.equal(sourcePathForPublicPath('/san-pham-moi'),'/san-pham-moi.html');
+ assert.ok(Object.values(PUBLIC_PATHS).every(path=>!/-trang-\d+$/.test(path)));
+});
+test('legacy product tabs can be edited as description, specifications, video and gallery',()=>{
+ const fragment='<ul id="tags"><li>Mô tả</li></ul><div id="tagContent"><div class="tagContent"><p>Chi tiết</p></div><div class="tagContent"><table><tr><td>Công suất</td><td>1000L</td></tr></table></div><div class="tagContent"><a href="https://www.youtube.com/embed/abc"><img src="/video.jpg"></a></div></div>';
+ const extracted=extractProductContent(fragment,'<div id="proimg"><img src="/main.jpg"></div><ul class="spec-list"><li><img src="/main.jpg"></li><li><img src="/other.jpg"></li></ul>');
+ assert.match(extracted.descriptionHtml,/Chi tiết/);
+ assert.deepEqual(extracted.specifications,[{label:'Công suất',value:'1000L'}]);
+ assert.deepEqual(extracted.videos,[{url:'https://www.youtube.com/embed/abc',thumbnail:'/video.jpg'}]);
+ assert.deepEqual(extracted.gallery,['/other.jpg']);
+ const saved=normalizeResource('products',{name:'Máy thử',image:'/main.jpg',descriptionHtml:extracted.descriptionHtml,specifications:extracted.specifications,videos:extracted.videos,gallery:extracted.gallery});
+ assert.equal(saved.specifications[0].value,'1000L');assert.equal(saved.videos[0].url,extracted.videos[0].url);
 });
 test('main navigation and content routes open at clean URLs; old URLs redirect',async()=>{
  const samples=['/complete-line-1.html','/solution-3.html','/service-4.html','/news-67.html','/about-us-6.html','/contact-us-7.html','/search.html','/air-compressor-252.html'];

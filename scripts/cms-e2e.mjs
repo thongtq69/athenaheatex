@@ -21,6 +21,7 @@ let cookie = '';
 const created = { pages: [], sections: [], products: [], services: [], categories: [], banners: [], media: [] };
 let originalSettings;
 const checks = [];
+const visitor = value => String(value || '').replace(/\.html$/, '');
 
 function check(condition, name) {
   if (!condition) throw new Error(`FAIL: ${name}`);
@@ -79,26 +80,30 @@ try {
   check(result.response.ok && result.data.items.length === 2 && result.data.total >= 432, 'phân trang API chỉ tải số mục cần hiển thị');
   result = await request('/api/admin/media?idsOnly=true');
   check(result.response.ok && result.data.items.length >= 432 && result.data.items.every(item => item._id && !item.url), 'API sắp xếp chỉ tải ID, không tải ảnh');
+  result = await request('/api/admin/products?q='+encodeURIComponent('Máy gắn nắp tự động'));
+  const importedProductId = result.data.items.find(item => item.path === '/automatic-cap-applicator-269.html')?._id;
+  result = await request(`/api/admin/products/${importedProductId}`);
+  check(result.response.ok && result.data.item.specifications.length === 17 && result.data.item.videos.length === 1 && result.data.item.gallery.length === 1, 'Admin tách thông số, video và ảnh bổ sung của sản phẩm đã nhập');
 
   const category = await create('categories', { name: `${tag} category`, path: `/${tag}-category.html`, image: 'https://example.com/cms-category.jpg', kind: 'product', enabled: true, sortOrder: 99999, descriptionHtml: '<p>Danh mục kiểm thử</p>' });
   check(Boolean(category._id), 'CREATE danh mục');
-  const product = await create('products', { name: `${tag} product`, path: `/${tag}-product.html`, categoryId: category._id, summary: 'URL image test', descriptionHtml: '<p>Nội dung sản phẩm từ CMS</p>', image: 'https://example.com/cms-image-url.jpg', enabled: true, sortOrder: 99999, seo: { title: `${tag} SEO` } });
+  const product = await create('products', { name: `${tag} product`, path: `/${tag}-product.html`, categoryId: category._id, summary: 'URL image test', descriptionHtml: '<p>Nội dung sản phẩm từ CMS</p>', specifications:[{label:'Công suất',value:'2000 hộp/giờ'}], videos:[{url:'https://www.youtube.com/embed/TRJZca87zVI',thumbnail:'https://example.com/video.jpg'}], gallery:['https://example.com/gallery.jpg'], image: 'https://example.com/cms-image-url.jpg', enabled: true, sortOrder: 99999, seo: { title: `${tag} SEO` } });
   check(Boolean(product._id), 'CREATE sản phẩm với URL ảnh');
   result = await request('/api/admin/products', { method: 'POST', body: { name: '', path: '', image: '' } });
   check(result.response.status === 400, 'ảnh đại diện vẫn bắt buộc khi không nhập URL và không upload file');
   const optionalProduct = await create('products', { name: '', path: '', image: 'https://example.com/optional-product.jpg', enabled: true, sortOrder: 99998 });
-  check(optionalProduct.name === '' && /^\/san-pham(?:-\d+)?\.html$/.test(optionalProduct.path), 'tên và đường dẫn được phép để trống, đường dẫn public tự tạo duy nhất');
+  check(optionalProduct.name === '' && /^\/san-pham(?:-ban-[a-z]+)?\.html$/.test(optionalProduct.path), 'tên và đường dẫn được phép để trống, đường dẫn public tự tạo duy nhất');
   const secondOptionalProduct = await create('products', { name: '', path: '', image: 'https://example.com/optional-product-2.jpg', enabled: true, sortOrder: 99997 });
   check(secondOptionalProduct.path !== optionalProduct.path, 'nhiều sản phẩm cùng để trống đường dẫn vẫn được lưu với URL không trùng');
-  result = await request(optionalProduct.path);
+  result = await request(optionalProduct.publicUrl || visitor(optionalProduct.path));
   check(result.response.ok && result.data.includes('https://example.com/optional-product.jpg'), 'sản phẩm chỉ có URL ảnh được lưu và đồng bộ ra website');
   result = await request(`/api/admin/products/${optionalProduct._id}`, { method: 'PUT', body: { name: '', path: '' } });
   check(result.response.ok && result.data.item.path === optionalProduct.path, 'chỉnh sửa để trống tên và đường dẫn vẫn lưu, giữ nguyên URL public');
   result = await request('/api/admin/categories', { method: 'POST', body: { name: '', path: '', image: '' } });
   check(result.response.status === 400, 'danh mục chỉ chặn lưu khi thiếu ảnh đại diện');
   const optionalCategory = await create('categories', { name: '', path: '', image: 'https://example.com/optional-category.jpg', kind: 'product', enabled: true, sortOrder: 99996 });
-  check(optionalCategory.name === '' && /^\/danh-muc(?:-\d+)?\.html$/.test(optionalCategory.path), 'danh mục cho phép để trống tên và đường dẫn');
-  result = await request(optionalCategory.path);
+  check(optionalCategory.name === '' && /^\/danh-muc(?:-ban-[a-z]+)?\.html$/.test(optionalCategory.path), 'danh mục cho phép để trống tên và đường dẫn');
+  result = await request(optionalCategory.publicUrl || visitor(optionalCategory.path));
   check(result.response.ok && result.data.includes('https://example.com/optional-category.jpg'), 'ảnh đại diện danh mục đồng bộ ra website');
   result = await request(PUBLIC_PATHS['/2_2.html']);
   const renderedCategory = load(result.data);
@@ -110,32 +115,32 @@ try {
   check(result.response.status === 409, 'UPDATE sản phẩm từ chối đường dẫn trang đã dùng');
   result = await request(`/api/admin/products/${product._id}`);
   check(result.data.item.path === `/${tag}-product.html`, 'UPDATE lỗi giữ nguyên sản phẩm và trang public');
-  result = await request(`/${tag}-product.html`);
-  check(result.response.status === 200 && result.data.includes(`${tag} product`) && result.data.includes('https://example.com/cms-image-url.jpg'), 'Admin → website đồng bộ sản phẩm và URL ảnh');
+  result = await request(`/${tag}-product`);
+  check(result.response.status === 200 && result.data.includes(`${tag} product`) && result.data.includes('https://example.com/cms-image-url.jpg') && result.data.includes('2000 hộp/giờ') && result.data.includes('https://example.com/gallery.jpg') && result.data.includes('TRJZca87zVI'), 'Admin → website đồng bộ ảnh, thông số và video sản phẩm');
   const renderedProduct = load(result.data);
   check(renderedProduct('[id="pagetitle"]').length <= 1, 'HTML sản phẩm không có ID biểu mẫu trùng');
   check(renderedProduct('.crm-form form').toArray().every(formNode => renderedProduct(formNode).attr('action') === '/api/inquiries' && renderedProduct(formNode).attr('method') === 'post'), 'biểu mẫu public dùng API cùng website');
 
   result = await request(`/api/admin/products/${product._id}`, { method: 'PUT', body: { name: `${tag} product updated` } });
   check(result.response.ok, 'UPDATE sản phẩm');
-  result = await request(`/${tag}-product.html`);
+  result = await request(`/${tag}-product`);
   check(result.data.includes(`${tag} product updated`), 'website public nhận UPDATE ngay');
   result = await request(`/api/admin/products/${product._id}`, { method: 'PUT', body: { enabled: false } });
-  result = await request(`/${tag}-product.html`);
+  result = await request(`/${tag}-product`);
   check(result.response.status === 404, 'bật/tắt sản phẩm điều khiển public');
   await request(`/api/admin/products/${product._id}`, { method: 'PUT', body: { enabled: true } });
 
   const service = await create('services', { name: `${tag} service`, path: `/${tag}-service.html`, image: 'https://example.com/cms-service.jpg', descriptionHtml: '<h1>Dịch vụ CMS thật</h1>', enabled: true, sortOrder: 99999 });
-  result = await request(`/${tag}-service.html`);
+  result = await request(`/${tag}-service`);
   check(result.response.ok && result.data.includes('Dịch vụ CMS thật') && result.data.includes('https://example.com/cms-service.jpg'), 'CRUD dịch vụ và ảnh đại diện đồng bộ trang public thật');
   const optionalService = await create('services', { name: '', path: '', image: 'https://example.com/optional-service.jpg', enabled: true, sortOrder: 99995 });
-  check(optionalService.name === '' && /^\/dich-vu(?:-\d+)?\.html$/.test(optionalService.path), 'dịch vụ cho phép để trống tên và đường dẫn');
-  result = await request(optionalService.path);
+  check(optionalService.name === '' && /^\/dich-vu(?:-ban-[a-z]+)?\.html$/.test(optionalService.path), 'dịch vụ cho phép để trống tên và đường dẫn');
+  result = await request(optionalService.publicUrl || visitor(optionalService.path));
   check(result.response.ok && result.data.includes('https://example.com/optional-service.jpg'), 'dịch vụ chỉ có ảnh đại diện vẫn đồng bộ ra website');
 
   const page = await create('pages', { title: `${tag} page`, path: `/${tag}-page.html`, type: 'page', enabled: true, sortOrder: 99999, seo: { title: `${tag} page SEO` }, html: '<!doctype html><html><head><title>base</title></head><body><main id="main"><div id="cms-target">Nội dung cũ</div></main></body></html>' });
   const section = await create('sections', { name: `${tag} section`, pagePath: `/${tag}-page.html`, selector: '#cms-target', mode: 'inner', html: '<strong>Nội dung section persistent</strong>', enabled: true, sortOrder: 0 });
-  result = await request(`/${tag}-page.html`);
+  result = await request(`/${tag}-page`);
   check(result.response.ok && result.data.includes('Nội dung section persistent') && result.data.includes(`${tag} page SEO`), 'page + section + SEO render từ database');
   result = await request('/api/admin/sections/reorder', { method: 'POST', body: { ids: [section._id] } });
   check(result.response.ok && result.data.updated === 1, 'API sắp xếp section lưu thành công');
@@ -150,14 +155,14 @@ try {
   const replacedMediaUrl = 'https://example.com/cms-library-url-updated.jpg';
   result = await request(`/api/admin/media/${externalMedia._id}`, { method: 'PUT', body: { url: replacedMediaUrl } });
   check(result.response.ok, 'UPDATE ảnh trong thư viện');
-  result = await request(`/${tag}-product.html`);
+  result = await request(`/${tag}-product`);
   check(result.data.includes(replacedMediaUrl), 'đổi URL thư viện đồng bộ nơi đang sử dụng');
   result = await request(`/api/admin/media/${externalMedia._id}`, { method: 'PUT', body: { enabled: false } });
   check(result.response.status === 409, 'không cho tắt ảnh đang được website sử dụng');
   const mergeTarget = await create('media', { name: `${tag} merge target`, url: 'https://example.com/cms-library-merge-target.jpg', alt: 'Merge target', enabled: true });
   result = await request(`/api/admin/media/${externalMedia._id}`, { method: 'PUT', body: { url: mergeTarget.url } });
   check(result.response.ok && result.data.merged === true && result.data.item._id === mergeTarget._id, 'đổi sang URL đã có sẽ gộp bản ghi ảnh');
-  result = await request(`/${tag}-product.html`);
+  result = await request(`/${tag}-product`);
   check(result.data.includes(mergeTarget.url), 'gộp ảnh vẫn đồng bộ nơi đang sử dụng');
 
   const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64');
@@ -178,7 +183,7 @@ try {
   check(result.response.ok && result.data.item._id === uploadedMedia._id && result.data.item.url !== firstUploadUrl, 'thay file ảnh giữ nguyên bản ghi CMS');
   uploadedMedia = result.data.item;
   await request(`/api/admin/products/${product._id}`, { method: 'PUT', body: { image: uploadedMedia.url } });
-  result = await request(`/${tag}-product.html`);
+  result = await request(`/${tag}-product`);
   check(result.data.includes(uploadedMedia.url), 'ảnh upload đồng bộ vào sản phẩm public');
 
   result = await request('/api/admin/settings');
@@ -194,7 +199,7 @@ try {
   await remove('products', secondOptionalProduct._id);
   await remove('products', optionalProduct._id);
   await remove('products', product._id);
-  result = await request(`/${tag}-product.html`);
+  result = await request(`/${tag}-product`);
   check(result.response.status === 404, 'DELETE sản phẩm xoá trang public tương ứng');
   await remove('services', optionalService._id);
   await remove('services', service._id);
