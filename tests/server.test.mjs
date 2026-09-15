@@ -41,6 +41,8 @@ test('the deployed entity editors mark only the representative image as required
  assert.match(source,/\['image','Ảnh đại diện','image',true\]/);
  assert.match(source,/data-image-required="\$\{required\}"/);
  assert.match(source,/!url&&!file/);
+ assert.match(source,/resource==='media'&&id\?`\/media\/\$\{id\}\/upload`/);
+ assert.match(source,/Đã thay ảnh và đồng bộ website/);
 });
 test('CMS HTML is normalized before storage and clean HTML is preserved byte-for-byte',()=>{
  const dirty='<!doctype html><html><body><div id="x"></div><div id="x"></div><img src="/a.jpg"><div class="crm-form"><form><input name="Name" placeholder="*Họ tên"><input name="Email" placeholder="*E-mail" type="text"><textarea name="Message" placeholder="*Lời nhắn"></textarea></form></div></body></html>';
@@ -59,6 +61,9 @@ test('CMS HTML is normalized before storage and clean HTML is preserved byte-for
  assert.equal(normalizeFragmentHtml(clean,'Fallback'),clean);
  const page=normalizeResource('pages',{path:'/kiem-tra.html',title:'Kiểm tra',html:dirty});
  assert.equal(load(page.html)('img').attr('alt'),'Kiểm tra');
+ const replacedMedia=normalizeResource('media',{url:'/img/moi.jpg'},{name:'Ảnh',url:'https://example.com/cu.jpg',publicId:'old/file',width:10,height:10,bytes:100});
+ assert.equal(replacedMedia.publicId,undefined);
+ assert.equal(replacedMedia.width,undefined);
 });
 test('Máy móc uses the Vietnamese public URL and the imported URL redirects',async()=>{
  const legacy=await fetch(base+'/machinery-2.html',{redirect:'manual'});

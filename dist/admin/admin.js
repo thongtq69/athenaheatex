@@ -189,7 +189,7 @@ $('#editorForm').addEventListener('submit',async event=>{
       const name=field.dataset.imageField,url=field.querySelector('.image-url').value.trim(),file=field.querySelector('.image-file').files[0];
       if(url&&file)throw new Error('Mỗi ảnh chỉ được chọn URL hoặc file, không chọn cả hai.');
       if(field.dataset.imageRequired==='true'&&!url&&!file)throw new Error('Vui lòng nhập URL ảnh hoặc chọn một file ảnh đại diện.');
-      if(file){if(file.size>10*1024*1024)throw new Error('Ảnh vượt quá 10 MB. Vui lòng chọn ảnh nhỏ hơn.');const form=new FormData();form.append('file',file);form.append('name',payload.title||payload.name||file.name);form.append('alt',payload.alt||payload.name||'');const uploaded=await api('/media/upload',{method:'POST',body:form});setValue(payload,name,uploaded.item.url);}
+      if(file){if(file.size>10*1024*1024)throw new Error('Ảnh vượt quá 10 MB. Vui lòng chọn ảnh nhỏ hơn.');const form=new FormData();form.append('file',file);form.append('name',payload.title||payload.name||file.name);form.append('alt',payload.alt||payload.name||'');const uploadPath=resource==='media'&&id?`/media/${id}/upload`:'/media/upload';const uploaded=await api(uploadPath,{method:'POST',body:form});if(resource==='media'){$('#editorDialog').close();toast(id?'Đã thay ảnh và đồng bộ website.':'Đã tải ảnh lên thư viện.');await renderResource(resource);return;}setValue(payload,name,uploaded.item.url);}
       else setValue(payload,name,url);
     }
     await api(`/${resource}${id?`/${id}`:''}`,{method:id?'PUT':'POST',body:payload});if(resource==='categories')state.categoriesLoaded=false;$('#editorDialog').close();toast(id?'Đã lưu thay đổi.':'Đã tạo nội dung mới.');await renderResource(resource);

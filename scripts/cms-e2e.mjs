@@ -152,6 +152,11 @@ try {
   check(result.response.ok, 'UPDATE ảnh trong thư viện');
   result = await request(`/${tag}-product.html`);
   check(result.data.includes(replacedMediaUrl), 'đổi URL thư viện đồng bộ nơi đang sử dụng');
+  const mergeTarget = await create('media', { name: `${tag} merge target`, url: 'https://example.com/cms-library-merge-target.jpg', alt: 'Merge target', enabled: true });
+  result = await request(`/api/admin/media/${externalMedia._id}`, { method: 'PUT', body: { url: mergeTarget.url } });
+  check(result.response.ok && result.data.merged === true && result.data.item._id === mergeTarget._id, 'đổi sang URL đã có sẽ gộp bản ghi ảnh');
+  result = await request(`/${tag}-product.html`);
+  check(result.data.includes(mergeTarget.url), 'gộp ảnh vẫn đồng bộ nơi đang sử dụng');
 
   const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64');
   const form = new FormData();
@@ -160,8 +165,16 @@ try {
   form.append('alt', 'Upload E2E');
   result = await request('/api/admin/media/upload', { method: 'POST', form });
   check(result.response.status === 201 && /^https:\/\//.test(result.data.item.url), 'upload file thật lên Cloudinary');
-  const uploadedMedia = result.data.item;
+  let uploadedMedia = result.data.item;
   created.media.push(uploadedMedia._id);
+  const replacementForm = new FormData();
+  replacementForm.append('file', new Blob([png], { type: 'image/png' }), `${tag}-replacement.png`);
+  replacementForm.append('name', `${tag} upload replaced`);
+  replacementForm.append('alt', 'Upload replacement E2E');
+  const firstUploadUrl = uploadedMedia.url;
+  result = await request(`/api/admin/media/${uploadedMedia._id}/upload`, { method: 'POST', form: replacementForm });
+  check(result.response.ok && result.data.item._id === uploadedMedia._id && result.data.item.url !== firstUploadUrl, 'thay file ảnh giữ nguyên bản ghi CMS');
+  uploadedMedia = result.data.item;
   await request(`/api/admin/products/${product._id}`, { method: 'PUT', body: { image: uploadedMedia.url } });
   result = await request(`/${tag}-product.html`);
   check(result.data.includes(uploadedMedia.url), 'ảnh upload đồng bộ vào sản phẩm public');
@@ -187,6 +200,7 @@ try {
   await remove('media', uploadedMedia._id);
   check(true, 'DELETE media upload gọi xoá Cloudinary');
   await remove('media', externalMedia._id);
+  await remove('media', mergeTarget._id);
   await remove('sections', section._id);
   await remove('pages', page._id);
   await remove('categories', optionalCategory._id);
