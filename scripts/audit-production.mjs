@@ -8,8 +8,9 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const base = String(process.env.SITE_BASE_URL || 'https://athenaheatex.vercel.app').replace(/\/+$/, '');
 const routes = [...new Set(['/', ...Object.values(PUBLIC_PATHS), '/404.html'])];
 const issues = {
-  failedPages: [], nonCmsPages: [], missingLang: [], missingHeadings: [], missingBaseStyles: [], missingAlts: [],
-  duplicateIds: [], invalidForms: [], unnamedFields: [], legacyLinks: [], brokenAssets: [],
+  failedPages: [], nonCmsPages: [], missingLang: [], missingHeadings: [], missingBaseStyles: [], missingMainStyles: [],
+  rawMarkupText: [], missingAlts: [], duplicateIds: [], invalidForms: [], unnamedFields: [], legacyLinks: [],
+  adminShell: [], brokenAssets: [],
 };
 const assets = new Set();
 
@@ -43,6 +44,12 @@ await parallel(routes, 8, async route => {
   if ($('.mo-header,#header,#nav,#footer').length && !$('link[rel="stylesheet"][href="/templates/default/css/public.css"]').length) {
     issues.missingBaseStyles.push(route);
   }
+  if ($('.mo-header,#header,#nav,#footer').length && !$('link[rel="stylesheet"][href="/templates/default/css/main.css"]').length) {
+    issues.missingMainStyles.push(route);
+  }
+  const visibleText = $('body').clone().find('script,style,noscript').remove().end().text();
+  const rawMarkup = visibleText.match(/<\/?(?:html|head|body|div|span|p|a|img|section|main|header|footer|table|form|input|script|style)\b[^>]*>/i);
+  if (rawMarkup) issues.rawMarkupText.push({ route, sample: rawMarkup[0] });
   $('img').each((_, node) => {
     const src = String($(node).attr('src') || '').trim();
     if (src) assets.add(new URL(src, response.url).href);
@@ -71,6 +78,21 @@ await parallel(routes, 8, async route => {
     if (href.endsWith('.html') && href !== '/404.html') issues.legacyLinks.push({ route, href });
   });
 });
+
+try {
+  const response = await fetch(new URL('/admin', base), { redirect: 'follow', headers: { 'User-Agent': 'AthenaHeatEx production audit' } });
+  const html = await response.text();
+  const $ = load(html);
+  if (!response.ok || $('html').attr('lang') !== 'vi' || !$('#loginView,#appView').length || !$('link[rel="stylesheet"][href="/admin/admin.css"]').length || !$('script[src="/admin/admin.js"]').length) {
+    issues.adminShell.push({ status: response.status });
+  }
+  $('script[src],link[rel="stylesheet"][href]').each((_, node) => {
+    const url = $(node).attr('src') || $(node).attr('href');
+    if (url) assets.add(new URL(url, response.url).href);
+  });
+} catch (error) {
+  issues.adminShell.push({ error: error.message });
+}
 
 await parallel([...assets], 12, async url => {
   try {

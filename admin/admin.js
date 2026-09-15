@@ -7,17 +7,17 @@ const esc = value => String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp
 const configs = {
   pages: { singular:'trang', fields:[
     ['title','Tiêu đề','text',true],['path','Đường dẫn (.html)','text',true],['type','Loại trang','select',true,['page','product','category']],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],
-    ['seo.title','SEO title','text'],['seo.description','Meta description','textarea'],['seo.keywords','Meta keywords','textarea'],['html','HTML toàn trang','textarea-tall',true]
+    ['seo.title','SEO title','text'],['seo.description','Meta description','textarea'],['seo.keywords','Meta keywords','textarea'],['html','Nội dung trang','document-editor',true]
   ]},
-  sections:{singular:'section',fields:[['name','Tên section','text',true],['pagePath','Trang áp dụng','text',true],['selector','CSS selector','text',true],['mode','Cách áp dụng','select',true,['inner','replace']],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['html','HTML section','textarea-tall',true]]},
+  sections:{singular:'section',fields:[['name','Tên section','text',true],['pagePath','Trang áp dụng','text',true],['selector','CSS selector','text',true],['mode','Cách áp dụng','select',true,['inner','replace']],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['html','Nội dung section','richtext',true]]},
   products:{singular:'sản phẩm',fields:entityFields({withCategory:true,requireIdentity:false,requireImage:true})},
   services:{singular:'dịch vụ',fields:entityFields({withCategory:false,requireIdentity:false,requireImage:true})},
-  categories:{singular:'danh mục',fields:[['name','Tên danh mục','text'],['path','Đường dẫn (.html)','text'],['parentId','Danh mục cha','category-select'],['kind','Nhóm','select',false,['product','service']],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['image','Ảnh đại diện','image',true],['descriptionHtml','HTML mô tả','textarea-tall']]},
+  categories:{singular:'danh mục',fields:[['name','Tên danh mục','text'],['path','Đường dẫn (.html)','text'],['parentId','Danh mục cha','category-select'],['kind','Nhóm','select',false,['product','service']],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['image','Ảnh đại diện','image',true],['descriptionHtml','Nội dung mô tả','richtext']]},
   banners:{singular:'banner',fields:[['title','Tên banner','text',true],['url','Liên kết','text',true],['alt','Alt ảnh','text'],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['image','Ảnh banner','image',true]]},
   media:{singular:'ảnh',fields:[['name','Tên ảnh','text',true],['alt','Alt ảnh','text'],['enabled','Đang sử dụng','checkbox'],['sortOrder','Thứ tự','number'],['url','Nguồn ảnh','image',true]]},
   inquiries:{singular:'yêu cầu',fields:[['status','Trạng thái','select',true,['new','processing','done','spam']]]},
 };
-function entityFields({withCategory,requireIdentity,requireImage}){const fields=[['name','Tên','text',requireIdentity],['path','Đường dẫn (.html)','text',requireIdentity]];if(withCategory)fields.push(['categoryId','Danh mục','category-select']);return [...fields,['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['summary','Mô tả ngắn','textarea'],['image','Ảnh đại diện','image',requireImage],['descriptionHtml','HTML nội dung','textarea-tall'],['seo.title','SEO title','text'],['seo.description','Meta description','textarea'],['seo.keywords','Meta keywords','textarea']];}
+function entityFields({withCategory,requireIdentity,requireImage}){const fields=[['name','Tên','text',requireIdentity],['path','Đường dẫn (.html)','text',requireIdentity]];if(withCategory)fields.push(['categoryId','Danh mục','category-select']);return [...fields,['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['summary','Mô tả ngắn','textarea'],['image','Ảnh đại diện','image',requireImage],['descriptionHtml','Nội dung chi tiết','richtext'],['seo.title','SEO title','text'],['seo.description','Meta description','textarea'],['seo.keywords','Meta keywords','textarea']];}
 
 async function api(path, options={}) {
   const init = { credentials:'same-origin', ...options };
@@ -107,6 +107,69 @@ async function renderResource(resource,q=state.list?.resource===resource?state.l
 }
 function showListError(error){if(error.name!=='AbortError')toast(error.message,'error');}
 
+function documentRegion(source){
+  const document=new DOMParser().parseFromString(String(source||''),'text/html');
+  const selectors=['#main','.mainpage','#content','.crm-form','.right','body'];
+  const selector=selectors.find(candidate=>document.querySelector(candidate))||'body';
+  const region=document.querySelector(selector);
+  const clone=region?.cloneNode(true);
+  clone?.querySelectorAll('script,style,noscript').forEach(node=>node.remove());
+  clone?.querySelectorAll('*').forEach(node=>[...node.attributes].forEach(attribute=>{if(/^on/i.test(attribute.name)||attribute.name==='srcdoc')node.removeAttribute(attribute.name);}));
+  return {selector,html:clone?.innerHTML||''};
+}
+function safeVisualFragment(source){
+  const document=new DOMParser().parseFromString(`<body>${String(source||'')}</body>`,'text/html');
+  document.querySelectorAll('script,style,noscript').forEach(node=>node.remove());
+  document.querySelectorAll('*').forEach(node=>[...node.attributes].forEach(attribute=>{if(/^on/i.test(attribute.name)||attribute.name==='srcdoc')node.removeAttribute(attribute.name);}));
+  return document.body.innerHTML;
+}
+function richEditorHtml(name,label,type,value,required){
+  const source=String(value||'');
+  const region=type==='document-editor'?documentRegion(source):{selector:'',html:safeVisualFragment(source)};
+  return `<div class="field full rich-field" data-rich-path="${esc(name)}" data-rich-kind="${esc(type)}" data-rich-selector="${esc(region.selector)}"><span>${esc(label)}${required?' *':''}</span><div class="rich-toolbar" role="toolbar" aria-label="Định dạng ${esc(label)}"><button type="button" data-command="bold" title="In đậm"><b>B</b></button><button type="button" data-command="italic" title="In nghiêng"><i>I</i></button><button type="button" data-command="insertUnorderedList" title="Danh sách dấu chấm">• Danh sách</button><button type="button" data-command="insertOrderedList" title="Danh sách số">1. Danh sách</button><button type="button" data-command="createLink" title="Thêm liên kết">Liên kết</button><button type="button" data-command="removeFormat" title="Xoá định dạng">Xoá định dạng</button></div><div class="rich-surface" contenteditable="true" role="textbox" aria-multiline="true" aria-label="${esc(label)}">${region.html}</div><details class="source-details"><summary>Mã nguồn nâng cao — chỉ dành cho kỹ thuật</summary><p>Phần này được đóng mặc định. Chỉ chỉnh sửa khi cần can thiệp HTML chuyên sâu.</p><textarea class="rich-source" aria-label="Mã nguồn ${esc(label)}">${esc(source)}</textarea></details></div>`;
+}
+function serializeRichField(field){
+  const surface=field.querySelector('.rich-surface');
+  const source=field.querySelector('.rich-source');
+  if(source.dataset.dirty==='true')return source.value;
+  if(surface.dataset.dirty!=='true')return source.value;
+  if(field.dataset.richKind!=='document-editor')return surface.innerHTML;
+  const document=new DOMParser().parseFromString(source.value||'<!doctype html><html><head></head><body></body></html>','text/html');
+  const region=document.querySelector(field.dataset.richSelector)||document.body;
+  region.innerHTML=surface.innerHTML;
+  return '<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+}
+function applyRichSource(field){
+  const source=field.querySelector('.rich-source');
+  const surface=field.querySelector('.rich-surface');
+  if(field.dataset.richKind==='document-editor'){
+    const region=documentRegion(source.value);
+    field.dataset.richSelector=region.selector;
+    surface.innerHTML=region.html;
+  }else surface.innerHTML=safeVisualFragment(source.value);
+  source.dataset.dirty='false';surface.dataset.dirty='false';
+}
+function bindRichEditors(){
+  document.querySelectorAll('.rich-field').forEach(field=>{
+    const surface=field.querySelector('.rich-surface'),source=field.querySelector('.rich-source'),details=field.querySelector('.source-details');
+    field.querySelector('.rich-toolbar').addEventListener('click',event=>{
+      const button=event.target.closest('[data-command]');if(!button)return;
+      surface.focus();
+      const command=button.dataset.command;
+      const value=command==='createLink'?prompt('Nhập đường dẫn liên kết (https://… hoặc /duong-dan):','https://'):null;
+      if(command==='createLink'&&!value)return;
+      document.execCommand(command,false,value);
+      surface.dataset.dirty='true';
+    });
+    source.addEventListener('input',()=>{source.dataset.dirty='true';});
+    surface.addEventListener('input',()=>{surface.dataset.dirty='true';});
+    details.addEventListener('toggle',()=>{
+      if(details.open){source.value=serializeRichField(field);source.dataset.dirty='false';}
+      else if(source.dataset.dirty==='true')applyRichSource(field);
+    });
+  });
+}
+
 function table(resource,items,offset=0,total=items.length){
   if(!items.length)return '<div class="empty">Chưa có dữ liệu.</div>';
   return `<table><thead><tr><th>Nội dung</th><th>Đường dẫn / thông tin</th><th>Trạng thái</th><th>Thứ tự</th><th style="text-align:right">Thao tác</th></tr></thead><tbody>${items.map((item,index)=>row(resource,item,index,offset,total)).join('')}</tbody></table>`;
@@ -162,7 +225,7 @@ async function openEditor(resource,id=null){
     const item=detail?.item||{enabled:true,sortOrder:state.list?.total??state.items.length};state.editing={resource,id,item};
     $('#editorEyebrow').textContent=titles[resource].toUpperCase();$('#editorTitle').textContent=id?'Chỉnh sửa':'Thêm mới';
     $('#editorFields').innerHTML=configs[resource].fields.map(field=>fieldHtml(field,item)).join('');
-    bindImageInputs();$('#editorDialog').showModal();
+    bindImageInputs();bindRichEditors();$('#editorDialog').showModal();
   }catch(error){toast(error.message,'error');}finally{loading(false);}
 }
 function fieldHtml([name,label,type,required=false,options=[]],item){
@@ -171,6 +234,7 @@ function fieldHtml([name,label,type,required=false,options=[]],item){
   if(type==='category-select')return `<label class="field"><span>${esc(label)}</span><select data-path="${name}"><option value="">— Không chọn —</option>${state.categories.filter(category=>category._id!==item._id).map(category=>`<option value="${esc(category._id)}" ${value===category._id?'selected':''}>${esc(category.name)} (${esc(category.path)})</option>`).join('')}</select></label>`;
   if(type==='select')return `<label class="field"><span>${esc(label)}</span><select data-path="${name}" ${required?'required':''}>${options.map(option=>`<option value="${esc(option)}" ${value===option?'selected':''}>${esc(option)}</option>`).join('')}</select></label>`;
   if(type==='image')return `<div class="field full image-field" data-image-field="${name}" data-image-required="${required}" ${required?'aria-required="true"':''}><span>${esc(label)}${required?' *':''}</span><div class="image-inputs"><input class="image-url" aria-label="${esc(label)} bằng URL" placeholder="Nhập URL hoặc /đường-dẫn/ảnh.jpg" value="${esc(value||'')}"><input class="image-file" aria-label="${esc(label)} từ tệp" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"></div><small>${required?'Bắt buộc chọn một trong hai: nhập URL hoặc chọn file upload':'Chỉ dùng một nguồn: nhập URL hoặc chọn file upload'} (tối đa 10 MB).</small><img class="image-preview" src="${esc(value||'')}" alt="Xem trước ${esc(label)}"></div>`;
+  if(type==='richtext'||type==='document-editor')return richEditorHtml(name,label,type,value,required);
   if(type.startsWith('textarea'))return `<label class="field full"><span>${esc(label)}${required?' *':''}</span><textarea data-path="${name}" class="${type==='textarea-tall'?'tall':''}" ${required?'required':''}>${esc(value||'')}</textarea></label>`;
   return `<label class="field ${full?'full':''}"><span>${esc(label)}${required?' *':''}</span><input data-path="${name}" type="${type}" value="${esc(value??'')}" ${name==='path'&&!required?'placeholder="Để trống để hệ thống tự tạo"':''} ${required?'required':''}></label>`;
 }
@@ -185,6 +249,7 @@ $('#editorForm').addEventListener('submit',async event=>{
   event.preventDefault();const {resource,id}=state.editing;loading(true);
   try{
     const payload={};$('#editorFields').querySelectorAll('[data-path]').forEach(input=>setValue(payload,input.dataset.path,input.type==='checkbox'?input.checked:input.type==='number'?Number(input.value):input.value));
+    $('#editorFields').querySelectorAll('[data-rich-path]').forEach(field=>setValue(payload,field.dataset.richPath,serializeRichField(field)));
     for(const field of $('#editorFields').querySelectorAll('[data-image-field]')){
       const name=field.dataset.imageField,url=field.querySelector('.image-url').value.trim(),file=field.querySelector('.image-file').files[0];
       if(url&&file)throw new Error('Mỗi ảnh chỉ được chọn URL hoặc file, không chọn cả hai.');

@@ -45,6 +45,12 @@ test('the deployed entity editors mark only the representative image as required
  assert.match(source,/Đã thay ảnh và đồng bộ website/);
  assert.match(source,/aria-label="Tìm kiếm trong/);
  assert.match(source,/aria-label="\$\{esc\(label\)\} bằng URL"/);
+ assert.match(source,/\['html','Nội dung trang','document-editor',true\]/);
+ assert.match(source,/\['descriptionHtml','Nội dung chi tiết','richtext'\]/);
+ assert.match(source,/contenteditable="true"/);
+ assert.match(source,/Mã nguồn nâng cao — chỉ dành cho kỹ thuật/);
+ assert.match(source,/serializeRichField/);
+ assert.doesNotMatch(source,/\['html','HTML toàn trang'/);
 });
 test('CMS HTML is normalized before storage and clean HTML is preserved byte-for-byte',()=>{
  const dirty='<!doctype html><html><body><div id="x"></div><div id="x"></div><img src="/a.jpg"><div class="crm-form"><form><input name="Name" placeholder="*Họ tên"><input name="Email" placeholder="*E-mail" type="text"><textarea name="Message" placeholder="*Lời nhắn"></textarea></form></div></body></html>';

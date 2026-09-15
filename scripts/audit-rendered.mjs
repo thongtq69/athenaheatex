@@ -7,7 +7,7 @@ import { PUBLIC_PATHS } from '../lib/public-path-map.mjs';
 import { sourcePathForPublicPath } from '../lib/public-paths.mjs';
 
 const issues = {
-  missingPages: [], missingBaseStyles: [], duplicateIds: [], missingAlts: [], forms: [], brokenLinks: [], legacyPublicLinks: [],
+  missingPages: [], missingBaseStyles: [], missingMainStyles: [], rawMarkupText: [], duplicateIds: [], missingAlts: [], forms: [], brokenLinks: [], legacyPublicLinks: [],
   missingMediaRecords: [], disabledMediaInUse: [], missingEntityPages: [], mismatchedEntityPages: [], orphanEntityPages: [],
 };
 try {
@@ -24,6 +24,12 @@ try {
       if ($('.mo-header,#header,#nav,#footer').length && !$('link[rel="stylesheet"][href="/templates/default/css/public.css"]').length) {
         issues.missingBaseStyles.push(page.path);
       }
+      if ($('.mo-header,#header,#nav,#footer').length && !$('link[rel="stylesheet"][href="/templates/default/css/main.css"]').length) {
+        issues.missingMainStyles.push(page.path);
+      }
+      const visibleText = $('body').clone().find('script,style,noscript').remove().end().text();
+      const rawMarkup = visibleText.match(/<\/?(?:html|head|body|div|span|p|a|img|section|main|header|footer|table|form|input|script|style)\b[^>]*>/i);
+      if (rawMarkup) issues.rawMarkupText.push({ page: page.path, sample: rawMarkup[0] });
       const ids = new Set();
       $('[id]').each((_, node) => {
         const id = $(node).attr('id');
