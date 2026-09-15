@@ -221,7 +221,7 @@ test('inquiry normalization maps the mirrored form fields and enforces limits',(
  assert.equal(isAllowedOrigin('https://evil.test','site.test'),false);
  assert.equal(clientAddress({'x-forwarded-for':'203.0.113.9, 10.0.0.1'},'127.0.0.1'),'203.0.113.9');
 });
-test('no-account mail fallback distinguishes activation, acceptance, and failure',async()=>{
+test('no-account mail fallback lets the browser forward after storage',async()=>{
  const originalFetch=globalThis.fetch;
  const originalKey=process.env.RESEND_API_KEY;
  const originalWebhook=process.env.INQUIRY_EMAIL_WEBHOOK_URL;
@@ -229,16 +229,9 @@ test('no-account mail fallback distinguishes activation, acceptance, and failure
  delete process.env.INQUIRY_EMAIL_WEBHOOK_URL;
  const record={name:'An',email:'an@example.com',message:'Báo giá',phone:'',company:'',country:'',page:'/lien-he'};
  try{
-  let request;
-  globalThis.fetch=async(url,options)=>{request={url,options};return {ok:true,json:async()=>({success:'false',message:'This form needs Activation. Activate Form.'})};};
-  const pending=await notifyByEmail(record,'123','sales@athenatech.com.vn');
-  assert.equal(pending.status,'pending_activation');assert.equal(pending.provider,'formsubmit');
-  assert.equal(request.url,'https://formsubmit.co/ajax/sales%40athenatech.com.vn');
-  assert.match(JSON.parse(request.options.body).message,/Báo giá/);
-  globalThis.fetch=async()=>({ok:true,json:async()=>({success:'true',message:'Submitted'})});
-  assert.equal((await notifyByEmail(record,'124','sales@athenatech.com.vn')).status,'sent');
-  globalThis.fetch=async()=>({ok:true,json:async()=>({success:'false',message:'Rejected'})});
-  assert.equal((await notifyByEmail(record,'125','sales@athenatech.com.vn')).status,'failed');
+  globalThis.fetch=async()=>{throw new Error('Serverless must not call FormSubmit');};
+  const notification=await notifyByEmail(record,'123','sales@athenatech.com.vn');
+  assert.deepEqual(notification,{status:'client_required',provider:'formsubmit',to:'sales@athenatech.com.vn'});
  }finally{
   globalThis.fetch=originalFetch;
   if(originalKey===undefined)delete process.env.RESEND_API_KEY;else process.env.RESEND_API_KEY=originalKey;
@@ -251,7 +244,8 @@ test('the Vercel inquiry function rejects bad requests before touching storage',
   await inquiryFunction({headers:{host:'site.test'},socket:{},...req},res);return res;
  };
  const get=await call({method:'GET'});
- assert.equal(get.statusCode,405);assert.equal(get.headers.allow,'POST');
+ assert.equal(get.statusCode,405);assert.equal(get.headers.allow,'POST, PATCH');
+ assert.equal((await call({method:'PATCH',body:{id:'invalid'}})).statusCode,400);
  assert.equal((await call({method:'POST',headers:{host:'site.test',origin:'https://evil.test'},body:{}})).statusCode,403);
  const invalid=await call({method:'POST',body:{Name:'An',Email:'bad',Message:'x'}});
  assert.equal(invalid.statusCode,400);assert.match(invalid.body.error,/email hợp lệ/);

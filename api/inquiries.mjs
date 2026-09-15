@@ -1,5 +1,5 @@
-/* Vercel Function: POST /api/inquiries stores a contact-form submission. */
-import { clientAddress, isAllowedOrigin, MESSAGES, submitInquiry } from '../lib/inquiries.mjs';
+/* Vercel Function: POST stores an inquiry; PATCH records the browser mail outcome. */
+import { clientAddress, isAllowedOrigin, MESSAGES, reportInquiryNotification, submitInquiry } from '../lib/inquiries.mjs';
 
 function readBody(req) {
   // Vercel parses JSON and form bodies; its getter throws on malformed JSON.
@@ -20,8 +20,8 @@ function readBody(req) {
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
+  if (!['POST', 'PATCH'].includes(req.method)) {
+    res.setHeader('Allow', 'POST, PATCH');
     return res.status(405).json({ error: 'Phương thức không được hỗ trợ.' });
   }
   if (!isAllowedOrigin(req.headers.origin, req.headers.host)) {
@@ -29,6 +29,10 @@ export default async function handler(req, res) {
   }
   const input = readBody(req);
   if (input === null) return res.status(400).json({ error: MESSAGES.invalid });
+  if (req.method === 'PATCH') {
+    const { status, body } = await reportInquiryNotification(input);
+    return res.status(status).json(body);
+  }
   const { status, body } = await submitInquiry(input, {
     address: clientAddress(req.headers, req.socket?.remoteAddress),
     userAgent: req.headers['user-agent'],

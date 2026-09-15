@@ -10,6 +10,32 @@
     'Vui lòng nhập họ tên, địa chỉ email hợp lệ và nội dung tin nhắn.',
     'Hiện chưa gửi được yêu cầu trực tuyến. Quý khách vui lòng liên hệ trực tiếp: Điện thoại +84 912 7676 85, Email sales@athenatech.com.vn.'
   ];
+  async function sendInquiry(payload){
+    const response=await fetch('/api/inquiries',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const result=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(result.error||messages[2]);
+    if(result.notification!=='client_required')return result;
+    let notification='failed';
+    try{
+      const text=[`Yêu cầu liên hệ mới trên Athena Heat Ex (mã ${result.id})`,`Họ tên: ${payload.Name||''}`,`Email: ${payload.Email||''}`,`Công ty: ${payload.Company||''}`,`Quốc gia: ${payload.Country||''}`,`Điện thoại: ${payload.Tel||''}`,`Trang gửi: ${payload.page||location.pathname}`,'Nội dung:',String(payload.Message||'')].join('\n');
+      const sent=await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(result.notificationRecipient)}`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({name:String(payload.Name||''),email:String(payload.Email||''),message:text,
+          _subject:`Yêu cầu liên hệ mới từ ${payload.Name||''}`,_url:location.href,_captcha:'false'})
+      });
+      const answer=await sent.json();
+      if(sent.ok&&(answer.success===true||answer.success==='true'))notification='sent';
+      else if(/needs activation|activate form/i.test(String(answer.message||'')))notification='pending_activation';
+    }catch(error){console.warn('Không chuyển tiếp được email thông báo:',error);}
+    try{
+      const report=await fetch('/api/inquiries',{method:'PATCH',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({id:result.id,notificationToken:result.notificationToken,notification})});
+      const updated=await report.json();
+      if(report.ok)return {...result,notification,message:updated.message,notificationToken:undefined};
+      console.warn('Không cập nhật được trạng thái email trong Admin:',updated.error);
+    }catch(error){console.warn('Không cập nhật được trạng thái email trong Admin:',error);}
+    return {...result,notification,message:notification==='pending_activation'?'Yêu cầu đã được lưu. Email thông báo đang chờ chủ hộp thư xác nhận kích hoạt.':notification==='sent'?messages[0]:'Yêu cầu đã được lưu, nhưng email thông báo chưa được gửi.',notificationToken:undefined};
+  }
   // Optional WebMCP integration mirrors the visible search and inquiry actions.
   const modelContext=document.modelContext;
   if(modelContext?.registerTool){
@@ -22,7 +48,7 @@
         return {query:q,total:found.length,results:found.slice(0,20).map(({text,...x})=>({...x,snippet:text.slice(0,260)}))};
       }});
       modelContext.registerTool({name:'submit_inquiry',title:'Gửi yêu cầu',description:'Gửi yêu cầu báo giá qua biểu mẫu liên hệ của website.',inputSchema:{type:'object',properties:{name:{type:'string'},email:{type:'string'},message:{type:'string'}},required:['name','email','message'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},async execute(input){
-        const payload={Name:String(input?.name||''),Email:String(input?.email||''),Message:String(input?.message||''),page:location.pathname};const r=await fetch('/api/inquiries',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const result=await r.json();if(!r.ok)throw new Error(result.error||'Không gửi được yêu cầu');return result;
+        const payload={Name:String(input?.name||''),Email:String(input?.email||''),Message:String(input?.message||''),page:location.pathname};return sendInquiry(payload);
       }});
     } catch (error) { console.warn('WebMCP registration unavailable',error); }
   }
@@ -50,13 +76,9 @@
     const button=form.querySelector('[type="submit"]');if(button?.disabled)return;
     if(button)button.disabled=true;
     try {
-      const response=await fetch('/api/inquiries',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-      // No endpoint behind this deployment: fall back to the direct channels.
-      if(response.status===404||response.status===405)throw new Error('Inquiry endpoint unavailable');
-      const result=await response.json().catch(()=>({}));
-      if(response.ok){form.reset();notice(result.message||messages[0]);}
-      else notice(result.error||messages[2]);
-    }catch{notice(messages[2]);}finally{if(button)button.disabled=false;}
+      const result=await sendInquiry(payload);
+      form.reset();notice(result.message||messages[0]);
+    }catch(error){notice(error.message||messages[2]);}finally{if(button)button.disabled=false;}
   },true);
   // Enable keyboard access to the original hover navigation without changing its look.
   document.querySelectorAll('.smartmenu li').forEach(item=>{
