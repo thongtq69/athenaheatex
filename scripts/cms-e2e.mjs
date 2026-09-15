@@ -152,6 +152,8 @@ try {
   check(result.response.ok, 'UPDATE ảnh trong thư viện');
   result = await request(`/${tag}-product.html`);
   check(result.data.includes(replacedMediaUrl), 'đổi URL thư viện đồng bộ nơi đang sử dụng');
+  result = await request(`/api/admin/media/${externalMedia._id}`, { method: 'PUT', body: { enabled: false } });
+  check(result.response.status === 409, 'không cho tắt ảnh đang được website sử dụng');
   const mergeTarget = await create('media', { name: `${tag} merge target`, url: 'https://example.com/cms-library-merge-target.jpg', alt: 'Merge target', enabled: true });
   result = await request(`/api/admin/media/${externalMedia._id}`, { method: 'PUT', body: { url: mergeTarget.url } });
   check(result.response.ok && result.data.merged === true && result.data.item._id === mergeTarget._id, 'đổi sang URL đã có sẽ gộp bản ghi ảnh');

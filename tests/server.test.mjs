@@ -43,6 +43,8 @@ test('the deployed entity editors mark only the representative image as required
  assert.match(source,/!url&&!file/);
  assert.match(source,/resource==='media'&&id\?`\/media\/\$\{id\}\/upload`/);
  assert.match(source,/Đã thay ảnh và đồng bộ website/);
+ assert.match(source,/aria-label="Tìm kiếm trong/);
+ assert.match(source,/aria-label="\$\{esc\(label\)\} bằng URL"/);
 });
 test('CMS HTML is normalized before storage and clean HTML is preserved byte-for-byte',()=>{
  const dirty='<!doctype html><html><body><div id="x"></div><div id="x"></div><img src="/a.jpg"><div class="crm-form"><form><input name="Name" placeholder="*Họ tên"><input name="Email" placeholder="*E-mail" type="text"><textarea name="Message" placeholder="*Lời nhắn"></textarea></form></div></body></html>';
