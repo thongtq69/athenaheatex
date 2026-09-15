@@ -6,11 +6,15 @@ import { closeDatabase, getDb } from '../lib/mongodb.mjs';
 import { PUBLIC_PATHS } from '../lib/public-path-map.mjs';
 import { sourcePathForPublicPath } from '../lib/public-paths.mjs';
 
-const issues = { missingPages: [], duplicateIds: [], missingAlts: [], forms: [], brokenLinks: [], legacyPublicLinks: [] };
+const issues = {
+  missingPages: [], duplicateIds: [], missingAlts: [], forms: [], brokenLinks: [], legacyPublicLinks: [],
+  missingMediaRecords: [], disabledMediaInUse: [], missingEntityPages: [], mismatchedEntityPages: [], orphanEntityPages: [],
+};
 try {
   const db = await getDb();
-  const pages = await db.collection(CMS.pages).find({ enabled: true }, { projection: { path: 1 } }).toArray();
+  const pages = await db.collection(CMS.pages).find({ enabled: true }, { projection: { path: 1, sourceEntityId: 1 } }).toArray();
   const paths = new Set(pages.map(page => page.path));
+  const referencedImages = new Set();
 
   for (let start = 0; start < pages.length; start += 4) {
     await Promise.all(pages.slice(start, start + 4).map(async page => {
@@ -24,6 +28,8 @@ try {
         ids.add(id);
       });
       $('img').each((_, node) => {
+        const src = String($(node).attr('src') || '').trim();
+        if (src) referencedImages.add(src);
         if (!String($(node).attr('alt') || '').trim()) issues.missingAlts.push(page.path);
       });
       $('.crm-form form').each((_, node) => {
@@ -38,8 +44,32 @@ try {
     }));
   }
 
+  const media = await db.collection(CMS.media).find({}, { projection: { url: 1, enabled: 1 } }).toArray();
+  const mediaByUrl = new Map(media.map(item => [item.url, item]));
+  for (const src of referencedImages) {
+    if (!mediaByUrl.has(src)) issues.missingMediaRecords.push(src);
+    else if (!mediaByUrl.get(src).enabled) issues.disabledMediaInUse.push(src);
+  }
+
+  const entityIds = new Set();
+  for (const [kind, collection] of [['product', CMS.products], ['service', CMS.services], ['category', CMS.categories]]) {
+    const entities = await db.collection(collection).find({ enabled: true }, { projection: { path: 1 } }).toArray();
+    for (const entity of entities) {
+      const id = String(entity._id);
+      entityIds.add(id);
+      const page = pages.find(item => item.path === entity.path);
+      if (!page) issues.missingEntityPages.push({ kind, id, path: entity.path });
+      else if (String(page.sourceEntityId || '') !== id) issues.mismatchedEntityPages.push({ kind, id, path: entity.path, pageEntityId: String(page.sourceEntityId || '') });
+    }
+  }
+  for (const page of pages) {
+    if (page.sourceEntityId && !entityIds.has(String(page.sourceEntityId))) {
+      issues.orphanEntityPages.push({ path: page.path, sourceEntityId: String(page.sourceEntityId) });
+    }
+  }
+
   const counts = Object.fromEntries(Object.entries(issues).map(([name, values]) => [name, values.length]));
-  console.log(JSON.stringify({ pagesChecked: pages.length, counts, samples: Object.fromEntries(Object.entries(issues).map(([name, values]) => [name, values.slice(0, 5)])) }, null, 2));
+  console.log(JSON.stringify({ pagesChecked: pages.length, referencedImages: referencedImages.size, mediaRecords: media.length, counts, samples: Object.fromEntries(Object.entries(issues).map(([name, values]) => [name, values.slice(0, 5)])) }, null, 2));
   if (Object.values(counts).some(Boolean)) process.exitCode = 1;
 } finally {
   await closeDatabase();

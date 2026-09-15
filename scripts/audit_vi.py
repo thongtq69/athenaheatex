@@ -37,12 +37,24 @@ def dom_signature(soup):
     normalization to both sides keeps this check sensitive to accidental
     structural damage from translation.
     """
-    for node in soup.select('script,style,noscript,title,.lang,.header-lang,.crmFormVali-error,input[name="lng"],input[name="mid"]'):
+    for node in soup.select('script,style,noscript,title,.lang,.header-lang,.crmFormVali-error,.cms-visually-hidden,input[name="lng"],input[name="mid"]'):
         node.decompose()
+    # The upstream video lists contain nested <a> elements. HTML5 parsers
+    # correctly split those invalid wrappers, so compare the meaningful card
+    # structure while ignoring only the repaired link wrappers.
+    for node in soup.select('.videolist a'):
+        node.unwrap()
     for image in soup.find_all("img"):
         src = (image.get("src") or "").split("?")[0].split("#")[0]
         if src.startswith("/") and not src.startswith("//") and not (DIST / unquote(src).lstrip("/")).exists():
             image.decompose()
+    seen_ids = set()
+    for node in soup.find_all(id=True):
+        value = node.get("id")
+        if value in seen_ids:
+            del node["id"]
+        else:
+            seen_ids.add(value)
     return [(tag.name, tuple(sorted(tag.get("class", []))), tag.get("id")) for tag in soup.find_all(True)]
 
 
@@ -118,6 +130,9 @@ def main():
     locale_links, broken_links, missing_assets = [], [], []
     switcher_remnants, leftovers, mixed, dom_mismatches, comment_artifacts = [], [], [], [], []
     non_vietnamese_html_lang = []
+    public_paths_file = DIST / "public-paths.json"
+    public_paths = json.loads(public_paths_file.read_text(encoding="utf8")) if public_paths_file.exists() else {}
+    public_routes = set(public_paths.values())
 
     for page in sorted(DIST.glob("*.html")):
         raw = page.read_text(encoding="utf8")
@@ -159,6 +174,8 @@ def main():
                 if resolved.startswith("/languages/"):
                     locale_links.append({"page": rel, "attr": attr, "href": value})
                     continue
+                if resolved.startswith("/api/") or resolved in public_routes:
+                    continue
                 if resolved.endswith("/"):
                     resolved += "index.html"
                 target = DIST / resolved.lstrip("/")
@@ -171,8 +188,6 @@ def main():
     # every page that has real content must appear in it.
     index_path = DIST / "search-index.json"
     index = json.loads(index_path.read_text(encoding="utf8")) if index_path.exists() else []
-    public_paths_file = DIST / "public-paths.json"
-    public_paths = json.loads(public_paths_file.read_text(encoding="utf8")) if public_paths_file.exists() else {}
     source_for_public = {visitor: source for source, visitor in public_paths.items()}
     indexed = {source_for_public.get(record["path"], record["path"]).lstrip("/") for record in index}
     stub = re.compile(r"^\d+_\d+\.html$")

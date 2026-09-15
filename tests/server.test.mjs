@@ -1,5 +1,6 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { load } from 'cheerio';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -8,6 +9,8 @@ import { clientAddress, isAllowedOrigin, normalizeInquiry } from '../lib/inquiri
 import inquiryFunction from '../api/inquiries.mjs';
 import { PUBLIC_PATHS } from '../lib/public-path-map.mjs';
 import { publicPathForSourcePath, sourcePathForPublicPath } from '../lib/public-paths.mjs';
+import { normalizeResource } from '../lib/admin-api.mjs';
+import { normalizeDocumentHtml, normalizeFragmentHtml } from '../lib/html-normalize.mjs';
 
 let server,base,dataDir;
 before(async()=>{
@@ -38,6 +41,24 @@ test('the deployed entity editors mark only the representative image as required
  assert.match(source,/\['image','Ảnh đại diện','image',true\]/);
  assert.match(source,/data-image-required="\$\{required\}"/);
  assert.match(source,/!url&&!file/);
+});
+test('CMS HTML is normalized before storage and clean HTML is preserved byte-for-byte',()=>{
+ const dirty='<!doctype html><html><body><div id="x"></div><div id="x"></div><img src="/a.jpg"><div class="crm-form"><form><input name="Name" placeholder="*Họ tên"><input name="Email" placeholder="*E-mail" type="text"><textarea name="Message" placeholder="*Lời nhắn"></textarea></form></div></body></html>';
+ const normalized=normalizeDocumentHtml(dirty,'Ảnh trang');
+ assert.notEqual(normalized,dirty);
+ const $=load(normalized);
+ assert.equal($('[id="x"]').length,1);
+ assert.equal($('img').attr('alt'),'Ảnh trang');
+ assert.equal($('.crm-form form').attr('action'),'/api/inquiries');
+ assert.equal($('.crm-form form').attr('method'),'post');
+ assert.equal($('h1').length,1);
+ assert.equal($('input[name="Name"]').attr('aria-label'),'Họ tên');
+ assert.equal($('input[name="Email"]').attr('type'),'email');
+ assert.notEqual($('textarea[name="Message"]').attr('required'),undefined);
+ const clean='<p id="clean"><img src="/ok.jpg" alt="Đã có"></p>';
+ assert.equal(normalizeFragmentHtml(clean,'Fallback'),clean);
+ const page=normalizeResource('pages',{path:'/kiem-tra.html',title:'Kiểm tra',html:dirty});
+ assert.equal(load(page.html)('img').attr('alt'),'Kiểm tra');
 });
 test('Máy móc uses the Vietnamese public URL and the imported URL redirects',async()=>{
  const legacy=await fetch(base+'/machinery-2.html',{redirect:'manual'});
