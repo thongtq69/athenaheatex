@@ -8,7 +8,7 @@
   const messages=[
     'Cảm ơn quý khách! Yêu cầu đã được gửi thành công, chúng tôi sẽ phản hồi trong thời gian sớm nhất.',
     'Vui lòng nhập họ tên, địa chỉ email hợp lệ và nội dung tin nhắn.',
-    'Hiện chưa gửi được yêu cầu trực tuyến. Quý khách vui lòng liên hệ trực tiếp: Điện thoại +86-21-50911019, WhatsApp +86-18616619098, Email info@shjoylong.com.'
+    'Hiện chưa gửi được yêu cầu trực tuyến. Quý khách vui lòng liên hệ trực tiếp: Điện thoại +84 912 7676 85, Email sales@athenatech.com.vn.'
   ];
   // Optional WebMCP integration mirrors the visible search and inquiry actions.
   const modelContext=document.modelContext;

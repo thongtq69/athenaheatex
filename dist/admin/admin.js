@@ -16,7 +16,7 @@ const configs = {
   categories:{singular:'danh mục',fields:[['name','Tên danh mục','text'],['path','Đường dẫn trang','text'],['parentId','Danh mục cha','category-select'],['kind','Nhóm','select',false,['product','service']],['productPaths','Sản phẩm trong danh mục','product-multi-select'],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['image','Ảnh đại diện','image',true],['descriptionHtml','Nội dung mô tả','richtext']]},
   banners:{singular:'banner',fields:[['title','Tên banner','text',true],['url','Liên kết','text',true],['alt','Alt ảnh','text'],['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['image','Ảnh banner','image',true]]},
   media:{singular:'ảnh',fields:[['name','Tên ảnh','text',true],['alt','Alt ảnh','text'],['enabled','Đang sử dụng','checkbox'],['sortOrder','Thứ tự','number'],['url','Nguồn ảnh','image',true]]},
-  inquiries:{singular:'yêu cầu',fields:[['status','Trạng thái','select',true,['new','processing','done','spam']]]},
+  inquiries:{singular:'yêu cầu',fields:[['name','Họ tên','readonly'],['email','Email khách','readonly'],['phone','Điện thoại','readonly'],['company','Công ty','readonly'],['country','Quốc gia','readonly'],['page','Trang gửi','readonly'],['message','Nội dung yêu cầu','readonly-tall'],['notificationRecipient','Email nhận thông báo','readonly'],['notificationStatus','Trạng thái email thông báo','readonly'],['status','Trạng thái xử lý','select',true,['new','processing','done','spam']]]},
 };
 function entityFields({withCategory,requireIdentity,requireImage}){const fields=[['name','Tên','text',requireIdentity],['path','Đường dẫn trang','text',requireIdentity]];if(withCategory)fields.push(['categoryId','Danh mục','category-select']);return [...fields,['enabled','Đang hiển thị','checkbox'],['sortOrder','Thứ tự','number'],['summary','Mô tả ngắn','textarea'],['image','Ảnh đại diện','image',requireImage],['descriptionHtml','Nội dung chi tiết','richtext'],['seo.title','Tiêu đề tìm kiếm','text'],['seo.description','Mô tả tìm kiếm','textarea'],['seo.keywords','Từ khóa tìm kiếm','textarea']];}
 
@@ -166,7 +166,7 @@ function row(resource,item,index,offset,total){
   const name=item.title||item.name||item.email||item.path||item.url||'Không tên';
   const secondary=item.path||item.url||item.email||item.pagePath||item.company||'';
   const image=item.image||((resource==='media')?item.url:'');
-  const status=resource==='inquiries'?item.status:(item.enabled===false?'Đang tắt':'Đang bật');
+  const status=resource==='inquiries'?`${item.status||'new'} / email: ${item.notificationStatus||'chưa gửi'}`:(item.enabled===false?'Đang tắt':'Đang bật');
   const statusClass=(item.enabled===false||['spam'].includes(item.status))?'off':'';
   const preview=item.path?`<a href="${esc(item.path)}" target="_blank">Xem ↗</a>`:image?`<a href="${esc(image)}" target="_blank">Ảnh ↗</a>`:'';
   const toggle=('enabled'in item)?`<button data-action="toggle" aria-label="${item.enabled===false?'Bật':'Tắt'} ${esc(name)}">${item.enabled===false?'Bật':'Tắt'}</button>`:'';
@@ -220,6 +220,7 @@ async function openEditor(resource,id=null){
 }
 function fieldHtml([name,label,type,required=false,options=[]],item){
   const value=getValue(item,name);const full=['textarea','textarea-tall','image'].includes(type);
+  if(type==='readonly'||type==='readonly-tall')return `<label class="field full"><span>${esc(label)}</span>${type==='readonly-tall'?`<textarea readonly class="tall">${esc(value||'')}</textarea>`:`<input type="text" readonly value="${esc(value||'')}">`}</label>`;
   if(type==='checkbox')return `<label class="field check"><input data-path="${name}" type="checkbox" ${value!==false?'checked':''}> ${esc(label)}</label>`;
   if(type==='category-select')return `<label class="field"><span>${esc(label)}</span><select data-path="${name}"><option value="">— Không chọn —</option>${state.categories.filter(category=>category._id!==item._id).map(category=>`<option value="${esc(category._id)}" ${value===category._id?'selected':''}>${esc(category.name)} (${esc(category.path)})</option>`).join('')}</select></label>`;
   if(type==='product-multi-select'){const selected=new Set(Array.isArray(value)?value:[]);return `<label class="field full"><span>${esc(label)}</span><select data-path="${name}" multiple size="8" aria-label="${esc(label)}">${state.products.map(product=>`<option value="${esc(product.path)}" ${selected.has(product.path)?'selected':''}>${esc(product.name)} (${esc(product.path)})</option>`).join('')}</select><small>Giữ Ctrl/Cmd để chọn nhiều sản phẩm. Các sản phẩm có thể xuất hiện ở nhiều danh mục.</small></label>`;}

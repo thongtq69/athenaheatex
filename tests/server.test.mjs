@@ -97,6 +97,20 @@ test('Máy móc uses the Vietnamese public URL and the imported URL redirects',a
  const html=await page.text();
  assert.match(html, /href="\/may-moc"/);
  assert.doesNotMatch(html, /href="\/machinery-2\.html"/);
+ const $=load(html);
+ assert.equal($('.proDisplay .box').length,20);
+ assert.equal($('#pageNum a[title="1"]').attr('href'),'/may-moc');
+});
+test('machine category pages show their imported product cards and page 1 remains reachable',async()=>{
+ for(const [path,minimum] of [['/may-chiet-rot-hop-tiet-trung-69',12],['/may-chiet-rot-va-dong-goi-39',18],['/bon-inox-28',11]]){
+  const response=await fetch(base+path);assert.equal(response.status,200,path);
+  const $=load(await response.text());assert.ok($('.proDisplay .box').length>=minimum,path);
+ }
+ for(const route of ['/may-moc-trang-2','/may-moc-trang-6']){
+  const response=await fetch(base+route);assert.equal(response.status,200,route);
+  const $=load(await response.text());assert.ok($('.proDisplay .box').length>0,route);
+  assert.equal($('#pageNum a[title="1"]').attr('href'),'/may-moc',route);
+ }
 });
 test('every imported page has one reversible Vietnamese URL and configured Vercel routing',async()=>{
  const config=JSON.parse(await readFile(path.join(process.cwd(),'vercel.json'),'utf8'));
