@@ -5,7 +5,7 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { createServer } from '../server.mjs';
-import { clientAddress, isAllowedOrigin, normalizeInquiry } from '../lib/inquiries.mjs';
+import { clientAddress, isAllowedOrigin, normalizeInquiry, notifyByEmail } from '../lib/inquiries.mjs';
 import inquiryFunction from '../api/inquiries.mjs';
 import { PUBLIC_PATHS } from '../lib/public-path-map.mjs';
 import { publicPathForSourcePath, sourcePathForPublicPath } from '../lib/public-paths.mjs';
@@ -220,6 +220,30 @@ test('inquiry normalization maps the mirrored form fields and enforces limits',(
  assert.equal(isAllowedOrigin('https://site.test','site.test'),true);
  assert.equal(isAllowedOrigin('https://evil.test','site.test'),false);
  assert.equal(clientAddress({'x-forwarded-for':'203.0.113.9, 10.0.0.1'},'127.0.0.1'),'203.0.113.9');
+});
+test('no-account mail fallback distinguishes activation, acceptance, and failure',async()=>{
+ const originalFetch=globalThis.fetch;
+ const originalKey=process.env.RESEND_API_KEY;
+ const originalWebhook=process.env.INQUIRY_EMAIL_WEBHOOK_URL;
+ delete process.env.RESEND_API_KEY;
+ delete process.env.INQUIRY_EMAIL_WEBHOOK_URL;
+ const record={name:'An',email:'an@example.com',message:'Báo giá',phone:'',company:'',country:'',page:'/lien-he'};
+ try{
+  let request;
+  globalThis.fetch=async(url,options)=>{request={url,options};return {ok:true,json:async()=>({success:'false',message:'This form needs Activation. Activate Form.'})};};
+  const pending=await notifyByEmail(record,'123','sales@athenatech.com.vn');
+  assert.equal(pending.status,'pending_activation');assert.equal(pending.provider,'formsubmit');
+  assert.equal(request.url,'https://formsubmit.co/ajax/sales%40athenatech.com.vn');
+  assert.match(JSON.parse(request.options.body).message,/Báo giá/);
+  globalThis.fetch=async()=>({ok:true,json:async()=>({success:'true',message:'Submitted'})});
+  assert.equal((await notifyByEmail(record,'124','sales@athenatech.com.vn')).status,'sent');
+  globalThis.fetch=async()=>({ok:true,json:async()=>({success:'false',message:'Rejected'})});
+  assert.equal((await notifyByEmail(record,'125','sales@athenatech.com.vn')).status,'failed');
+ }finally{
+  globalThis.fetch=originalFetch;
+  if(originalKey===undefined)delete process.env.RESEND_API_KEY;else process.env.RESEND_API_KEY=originalKey;
+  if(originalWebhook===undefined)delete process.env.INQUIRY_EMAIL_WEBHOOK_URL;else process.env.INQUIRY_EMAIL_WEBHOOK_URL=originalWebhook;
+ }
 });
 test('the Vercel inquiry function rejects bad requests before touching storage',async()=>{
  const call=async req=>{

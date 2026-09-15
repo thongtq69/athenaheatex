@@ -166,7 +166,8 @@ function row(resource,item,index,offset,total){
   const name=item.title||item.name||item.email||item.path||item.url||'Không tên';
   const secondary=item.path||item.url||item.email||item.pagePath||item.company||'';
   const image=item.image||((resource==='media')?item.url:'');
-  const status=resource==='inquiries'?`${item.status||'new'} / email: ${item.notificationStatus||'chưa gửi'}`:(item.enabled===false?'Đang tắt':'Đang bật');
+  const notificationLabels={sent:'dịch vụ đã nhận',pending_activation:'chờ chủ hộp thư kích hoạt',failed:'gửi thất bại',not_configured:'chưa cấu hình'};
+  const status=resource==='inquiries'?`${item.status||'new'} / email: ${notificationLabels[item.notificationStatus]||item.notificationStatus||'chưa gửi'}`:(item.enabled===false?'Đang tắt':'Đang bật');
   const statusClass=(item.enabled===false||['spam'].includes(item.status))?'off':'';
   const preview=item.path?`<a href="${esc(item.path)}" target="_blank">Xem ↗</a>`:image?`<a href="${esc(image)}" target="_blank">Ảnh ↗</a>`:'';
   const toggle=('enabled'in item)?`<button data-action="toggle" aria-label="${item.enabled===false?'Bật':'Tắt'} ${esc(name)}">${item.enabled===false?'Bật':'Tắt'}</button>`:'';
