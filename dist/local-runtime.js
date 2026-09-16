@@ -10,31 +10,56 @@
     'Vui lòng nhập họ tên, địa chỉ email hợp lệ và nội dung tin nhắn.',
     'Hiện chưa gửi được yêu cầu trực tuyến. Quý khách vui lòng liên hệ trực tiếp: Điện thoại +84 912 7676 85, Email sales@athenatech.com.vn.'
   ];
-  async function sendInquiry(payload){
-    const response=await fetch('/api/inquiries',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    const result=await response.json().catch(()=>({}));
-    if(!response.ok)throw new Error(result.error||messages[2]);
-    if(result.notification!=='client_required')return result;
-    let notification='failed';
+  const FORM_SUBMIT_RECIPIENT='sales@athenatech.com.vn';
+  async function notifyFormSubmit(payload,id=''){
     try{
-      const text=[`Yêu cầu liên hệ mới trên Athena Heat Ex (mã ${result.id})`,`Họ tên: ${payload.Name||''}`,`Email: ${payload.Email||''}`,`Công ty: ${payload.Company||''}`,`Quốc gia: ${payload.Country||''}`,`Điện thoại: ${payload.Tel||''}`,`Trang gửi: ${payload.page||location.pathname}`,'Nội dung:',String(payload.Message||'')].join('\n');
-      const sent=await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(result.notificationRecipient)}`,{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({name:String(payload.Name||''),email:String(payload.Email||''),message:text,
-          _subject:`Yêu cầu liên hệ mới từ ${payload.Name||''}`,_url:location.href,_captcha:'false'})
+      const sent=await fetch(`https://formsubmit.co/ajax/${FORM_SUBMIT_RECIPIENT}`,{
+        method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify({
+          name:String(payload.Name||''),email:String(payload.Email||''),company:String(payload.Company||''),
+          country:String(payload.Country||''),phone:String(payload.Tel||payload.Phone||''),message:String(payload.Message||''),
+          page:String(payload.page||location.pathname),inquiry_id:String(id||''),
+          _subject:`Yêu cầu liên hệ mới từ ${payload.Name||''}`,_replyto:String(payload.Email||''),
+          _template:'table',_url:location.href,_captcha:'false',_honey:''
+        })
       });
-      const answer=await sent.json();
-      if(sent.ok&&(answer.success===true||answer.success==='true'))notification='sent';
-      else if(/needs activation|activate form/i.test(String(answer.message||'')))notification='pending_activation';
-    }catch(error){console.warn('Không chuyển tiếp được email thông báo:',error);}
+      const answer=await sent.json().catch(()=>({}));
+      if(sent.ok&&(answer.success===true||answer.success==='true'))return 'sent';
+      if(/needs activation|activate form/i.test(String(answer.message||'')))return 'pending_activation';
+    }catch(error){console.warn('Không gửi được thông báo FormSubmit:',error);}
+    return 'failed';
+  }
+  async function reportNotification(result,notification){
+    if(!result?.notificationToken)return null;
     try{
       const report=await fetch('/api/inquiries',{method:'PATCH',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({id:result.id,notificationToken:result.notificationToken,notification})});
       const updated=await report.json();
-      if(report.ok)return {...result,notification,message:updated.message,notificationToken:undefined};
+      if(report.ok)return updated;
       console.warn('Không cập nhật được trạng thái email trong Admin:',updated.error);
     }catch(error){console.warn('Không cập nhật được trạng thái email trong Admin:',error);}
-    return {...result,notification,message:notification==='pending_activation'?'Yêu cầu đã được lưu. Email thông báo đang chờ chủ hộp thư xác nhận kích hoạt.':notification==='sent'?messages[0]:'Yêu cầu đã được lưu, nhưng email thông báo chưa được gửi.',notificationToken:undefined};
+    return null;
+  }
+  async function sendInquiry(payload){
+    let result=null,saveError=null;
+    try{
+      const response=await fetch('/api/inquiries',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      result=await response.json().catch(()=>({}));
+      if(!response.ok){
+        const error=new Error(result.error||messages[2]);error.status=response.status;result=null;throw error;
+      }
+    }catch(error){
+      if(error.status&&error.status<500)throw error;
+      saveError=error;
+    }
+    // A server-side provider may already have delivered the message. In every
+    // other case FormSubmit is mandatory, including when persistence is down.
+    if(result?.notification==='sent')return result;
+    const notification=await notifyFormSubmit(payload,result?.id);
+    const updated=await reportNotification(result,notification);
+    if(notification==='sent')return {...(result||{}),ok:true,notification,message:updated?.message||messages[0],notificationToken:undefined};
+    if(result)return {...result,notification,message:notification==='pending_activation'?'Yêu cầu đã được lưu. Email thông báo đang chờ chủ hộp thư xác nhận kích hoạt.':'Yêu cầu đã được lưu, nhưng email thông báo chưa được gửi.',notificationToken:undefined};
+    throw saveError||new Error(messages[2]);
   }
   // Optional WebMCP integration mirrors the visible search and inquiry actions.
   const modelContext=document.modelContext;

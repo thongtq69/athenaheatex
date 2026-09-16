@@ -200,6 +200,18 @@ test('WeChat shortcuts copy the configured contact and attempt to open the app',
  assert.match(script,/window\.location\.href=link\.href/);
  assert.match(script,/Add Contacts/);
 });
+test('both inquiry forms always notify the activated FormSubmit mailbox',async()=>{
+ const page=load(await (await fetch(base+'/contact-us-7.html')).text());
+ assert.equal(page('.crm-form form').length,2);
+ const script=await (await fetch(base+'/local-runtime.js')).text();
+ assert.match(script,/FORM_SUBMIT_RECIPIENT='sales@athenatech\.com\.vn'/);
+ assert.match(script,/formsubmit\.co\/ajax/);
+ assert.match(script,/'Accept':'application\/json'/);
+ assert.match(script,/_replyto/);
+ assert.match(script,/_template:'table'/);
+ assert.match(script,/if\(result\?\.notification==='sent'\)return result/);
+ assert.match(script,/notifyFormSubmit\(payload,result\?\.id\)/);
+});
 test('search returns Vietnamese results addressed at root routes',async()=>{
  const r=await fetch(base+'/api/search?q=máy');assert.equal(r.status,200);
  const data=await r.json();assert.ok(data.total>0);
@@ -281,15 +293,18 @@ test('no-account mail fallback lets the browser forward after storage',async()=>
  const originalWebhook=process.env.INQUIRY_EMAIL_WEBHOOK_URL;
  delete process.env.RESEND_API_KEY;
  delete process.env.INQUIRY_EMAIL_WEBHOOK_URL;
+ const originalRecipient=process.env.INQUIRY_TO_EMAIL;
+ process.env.INQUIRY_TO_EMAIL='wrong-recipient@example.com';
  const record={name:'An',email:'an@example.com',message:'Báo giá',phone:'',company:'',country:'',page:'/lien-he'};
  try{
   globalThis.fetch=async()=>{throw new Error('Serverless must not call FormSubmit');};
-  const notification=await notifyByEmail(record,'123','sales@athenatech.com.vn');
+  const notification=await notifyByEmail(record,'123','another-wrong-recipient@example.com');
   assert.deepEqual(notification,{status:'client_required',provider:'formsubmit',to:'sales@athenatech.com.vn'});
  }finally{
   globalThis.fetch=originalFetch;
   if(originalKey===undefined)delete process.env.RESEND_API_KEY;else process.env.RESEND_API_KEY=originalKey;
   if(originalWebhook===undefined)delete process.env.INQUIRY_EMAIL_WEBHOOK_URL;else process.env.INQUIRY_EMAIL_WEBHOOK_URL=originalWebhook;
+  if(originalRecipient===undefined)delete process.env.INQUIRY_TO_EMAIL;else process.env.INQUIRY_TO_EMAIL=originalRecipient;
  }
 });
 test('the Vercel inquiry function rejects bad requests before touching storage',async()=>{
