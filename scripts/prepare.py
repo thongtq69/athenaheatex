@@ -51,11 +51,8 @@ CONTACT_CHANNEL_RULES = """/* Contact shortcuts shared by the footer, inquiry fo
 .contact-channel-icon svg,.footer-channel-icon svg{width:24px;height:24px;fill:currentColor}
 .contact-channel-whatsapp{background:#20c76a}.contact-channel-zalo{background:#1688f8}.contact-channel-wechat{background:#22b957}.contact-channel-email{background:#f0645c;font-size:20px}
 .footShare ul{display:flex;flex-wrap:wrap;align-items:center}.footShare .contact-channel-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
-.form-contact-channels{margin:0;padding:14px 20px 8px;background:#f7fbfe;border-bottom:1px solid #d8eaf5;box-sizing:border-box}
-.form-contact-channels p{margin:0 0 10px;font-weight:700;color:#287da9}.form-contact-channels ul{display:flex;flex-wrap:wrap;margin:0;padding:0}
-.form-contact-channels .contact-channel-label{color:#333}.footForm .form-contact-channels{padding:8px;background:rgba(255,255,255,.1);border:0}.footForm .form-contact-channels p,.footForm .contact-channel-label{color:#fff}.footForm .contact-channel-icon{width:32px;height:32px;border-radius:9px}.footForm .form-contact-channel{margin-right:5px!important}
 #footerBar .footer-channel-icon{width:22px;height:22px;margin:0 auto;background:transparent!important;border-radius:0}#footerBar .footer-channel-icon svg{width:20px;height:20px}
-@media screen and (max-width:768px){.form-contact-channels{padding:12px}.form-contact-channels .contact-channel-label{font-size:13px}.contact-channel-icon{width:36px;height:36px}.footShare ul{justify-content:flex-start}}
+@media screen and (max-width:768px){.contact-channel-icon{width:36px;height:36px}.footShare ul{justify-content:flex-start}}
 """
 CSS_COMMENT = re.compile(r"/\*.*?\*/", re.S)
 CSS_RULE = re.compile(r"([^{}]*)\{([^{}]*)\}")

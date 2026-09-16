@@ -59,6 +59,22 @@
     const close=document.createElement('button');close.type='button';close.textContent='OK';close.onclick=()=>box.close();
     box.append(content,close);document.body.append(box);box.addEventListener('close',()=>box.remove());box.showModal();
   }
+  function copyContactValue(value){
+    if(navigator.clipboard?.writeText){navigator.clipboard.writeText(value).catch(()=>{});return;}
+    const field=document.createElement('textarea');field.value=value;field.setAttribute('readonly','');field.style.position='fixed';field.style.opacity='0';
+    document.body.append(field);field.select();try{document.execCommand('copy');}catch{}field.remove();
+  }
+  document.addEventListener('click',event=>{
+    const link=event.target.closest?.('a[data-contact-kind="wechat"][href^="weixin:"]');
+    if(!link)return;
+    event.preventDefault();
+    const value=String(link.dataset.contactValue||'+84 912 76 76 85');
+    copyContactValue(value);
+    window.location.href=link.href;
+    setTimeout(()=>{
+      if(document.visibilityState==='visible'&&document.hasFocus())notice(`Đã sao chép số/ID WeChat ${value}. Nếu ứng dụng chưa tự mở, hãy mở WeChat, chọn Add Contacts và dán số/ID này.`);
+    },900);
+  });
   document.addEventListener('submit',async event=>{
     const form=event.target;
     if(!(form instanceof HTMLFormElement))return;

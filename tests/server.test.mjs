@@ -102,7 +102,7 @@ test('legacy branding and contact details are normalized everywhere visitors can
  assert.match(contact,/contact-channel-whatsapp/);
  assert.match(contact,/contact-channel-zalo/);
  assert.match(contact,/contact-channel-wechat/);
- assert.match(contact,/form-contact-channels/);
+ assert.doesNotMatch(contact,/form-contact-channels|Liên hệ trực tiếp/);
  assert.doesNotMatch(contact,/facebook\.com\/joylong|twitter\.com\/Joylong|linkedin\.com\/company\/shanghai-joylong/i);
 });
 
@@ -185,6 +185,13 @@ test('legacy contact helper never posts inquiry data to the cloned upstream site
  const script=await (await fetch(base+'/aifeedback/form.js')).text();
  assert.match(script,/\/api\/inquiries/);
  assert.doesNotMatch(script,/shjoylong\.com|console\.log\(form\.serialize\(\)\)/);
+});
+test('WeChat shortcuts copy the configured contact and attempt to open the app',async()=>{
+ const script=await (await fetch(base+'/local-runtime.js')).text();
+ assert.match(script,/data-contact-kind="wechat"/);
+ assert.match(script,/navigator\.clipboard/);
+ assert.match(script,/window\.location\.href=link\.href/);
+ assert.match(script,/Add Contacts/);
 });
 test('search returns Vietnamese results addressed at root routes',async()=>{
  const r=await fetch(base+'/api/search?q=máy');assert.equal(r.status,200);
