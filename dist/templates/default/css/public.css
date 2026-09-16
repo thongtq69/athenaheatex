@@ -289,8 +289,10 @@ text-overflow: ellipsis; white-space: nowrap;}
 .contact-channel-icon svg,.footer-channel-icon svg{width:24px;height:24px;fill:currentColor}
 .contact-channel-whatsapp{background:#20c76a}.contact-channel-zalo{background:#1688f8}.contact-channel-wechat{background:#22b957}.contact-channel-email{background:#f0645c;font-size:20px}
 .footShare ul{display:flex;flex-wrap:wrap;align-items:center}.footShare .contact-channel-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.inquiry-contact-channels{padding:16px 25px 6px;background:#f7fbfe;border:1px solid #e2edf4;border-width:0 1px;box-sizing:border-box}
+.inquiry-contact-channels ul{display:flex;flex-wrap:wrap;align-items:center;margin:0;padding:0}.inquiry-contact-channels .contact-channel-item{float:none!important;display:block!important;width:auto!important;flex:0 0 auto}.inquiry-contact-channels .contact-channel-label{color:#333}
 #footerBar .footer-channel-icon{width:22px;height:22px;margin:0 auto;background:transparent!important;border-radius:0}#footerBar .footer-channel-icon svg{width:20px;height:20px}
-@media screen and (max-width:768px){.contact-channel-icon{width:36px;height:36px}.footShare ul{justify-content:flex-start}}
+@media screen and (max-width:768px){.contact-channel-icon{width:36px;height:36px}.footShare ul{justify-content:flex-start}.inquiry-contact-channels{padding:12px 12px 4px}.inquiry-contact-channels .contact-channel-label{font-size:13px}}
 
 
 /* These upstream images 404 at the source site; suppress the failed

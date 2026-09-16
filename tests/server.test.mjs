@@ -103,6 +103,13 @@ test('legacy branding and contact details are normalized everywhere visitors can
  assert.match(contact,/contact-channel-zalo/);
  assert.match(contact,/contact-channel-wechat/);
  assert.doesNotMatch(contact,/form-contact-channels|Liên hệ trực tiếp/);
+ const $contact=load(contact);
+ assert.equal($contact('.contactRight .inquiry-contact-channels').length,1);
+ assert.equal($contact('.contactRight .inquiry-contact-channels a[data-contact-kind]').length,3);
+ assert.equal($contact('.footForm .inquiry-contact-channels').length,0);
+ assert.match($contact('.inquiry-contact-channels a[data-contact-kind="whatsapp"]').attr('href'),/^https:\/\/wa\.me\//);
+ assert.match($contact('.inquiry-contact-channels a[data-contact-kind="zalo"]').attr('href'),/^https:\/\/zalo\.me\//);
+ assert.match($contact('.inquiry-contact-channels a[data-contact-kind="wechat"]').attr('href'),/^weixin:\/\//);
  assert.doesNotMatch(contact,/facebook\.com\/joylong|twitter\.com\/Joylong|linkedin\.com\/company\/shanghai-joylong/i);
 });
 
