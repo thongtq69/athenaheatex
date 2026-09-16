@@ -1,8 +1,8 @@
 {
-  "name": "joylong-local-mirror",
+  "name": "athena-heatex-website",
   "version": "1.0.0",
   "private": true,
-  "description": "Vietnamese edition of the Shanghai Joylong website, rendered from the English source mirror",
+  "description": "Vietnamese website and content management system for ATHENA HEATEX",
   "scripts": {
     "start": "node --env-file-if-exists=.env.local server.mjs",
     "dev": "node --env-file-if-exists=.env.local server.mjs",

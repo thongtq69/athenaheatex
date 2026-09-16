@@ -44,6 +44,19 @@ HEADER_RULE = """/* The header used to stack a language switcher above the searc
    single language that row is gone, so the right-hand column is centred
    against the logo instead of hugging the top edge of the header. */
 @media screen and (min-width:769px){.topRight{margin-top:15px;}}"""
+CONTACT_CHANNEL_RULES = """/* Contact shortcuts shared by the footer, inquiry forms and mobile bar. */
+.contact-channel-item{list-style:none;display:inline-block;vertical-align:top;margin:0 8px 8px 0!important;padding:0!important;float:none!important}
+.contact-channel-item a{display:flex!important;align-items:center;gap:7px;text-decoration:none}
+.contact-channel-icon,.footer-channel-icon{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:11px;color:#fff;font:700 11px/1 Arial,sans-serif;box-sizing:border-box;flex:0 0 auto}
+.contact-channel-icon svg,.footer-channel-icon svg{width:24px;height:24px;fill:currentColor}
+.contact-channel-whatsapp{background:#20c76a}.contact-channel-zalo{background:#1688f8}.contact-channel-wechat{background:#22b957}.contact-channel-email{background:#f0645c;font-size:20px}
+.footShare ul{display:flex;flex-wrap:wrap;align-items:center}.footShare .contact-channel-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.form-contact-channels{margin:0;padding:14px 20px 8px;background:#f7fbfe;border-bottom:1px solid #d8eaf5;box-sizing:border-box}
+.form-contact-channels p{margin:0 0 10px;font-weight:700;color:#287da9}.form-contact-channels ul{display:flex;flex-wrap:wrap;margin:0;padding:0}
+.form-contact-channels .contact-channel-label{color:#333}.footForm .form-contact-channels{padding:8px;background:rgba(255,255,255,.1);border:0}.footForm .form-contact-channels p,.footForm .contact-channel-label{color:#fff}.footForm .contact-channel-icon{width:32px;height:32px;border-radius:9px}.footForm .form-contact-channel{margin-right:5px!important}
+#footerBar .footer-channel-icon{width:22px;height:22px;margin:0 auto;background:transparent!important;border-radius:0}#footerBar .footer-channel-icon svg{width:20px;height:20px}
+@media screen and (max-width:768px){.form-contact-channels{padding:12px}.form-contact-channels .contact-channel-label{font-size:13px}.contact-channel-icon{width:36px;height:36px}.footShare ul{justify-content:flex-start}}
+"""
 CSS_COMMENT = re.compile(r"/\*.*?\*/", re.S)
 CSS_RULE = re.compile(r"([^{}]*)\{([^{}]*)\}")
 CSS_BACKGROUND_DECL = re.compile(r"background(?:-image)?\s*:([^;]*)")
@@ -110,7 +123,7 @@ def apply_stylesheet_overrides():
         end = css.find(OVERRIDE_END, start)
         css = css[:start] + css[end + len(OVERRIDE_END):] if end != -1 else css[:start]
     STYLESHEET.write_text(css.rstrip("\n") + "\n", encoding="utf8")
-    block = "\n\n".join(x for x in (HEADER_RULE, missing_background_rules()) if x)
+    block = "\n\n".join(x for x in (HEADER_RULE, CONTACT_CHANNEL_RULES, missing_background_rules()) if x)
     STYLESHEET.write_text(
         css.rstrip("\n") + "\n\n" + OVERRIDE_START + " - maintained by scripts/prepare.py, do not edit by hand */\n"
         + block + "\n" + OVERRIDE_END + "\n", encoding="utf8")
@@ -162,7 +175,7 @@ def build_search_page():
     """Rebuild search.html from the rendered home page so chrome stays identical."""
     soup = BeautifulSoup((OUT / "index.html").read_text(encoding="utf8"), "html.parser")
     if soup.title:
-        soup.title.string = SEARCH_LABEL + " - Shanghai Joylong Industry Co.,Ltd"
+        soup.title.string = SEARCH_LABEL + " - ATHENA HEATEX"
     container = soup.select_one("body > .container") or soup.body
     for child in list(container.children):
         if not getattr(child, "name", None):
@@ -249,7 +262,7 @@ def write_not_found_page():
     """Ship a Vietnamese 404 page; static hosts serve dist/404.html automatically."""
     soup = BeautifulSoup((OUT / "index.html").read_text(encoding="utf8"), "html.parser")
     if soup.title:
-        soup.title.string = "Không tìm thấy trang - Shanghai Joylong Industry Co.,Ltd"
+        soup.title.string = "Không tìm thấy trang - ATHENA HEATEX"
     container = soup.select_one("body > .container") or soup.body
     for child in list(container.children):
         if not getattr(child, "name", None):

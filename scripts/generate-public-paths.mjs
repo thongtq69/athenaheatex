@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { load } from 'cheerio';
 import { PUBLIC_PATHS as previousPaths } from '../lib/public-path-map.mjs';
+import { replaceLegacySiteText } from '../lib/site-settings.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const dist = path.join(root, 'dist');
@@ -20,7 +21,8 @@ const special = {
 const slug = value => { const full=String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');return full.length>72?full.slice(0,72).replace(/-[^-]*$/,''):full; };
 const numberWords = ['mot','hai','ba','bon','nam','sau','bay','tam','chin','muoi','muoi-mot','muoi-hai'];
 const alpha = number => { let value=number,result='';while(value>0){value-=1;result=String.fromCharCode(97+value%26)+result;value=Math.floor(value/26);}return result; };
-const index = JSON.parse(await readFile(path.join(root, 'reports', 'search-index.json'), 'utf8'));
+const index = JSON.parse(await readFile(path.join(root, 'reports', 'search-index.json'), 'utf8'))
+  .map(item => ({ ...item, title: replaceLegacySiteText(item.title), text: replaceLegacySiteText(item.text) }));
 const titles = new Map(index.map(item => [item.path, item.title]));
 const files = (await readdir(dist)).filter(name => name.endsWith('.html')).sort();
 const paths = {};

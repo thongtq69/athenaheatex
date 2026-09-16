@@ -57,6 +57,9 @@ test('the deployed entity editors mark only the representative image as required
  assert.doesNotMatch(source,/\['html','HTML toàn trang'/);
  assert.doesNotMatch(source,/source-details/);
  assert.doesNotMatch(source,/Đường dẫn \(\.html\)/);
+ assert.match(source,/\['whatsappUrl','Liên kết WhatsApp','text'\]/);
+ assert.match(source,/\['zaloUrl','Liên kết Zalo','text'\]/);
+ assert.match(source,/\['wechatUrl','Liên kết mở WeChat','text'\]/);
 });
 test('CMS HTML is normalized before storage and clean HTML is preserved byte-for-byte',()=>{
  const dirty='<!doctype html><html><body><div id="x"></div><div id="x"></div><img src="/a.jpg"><div class="crm-form"><form><input name="Name" placeholder="*Họ tên"><input name="Email" placeholder="*E-mail" type="text"><textarea name="Message" placeholder="*Lời nhắn"></textarea></form></div></body></html>';
@@ -86,6 +89,21 @@ test('legacy public pages always include the base stylesheet required for layout
  assert.match(normalized,/href="\/templates\/default\/css\/public\.css"/);
  assert.ok(normalized.indexOf('public.css')<normalized.indexOf('main.css'));
  assert.equal((normalized.match(/public\.css/g)||[]).length,1);
+});
+
+test('legacy branding and contact details are normalized everywhere visitors can see them',async()=>{
+ const raw='<!doctype html><html><head><title>Shanghai Joylong Industry Co., Ltd</title></head><body><p>Joylong +86-18616619098 info@shjoylong.com</p><a href="tel:+86-18616619098">Gọi</a><a href="mailto:shjoylong@hotmail.com">Mail</a></body></html>';
+ const normalized=normalizeDocumentHtml(raw,'Shanghai Joylong');
+ assert.doesNotMatch(normalized,/Shanghai Joylong|\bJoylong\b|shjoylong|18616619098/i);
+ assert.match(normalized,/ATHENA HEATEX/);
+ assert.match(normalized,/\+84 912 76 76 85/);
+ assert.match(normalized,/sales@athenatech\.com\.vn/);
+ const contact=await readFile(path.join(process.cwd(),'dist','contact-us-7.html'),'utf8');
+ assert.match(contact,/contact-channel-whatsapp/);
+ assert.match(contact,/contact-channel-zalo/);
+ assert.match(contact,/contact-channel-wechat/);
+ assert.match(contact,/form-contact-channels/);
+ assert.doesNotMatch(contact,/facebook\.com\/joylong|twitter\.com\/Joylong|linkedin\.com\/company\/shanghai-joylong/i);
 });
 
 test('the shared header constrains large logos uploaded from admin',async()=>{

@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-09-15T17:03:01.929Z",
+  "generatedAt": "2026-09-16T06:23:02.730Z",
   "source": {
     "htmlPages": 280,
     "files": 791,
-    "htmlSizeMB": 7.18,
+    "htmlSizeMB": 8.77,
     "images": 2644,
     "forms": 697,
     "productPages": 136,
@@ -24,7 +24,8 @@
       "services": 1,
       "categories": 37,
       "banners": 3,
-      "media": 432
+      "media": 432,
+      "migrated": false
     },
     "counts": {
       "pages": 280,
@@ -39,24 +40,12 @@
   },
   "contactsRepeatedInHtml": [
     {
-      "value": "mailto:info@shjoylong.com",
-      "count": 974
+      "value": "mailto:sales@athenatech.com.vn",
+      "count": 1391
     },
     {
-      "value": "tel:+86-21-50911019",
-      "count": 559
-    },
-    {
-      "value": "tel:+86-18616619098",
-      "count": 416
-    },
-    {
-      "value": "mailto:shjoylong@gmail.com",
-      "count": 1
-    },
-    {
-      "value": "tel:+86-008618616619098",
-      "count": 1
+      "value": "tel:+84 912 76 76 85",
+      "count": 695
     }
   ],
   "findingCounts": {

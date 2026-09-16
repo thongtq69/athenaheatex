@@ -41,7 +41,7 @@
   if(modelContext?.registerTool){
     try {
       // Search reads the static index: there is no /api/search on the deployed site.
-      modelContext.registerTool({name:'search_products',title:'Tìm kiếm sản phẩm',description:'Tìm kiếm trang sản phẩm và trang giới thiệu của Joylong.',inputSchema:{type:'object',properties:{query:{type:'string'}},required:['query'],additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:true},async execute(input){
+      modelContext.registerTool({name:'search_products',title:'Tìm kiếm sản phẩm',description:'Tìm kiếm trang sản phẩm và trang giới thiệu của ATHENA HEATEX.',inputSchema:{type:'object',properties:{query:{type:'string'}},required:['query'],additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:true},async execute(input){
         const q=String(input?.query||'').trim().toLowerCase();if(!q)throw new Error('Thiếu từ khóa tìm kiếm');
         const terms=q.split(/\s+/).filter(Boolean);const index=await fetch('/search-index.json').then(r=>r.json());
         const found=index.filter(x=>terms.every(t=>(x.title+' '+x.text).toLowerCase().includes(t)));

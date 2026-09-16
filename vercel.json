@@ -661,7 +661,7 @@
     },
     {
       "source": "/joylong-manufacturing-workshop-456.html",
-      "destination": "/xuong-san-xuat-joylong",
+      "destination": "/xuong-san-xuat-athena-heatex",
       "permanent": true
     },
     {
@@ -2775,8 +2775,13 @@
       "permanent": true
     },
     {
+      "source": "/xuong-san-xuat-joylong",
+      "destination": "/xuong-san-xuat-athena-heatex",
+      "permanent": true
+    },
+    {
       "source": "/xuong-san-xuat-joylong-456",
-      "destination": "/xuong-san-xuat-joylong",
+      "destination": "/xuong-san-xuat-athena-heatex",
       "permanent": true
     },
     {
@@ -3349,7 +3354,7 @@
       "destination": "/api/render?path=/jb--aseptic-brick-carton-aseptic-filling-machine-for-ml---ml-392.html"
     },
     {
-      "source": "/xuong-san-xuat-joylong",
+      "source": "/xuong-san-xuat-athena-heatex",
       "destination": "/api/render?path=/joylong-manufacturing-workshop-456.html"
     },
     {

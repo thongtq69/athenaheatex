@@ -9,6 +9,7 @@ import { ensureCmsSeeded } from './lib/cms.mjs';
 import { renderCmsPage } from './lib/cms-render.mjs';
 import { publicPathForAliasPath, publicPathForSourcePath, rewritePublicLinks, sourcePathForPublicPath } from './lib/public-paths.mjs';
 import { handleAdminApi } from './lib/admin-api.mjs';
+import { replaceLegacySiteText } from './lib/site-settings.mjs';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const publicRoot = path.join(root, 'dist');
@@ -16,7 +17,7 @@ const adminRoot = path.join(root, 'admin');
 const mime = {'.html':'text/html; charset=utf-8','.php':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.gif':'image/gif','.svg':'image/svg+xml','.webp':'image/webp','.ico':'image/x-icon','.woff':'font/woff','.woff2':'font/woff2','.ttf':'font/ttf','.eot':'application/vnd.ms-fontobject','.pdf':'application/pdf','.mp4':'video/mp4'};
 const escape = text => String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let cachedIndex;
-async function index() { return cachedIndex ||= JSON.parse(await readFile(path.join(root,'reports/search-index.json'),'utf8')); }
+async function index() { return cachedIndex ||= JSON.parse(replaceLegacySiteText(await readFile(path.join(root,'reports/search-index.json'),'utf8'))); }
 async function body(req, limit=65536) {
   const chunks=[]; let size=0;
   for await (const chunk of req) {size+=chunk.length;if(size>limit)throw Object.assign(new Error('Nội dung gửi lên quá lớn.'),{status:413});chunks.push(chunk);}
@@ -111,5 +112,5 @@ export function createServer({dataDir=path.join(root,'data'),useDatabase=isDatab
 if(process.argv[1] && path.resolve(process.argv[1])===fileURLToPath(import.meta.url)) {
  const port=Number(process.env.PORT||4173);
  if(isDatabaseConfigured())await ensureCmsSeeded();
- createServer().listen(port,'127.0.0.1',()=>console.log(`Joylong CMS: http://127.0.0.1:${port} (admin: /admin/)`));
+ createServer().listen(port,'127.0.0.1',()=>console.log(`ATHENA HEATEX CMS: http://127.0.0.1:${port} (admin: /admin/)`));
 }
