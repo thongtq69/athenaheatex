@@ -50,7 +50,7 @@
         .shareComp p{ font-size:15px;}
         .shareComp p a{ display:inline-block; padding:8px 0; color:#888; font-weight:bold; text-transform:capitalize; }
     </style>
-<title>Chia sẻ</title></head>
+<title>Chia sẻ</title><link href="/favicon.ico?v=20260917" rel="icon" sizes="any"/></head>
 <body>
 <div class="sharebox">
 <div class="shareComp">

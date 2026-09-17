@@ -31,7 +31,12 @@ test('the home and search pages are served in Vietnamese with the local runtime'
   assert.match(html,/<html lang="vi"/);
   assert.doesNotMatch(html,/\/languages\//);
   assert.doesNotMatch(html,/class="(?:lang|header-lang)"/);
+  assert.match(html,/href="\/favicon\.ico\?v=20260917"/);
  }
+ const favicon=await fetch(base+'/favicon.ico');
+ assert.equal(favicon.status,200);
+ assert.match(favicon.headers.get('content-type'),/image\/x-icon/);
+ assert.ok((await favicon.arrayBuffer()).byteLength>1000);
 });
 test('the deployed entity editors mark only the representative image as required',async()=>{
  const source=await readFile(path.join(process.cwd(),'admin','admin.js'),'utf8');

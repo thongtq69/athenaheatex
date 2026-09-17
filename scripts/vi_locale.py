@@ -327,6 +327,7 @@ _TABLE_LABELS = {"Name": "Tên", "Name:": "Tên:", "Name model": "Tên model", "
 # Inline wrappers upstream uses to split one heading across several tags.
 _INLINE_TAGS = {"strong", "b", "em", "i", "span", "u", "font"}
 _COMPANY_SUFFIX = " - Shanghai Joylong Industry Co.,Ltd"
+_FAVICON_HREF = "/favicon.ico?v=20260917"
 
 
 def translate_title(soup):
@@ -400,4 +401,8 @@ def translate_document(path: Path, root: Path = None):
     # Localize SEO titles from the rendered heading while preserving the
     # company name and model identifiers used by the source pages.
     translate_title(soup)
+    if soup.head is not None:
+        for current in soup.select('link[rel~="icon"]'):
+            current.decompose()
+        soup.head.append(soup.new_tag("link", href=_FAVICON_HREF, rel="icon", sizes="any"))
     path.write_text(str(soup), encoding="utf8")
