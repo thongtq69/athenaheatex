@@ -31,7 +31,8 @@ test('the home and search pages are served in Vietnamese with the local runtime'
   assert.match(html,/<html lang="vi"/);
   assert.doesNotMatch(html,/\/languages\//);
   assert.doesNotMatch(html,/class="(?:lang|header-lang)"/);
-  assert.match(html,/href="\/favicon\.ico\?v=20260917"/);
+  assert.match(html,/href="\/favicon\.ico\?v=20260917-2"/);
+  if(file==='/index.html')assert.equal(load(html)('title').text(),'ATHENA HEATEX');
  }
  const favicon=await fetch(base+'/favicon.ico');
  assert.equal(favicon.status,200);
