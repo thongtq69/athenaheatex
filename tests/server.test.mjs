@@ -125,8 +125,11 @@ test('every public page exposes the configured phone in a prominent click-to-cal
   assert.equal(button.find('.floating-call-icon svg').length,1,file);
  }
  const css=await readFile(path.join(process.cwd(),'dist','templates','default','css','public.css'),'utf8');
- assert.match(css,/\.floating-call\{position:fixed/);
- assert.match(css,/@media screen and \(max-width:768px\)\{\.floating-call\{/);
+ assert.match(css,/\.floating-call\{position:fixed;right:38px;bottom:72px/);
+ assert.match(css,/@media screen and \(max-width:768px\)\{\.floating-call\{right:14px;bottom:60px/);
+ assert.match(css,/@keyframes floating-call-ring/);
+ assert.match(css,/@keyframes floating-call-pulse/);
+ assert.match(css,/@keyframes floating-call-shake/);
 });
 
 test('the shared header constrains large logos uploaded from admin',async()=>{

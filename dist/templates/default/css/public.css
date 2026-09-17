@@ -296,15 +296,19 @@ text-overflow: ellipsis; white-space: nowrap;}
 
 
 /* Prominent click-to-call shortcut using the phone configured in the CMS. */
-.floating-call{position:fixed;left:24px;bottom:24px;z-index:998;display:inline-flex;align-items:center;min-height:58px;padding:0 8px 0 24px;border-radius:999px;background:#e53935;color:#fff!important;text-decoration:none!important;box-shadow:0 8px 24px rgba(0,0,0,.24);font:700 20px/1 Arial,sans-serif;letter-spacing:.4px;transition:transform .18s ease,box-shadow .18s ease}
+.floating-call{position:fixed;right:38px;bottom:72px;z-index:998;display:inline-flex;align-items:center;min-height:58px;padding:0 8px 0 24px;border-radius:999px;background:#e53935;color:#fff!important;text-decoration:none!important;box-shadow:0 8px 24px rgba(0,0,0,.24);font:700 20px/1 Arial,sans-serif;letter-spacing:.4px;transition:transform .18s ease,box-shadow .18s ease}
 .floating-call:hover,.floating-call:focus{transform:translateY(-2px);box-shadow:0 11px 28px rgba(0,0,0,.3);outline:none}
 .floating-call:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .floating-call-number{white-space:nowrap}
-.floating-call-icon{display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;margin-left:16px;border-radius:50%;background:#fff;color:#1687d5;box-shadow:0 0 0 3px rgba(22,135,213,.28);flex:0 0 auto}
-.floating-call-icon svg{width:29px;height:29px;fill:currentColor}
-@media screen and (max-width:768px){.floating-call{left:12px;bottom:58px;min-height:48px;padding-left:17px;font-size:16px}.floating-call-icon{width:42px;height:42px;margin-left:12px}.floating-call-icon svg{width:24px;height:24px}}
+.floating-call-icon{position:relative;display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;margin-left:16px;border-radius:50%;background:#fff;color:#1687d5;box-shadow:0 0 0 3px rgba(22,135,213,.28);flex:0 0 auto;animation:floating-call-pulse 2.3s ease-in-out infinite}
+.floating-call-icon::before{content:"";position:absolute;inset:-11px;border:2px solid #1687d5;border-radius:50%;pointer-events:none;animation:floating-call-ring 1.2s ease-in-out infinite}
+.floating-call-icon svg{position:relative;z-index:1;width:29px;height:29px;fill:currentColor;transform-origin:50% 50%;animation:floating-call-shake 1s ease-in-out infinite}
+@keyframes floating-call-ring{0%{transform:scale(.55);opacity:.1}30%{transform:scale(.8);opacity:.55}100%{transform:scale(1.18);opacity:0}}
+@keyframes floating-call-pulse{0%,100%{box-shadow:0 0 0 3px rgba(22,135,213,.25)}50%{box-shadow:0 0 0 9px rgba(22,135,213,.12)}}
+@keyframes floating-call-shake{0%,50%,100%{transform:rotate(0)}10%,30%{transform:rotate(-24deg)}20%,40%{transform:rotate(24deg)}}
+@media screen and (max-width:768px){.floating-call{right:14px;bottom:60px;min-height:48px;padding-left:17px;font-size:16px}.floating-call-icon{width:42px;height:42px;margin-left:12px}.floating-call-icon svg{width:24px;height:24px}}
 @media screen and (max-width:380px){.floating-call{font-size:14px;letter-spacing:0}}
-@media (prefers-reduced-motion:reduce){.floating-call{transition:none}}
+@media (prefers-reduced-motion:reduce){.floating-call{transition:none}.floating-call-icon,.floating-call-icon::before,.floating-call-icon svg{animation:none}}
 
 
 /* These upstream images 404 at the source site; suppress the failed
