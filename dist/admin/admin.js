@@ -1,8 +1,8 @@
 const $ = selector => document.querySelector(selector);
 const PAGE_SIZE = 40;
 const state = { view: 'dashboard', loadedView: null, dashboardCache: null, resourceCache: new Map(), items: [], categories: [], categoriesLoaded: false, products: [], productsLoaded: false, pages: [], pagesLoaded: false, list: null, listRequest: 0, listAbort: null, navigation: 0, searchTimer: null, editing: null, admin: null, toastTimer: null };
-const titles = { dashboard:'Tổng quan',pages:'Trang & nội dung',sections:'Khối nội dung',products:'Sản phẩm',services:'Dịch vụ',categories:'Danh mục',banners:'Banner',media:'Thư viện ảnh',settings:'Thông tin & giao diện',inquiries:'Yêu cầu khách hàng' };
-const hints = { dashboard:'Quản lý và đồng bộ website từ một nơi',pages:'Chỉnh chữ, liên kết và ảnh bằng trình trực quan',sections:'Quản lý các khối nội dung được đặt trên trang',products:'Ảnh, mô tả, thông số và video sản phẩm',services:'Quản lý dịch vụ đang hiển thị trên website',categories:'Quản lý nhóm sản phẩm và nhóm dịch vụ',banners:'Quản lý ảnh lớn và liên kết ở đầu trang',media:'Tìm và quản lý toàn bộ ảnh đã lưu',settings:'Logo, menu, mạng xã hội, liên hệ và SEO',inquiries:'Xem và xử lý yêu cầu khách gửi'};
+const titles = { dashboard:'Tổng quan',pages:'Trang & nội dung',sections:'Khối nội dung',products:'Sản phẩm',services:'Dịch vụ',categories:'Danh mục',banners:'Banner',media:'Thư viện ảnh',settings:'Thông tin & giao diện',inquiries:'Yêu cầu khách hàng',domains:'Tên miền' };
+const hints = { dashboard:'Quản lý và đồng bộ website từ một nơi',pages:'Chỉnh chữ, liên kết và ảnh bằng trình trực quan',sections:'Quản lý các khối nội dung được đặt trên trang',products:'Ảnh, mô tả, thông số và video sản phẩm',services:'Quản lý dịch vụ đang hiển thị trên website',categories:'Quản lý nhóm sản phẩm và nhóm dịch vụ',banners:'Quản lý ảnh lớn và liên kết ở đầu trang',media:'Tìm và quản lý toàn bộ ảnh đã lưu',settings:'Logo, menu, mạng xã hội, liên hệ và SEO',inquiries:'Xem và xử lý yêu cầu khách gửi',domains:'Địa chỉ truy cập chính thức và trạng thái kết nối website ATHENA HEATEX'};
 const esc = value => String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 
 const configs = {
@@ -62,7 +62,7 @@ async function navigate(view){
   $('.sidebar').classList.remove('open');
   $('#content').classList.add('view-pending');$('#content').setAttribute('aria-busy','true');$('#viewLoading').classList.remove('hidden');
   try{
-    if(view==='dashboard')await renderDashboard(navigation);else if(view==='settings')await renderSettings(navigation);else await renderResource(view,'',0,navigation);
+    if(view==='dashboard')await renderDashboard(navigation);else if(view==='settings')await renderSettings(navigation);else if(view==='domains')await renderDomains(navigation);else await renderResource(view,'',0,navigation);
     if(navigation===state.navigation){state.loadedView=view;$('#viewTitle').textContent=titles[view];$('#viewHint').textContent=hints[view]||'';}
   }
   catch(error){if(navigation!==state.navigation||error.name==='AbortError')return;state.loadedView=null;$('#content').innerHTML=`<div class="panel empty">${esc(error.message)}</div>`;$('#viewTitle').textContent=titles[view];$('#viewHint').textContent=hints[view]||'';toast(error.message,'error');if(error.status===401)setTimeout(()=>location.reload(),800);}
@@ -79,6 +79,59 @@ async function renderDashboard(navigation=state.navigation){
   $('#content').innerHTML=`<section class="dashboard-welcome"><div><p class="eyebrow">KHU VỰC QUẢN TRỊ</p><h2>Xin chào, ${esc(state.admin?.username||'Admin')}</h2><p>Mọi thay đổi được lưu qua API và đồng bộ trực tiếp ra website. Chọn một lối tắt bên phải để bắt đầu.</p></div><div class="welcome-actions"><button type="button" data-view="products">Mở sản phẩm</button><button type="button" data-view="pages">Mở trang</button></div></section><p class="dashboard-label">Tổng quan dữ liệu</p><div class="stats">${cards.map(([resource,label])=>`<button type="button" class="stat" data-view="${resource}" aria-label="Mở ${esc(titles[resource])}: ${Number(counts[resource]||0).toLocaleString('vi-VN')} mục"><strong>${Number(counts[resource]||0).toLocaleString('vi-VN')}</strong><span>${esc(label)}</span><span class="stat-arrow" aria-hidden="true">↗</span></button>`).join('')}</div><div class="dashboard-grid"><section class="panel"><div class="panel-head"><div><p class="eyebrow">LỐI TẮT</p><h2>Thao tác thường dùng</h2></div><span class="sync-badge">Dữ liệu trực tiếp</span></div><div class="quick-list">${quick.map(([resource,label,detail,icon])=>`<button type="button" class="quick-link" data-view="${resource}"><span class="quick-icon" aria-hidden="true">${icon}</span><span><b>${label}</b><small>${detail}</small></span></button>`).join('')}</div></section><section class="panel"><div class="panel-head"><div><p class="eyebrow">GỢI Ý</p><h2>Quy trình an toàn</h2></div></div><ol class="guide-list"><li><b>Tìm đúng mục</b><span>Chọn menu theo loại nội dung cần sửa.</span></li><li><b>Sửa bằng trình trực quan</b><span>Gõ chữ, định dạng và chọn ảnh mà không cần biết mã.</span></li><li><b>Lưu rồi kiểm tra</b><span>Bấm Xem và tải lại trang để xác nhận thay đổi.</span></li></ol></section></div>`;
   $('#content .guide-list').innerHTML='<li><b>Sản phẩm</b><span>Ảnh, ảnh bổ sung, mô tả, thông số và video.</span></li><li><b>Thông tin & giao diện</b><span>Logo, menu, mạng xã hội, điện thoại và email.</span></li><li><b>Danh mục và dịch vụ</b><span>Tên nhóm, sản phẩm trong nhóm, nội dung dịch vụ.</span></li><li><b>Trang & khối nội dung</b><span>Chữ, ảnh và liên kết riêng của từng trang.</span></li><li><b>Banner & thư viện ảnh</b><span>Ảnh lớn và liên kết banner.</span></li>';
   $('#content .guide-list').closest('.panel').querySelector('h2').textContent='Chỉnh ở đâu?';
+}
+
+function domainStatusIcon(ok){
+  return ok
+    ? '<span class="domain-check-icon ok" aria-hidden="true">✓</span>'
+    : '<span class="domain-check-icon off" aria-hidden="true">!</span>';
+}
+
+async function copyDomainUrl(value){
+  try{
+    if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(value);
+    else{const input=document.createElement('textarea');input.value=value;input.setAttribute('readonly','');input.style.position='fixed';input.style.opacity='0';document.body.append(input);input.select();document.execCommand('copy');input.remove();}
+    toast('Đã sao chép liên kết.');
+  }catch{toast('Không thể sao chép liên kết.','error');}
+}
+
+async function renderDomains(navigation=state.navigation){
+  const report=await api('/domain-status');
+  if(navigation!==state.navigation)return;
+  const {site,checks,connections}=report;
+  const activeLabel=report.active?'Đang hoạt động':'Cần kiểm tra';
+  const activeClass=report.active?'ok':'off';
+  const checkedAt=new Intl.DateTimeFormat('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(report.checkedAt));
+  const checkRows=[['Phân giải DNS',checks.dns],['Truy cập HTTPS',checks.https],['Website ATHENA HEATEX phản hồi',checks.website]];
+  $('#content').innerHTML=`
+    <div class="domain-page-head">
+      <div><p class="eyebrow">CÀI ĐẶT WEBSITE</p><h2>Tên miền</h2><p>Địa chỉ truy cập chính thức và trạng thái kết nối website ATHENA HEATEX.</p></div>
+      <button id="refreshDomains" class="domain-refresh" type="button"><span aria-hidden="true">↻</span> Kiểm tra lại</button>
+    </div>
+    <div class="domain-overview">
+      <article class="domain-stat"><div><span>Tên miền riêng</span><strong>1</strong><small>${esc(site.apexHost)}</small></div><span class="domain-stat-icon globe" aria-hidden="true">◎</span></article>
+      <article class="domain-stat"><div><span>Website</span><strong>${esc(activeLabel)}</strong><small>Tên miền chính · www</small></div>${domainStatusIcon(report.active)}</article>
+      <article class="domain-stat"><div><span>Kết nối bảo mật</span><strong>HTTPS</strong><small>${esc(checks.https.detail)}</small></div><span class="domain-stat-icon secure" aria-hidden="true">◇</span></article>
+    </div>
+    <div class="domain-layout">
+      <section class="domain-card domain-primary-card">
+        <div class="domain-card-top"><span class="domain-logo" aria-hidden="true">◎</span><span class="domain-status ${activeClass}"><i></i>${esc(activeLabel)}</span></div>
+        <p class="domain-kicker">TÊN MIỀN WEBSITE ATHENA HEATEX</p>
+        <h3>${esc(site.apexHost)}</h3>
+        <a class="domain-url" href="${esc(site.primaryUrl)}" target="_blank" rel="noopener noreferrer">${esc(site.primaryUrl)}</a>
+        <div class="domain-actions"><a class="domain-open" href="${esc(site.primaryUrl)}" target="_blank" rel="noopener noreferrer">Mở website <span aria-hidden="true">↗</span></a><button id="copyDomainUrl" type="button">▣&nbsp; Sao chép liên kết</button></div>
+        <div class="domain-divider"></div>
+        <h4>Địa chỉ đã kết nối</h4>
+        <div class="domain-connection"><span class="connection-symbol primary">◎</span><div><b>${esc(site.primaryHost)}</b><small>Tên miền chính</small></div><span class="domain-status ${connections.primary.ok?'ok':'off'}"><i></i>${connections.primary.ok?'Đang hoạt động':'Cần kiểm tra'}</span></div>
+        <div class="domain-connection"><span class="connection-symbol">↪</span><div><b>${esc(site.apexHost)}</b><small>Chuyển hướng về tên miền chính</small><em>${esc(site.apexHost)} → ${esc(site.primaryHost)} · ${connections.apex.ok?`Chuyển hướng ${connections.apex.status} trên Vercel`:'Chưa xác nhận chuyển hướng'}</em></div><span class="domain-status ${connections.apex.ok?'ok':'off'}"><i></i>${connections.apex.ok?'Đã kết nối':'Cần kiểm tra'}</span></div>
+      </section>
+      <aside class="domain-side">
+        <section class="domain-card domain-info"><h3>Thông tin website</h3><dl><div><dt>Dự án</dt><dd>${esc(site.project)}</dd></div><div><dt>Môi trường</dt><dd>${esc(site.environment)}</dd></div><div><dt>Nền tảng triển khai</dt><dd>${esc(site.platform)}</dd></div><div><dt>Địa chỉ nền tảng</dt><dd><a href="${esc(site.platformUrl)}" target="_blank" rel="noopener noreferrer">${esc(site.platformHost)}</a></dd></div></dl></section>
+        <section class="domain-card domain-checks"><div class="domain-check-head"><div><h3>Kiểm tra kết nối</h3><p>Cập nhật lúc ${esc(checkedAt)}</p></div><span class="domain-live-dot ${activeClass}" aria-hidden="true"></span></div><div class="domain-check-list">${checkRows.map(([label,item])=>`<div>${domainStatusIcon(item.ok)}<span><b>${esc(label)}</b><small>${esc(item.detail)}</small></span></div>`).join('')}</div><p class="domain-note">Trạng thái được kiểm tra tại thời điểm mở trang, không phải cam kết uptime liên tục.</p></section>
+      </aside>
+    </div>`;
+  $('#refreshDomains').onclick=async event=>{const button=event.currentTarget;button.disabled=true;button.innerHTML='<span class="domain-spin" aria-hidden="true">↻</span> Đang kiểm tra…';try{await renderDomains(state.navigation);toast('Đã cập nhật trạng thái tên miền.');}catch(error){button.disabled=false;button.innerHTML='<span aria-hidden="true">↻</span> Kiểm tra lại';toast(error.message,'error');}};
+  $('#copyDomainUrl').onclick=()=>copyDomainUrl(site.primaryUrl);
 }
 
 async function renderResource(resource,q=state.list?.resource===resource?state.list.q:'',page=state.list?.resource===resource?state.list.page:0,navigation=state.navigation){

@@ -12,6 +12,7 @@ import { publicPathForSourcePath, sourcePathForPublicPath } from '../lib/public-
 import { normalizeResource } from '../lib/admin-api.mjs';
 import { normalizeDocumentHtml, normalizeFragmentHtml } from '../lib/html-normalize.mjs';
 import { extractProductContent } from '../lib/product-content.mjs';
+import { checkDomainStatus, DOMAIN_CONFIG } from '../lib/domain-status.mjs';
 
 let server,base,dataDir;
 before(async()=>{
@@ -111,6 +112,31 @@ test('legacy branding and contact details are normalized everywhere visitors can
  assert.match($contact('.inquiry-contact-channels a[data-contact-kind="zalo"]').attr('href'),/^https:\/\/zalo\.me\//);
  assert.match($contact('.inquiry-contact-channels a[data-contact-kind="wechat"]').attr('href'),/^weixin:\/\//);
  assert.doesNotMatch(contact,/facebook\.com\/joylong|twitter\.com\/Joylong|linkedin\.com\/company\/shanghai-joylong/i);
+});
+test('the admin includes a responsive domain overview for ATHENA HEATEX',async()=>{
+ const html=await readFile(path.join(process.cwd(),'admin','index.html'),'utf8');
+ const script=await readFile(path.join(process.cwd(),'admin','admin.js'),'utf8');
+ const css=await readFile(path.join(process.cwd(),'admin','admin.css'),'utf8');
+ assert.match(html,/data-view="domains">Tên miền/);
+ assert.match(script,/api\('\/domain-status'\)/);
+ assert.match(script,/Địa chỉ đã kết nối/);
+ assert.match(script,/athenaheatex\.vercel\.app|site\.platformHost/);
+ assert.match(css,/\.domain-overview/);
+ assert.match(css,/@media\(max-width:760px\).*\.domain-overview\{grid-template-columns:1fr\}/s);
+});
+test('domain checks recognize the primary site and both Vercel redirects',async()=>{
+ const responses=new Map([
+  [DOMAIN_CONFIG.primaryUrl,{status:200,location:''}],
+  [DOMAIN_CONFIG.apexUrl,{status:308,location:DOMAIN_CONFIG.primaryUrl}],
+  [DOMAIN_CONFIG.platformUrl,{status:307,location:DOMAIN_CONFIG.primaryUrl}],
+ ]);
+ const fetchImpl=async url=>{const value=responses.get(url);return {status:value.status,headers:{get:name=>name==='location'?value.location:''}};};
+ const report=await checkDomainStatus({fetchImpl,lookup:async()=>[{address:'203.0.113.10'}],timeoutMs:50});
+ assert.equal(report.active,true);
+ assert.equal(report.checks.dns.ok,true);
+ assert.equal(report.checks.https.status,200);
+ assert.equal(report.connections.apex.ok,true);
+ assert.equal(report.connections.platform.ok,true);
 });
 
 test('every public page exposes the configured phone in a prominent click-to-call button',async()=>{
