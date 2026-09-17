@@ -55,12 +55,16 @@ $('#menuBtn').addEventListener('click',()=>$('.sidebar').classList.toggle('open'
 
 async function navigate(view){
   if(!titles[view])return;
-  if(view===state.view&&(state.loadedView===view||$('#content').classList.contains('view-pending')))return;
+  if(view===state.view&&$('#refreshDomains')?.disabled)return;
+  if(view===state.view&&state.loadedView===view&&view!=='domains')return;
+  if(view===state.view&&$('#content').classList.contains('view-pending'))return;
   const navigation=++state.navigation;
   clearTimeout(state.searchTimer);state.listAbort?.abort();
   state.view=view;state.editing=null;document.querySelectorAll('#nav [data-view]').forEach(button=>button.classList.toggle('active',button.dataset.view===view));
   $('.sidebar').classList.remove('open');
-  $('#content').classList.add('view-pending');$('#content').setAttribute('aria-busy','true');$('#viewLoading').classList.remove('hidden');
+  $('#viewTitle').textContent=titles[view];$('#viewHint').textContent=hints[view]||'';
+  if(view==='domains'){$('#content').classList.remove('view-pending');$('#content').removeAttribute('aria-busy');$('#viewLoading').classList.add('hidden');}
+  else{$('#content').classList.add('view-pending');$('#content').setAttribute('aria-busy','true');$('#viewLoading').classList.remove('hidden');}
   try{
     if(view==='dashboard')await renderDashboard(navigation);else if(view==='settings')await renderSettings(navigation);else if(view==='domains')await renderDomains(navigation);else await renderResource(view,'',0,navigation);
     if(navigation===state.navigation){state.loadedView=view;$('#viewTitle').textContent=titles[view];$('#viewHint').textContent=hints[view]||'';}
@@ -81,7 +85,10 @@ async function renderDashboard(navigation=state.navigation){
   $('#content .guide-list').closest('.panel').querySelector('h2').textContent='Chỉnh ở đâu?';
 }
 
-function domainStatusIcon(ok){
+const DOMAIN_SITE={project:'ATHENA HEATEX',primaryHost:'www.athenaheatex.com',apexHost:'athenaheatex.com',primaryUrl:'https://www.athenaheatex.com/',environment:'Website public · Production'};
+
+function domainStatusIcon(ok,checking=false){
+  if(checking)return '<span class="domain-check-icon pending" aria-hidden="true"><i></i></span>';
   return ok
     ? '<span class="domain-check-icon ok" aria-hidden="true">✓</span>'
     : '<span class="domain-check-icon off" aria-hidden="true">!</span>';
@@ -95,43 +102,60 @@ async function copyDomainUrl(value){
   }catch{toast('Không thể sao chép liên kết.','error');}
 }
 
-async function renderDomains(navigation=state.navigation){
-  const report=await api('/domain-status');
-  if(navigation!==state.navigation)return;
-  const {site,checks,connections}=report;
-  const activeLabel=report.active?'Đang hoạt động':'Cần kiểm tra';
-  const activeClass=report.active?'ok':'off';
-  const checkedAt=new Intl.DateTimeFormat('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(report.checkedAt));
+function domainMarkup(report){
+  const checking=!report;
+  const site=report?.site||DOMAIN_SITE;
+  const checks=report?.checks||{dns:{ok:false,detail:'…'},https:{ok:false,detail:'…'},website:{ok:false,detail:'…'}};
+  const connections=report?.connections||{primary:{ok:false},apex:{ok:false,status:0}};
+  const activeLabel=checking?'Đang kiểm tra':report.active?'Đang hoạt động':'Cần kiểm tra';
+  const activeClass=checking?'pending':report.active?'ok':'off';
+  const checkedAt=checking?'':new Intl.DateTimeFormat('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(report.checkedAt));
   const checkRows=[['Phân giải DNS',checks.dns],['Truy cập HTTPS',checks.https],['Website ATHENA HEATEX phản hồi',checks.website]];
-  $('#content').innerHTML=`
+  return `
     <div class="domain-page-head">
       <div><p class="eyebrow">CÀI ĐẶT WEBSITE</p><h2>Tên miền</h2><p>Địa chỉ truy cập chính thức và trạng thái kết nối website ATHENA HEATEX.</p></div>
-      <button id="refreshDomains" class="domain-refresh" type="button"><span aria-hidden="true">↻</span> Kiểm tra lại</button>
+      <button id="refreshDomains" class="domain-refresh" type="button" ${checking?'disabled':''}><span class="${checking?'domain-spin':''}" aria-hidden="true">↻</span> ${checking?'Đang kiểm tra…':'Kiểm tra lại'}</button>
     </div>
     <div class="domain-overview">
       <article class="domain-stat"><div><span>Tên miền riêng</span><strong>1</strong><small>${esc(site.apexHost)}</small></div><span class="domain-stat-icon globe" aria-hidden="true">◎</span></article>
-      <article class="domain-stat"><div><span>Website</span><strong>${esc(activeLabel)}</strong><small>Tên miền chính · www</small></div>${domainStatusIcon(report.active)}</article>
-      <article class="domain-stat"><div><span>Kết nối bảo mật</span><strong>HTTPS</strong><small>${esc(checks.https.detail)}</small></div><span class="domain-stat-icon secure" aria-hidden="true">◇</span></article>
+      <article class="domain-stat"><div><span>Website</span><strong>${esc(activeLabel)}</strong><small>Tên miền chính · www</small></div>${domainStatusIcon(report?.active,checking)}</article>
+      <article class="domain-stat"><div><span>Kết nối bảo mật</span><strong>${checking?'Đang kiểm tra':'HTTPS'}</strong><small>${checking?'Kiểm tra chứng chỉ khi truy cập':esc(checks.https.detail)}</small></div><span class="domain-stat-icon secure" aria-hidden="true">◇</span></article>
     </div>
     <div class="domain-layout">
       <section class="domain-card domain-primary-card">
-        <div class="domain-card-top"><span class="domain-logo" aria-hidden="true">◎</span><span class="domain-status ${activeClass}"><i></i>${esc(activeLabel)}</span></div>
+        <div class="domain-card-top"><span class="domain-logo" aria-hidden="true">◎</span><span class="domain-status ${activeClass}"><i></i>${esc(activeLabel)}${checking?'…':''}</span></div>
         <p class="domain-kicker">TÊN MIỀN WEBSITE ATHENA HEATEX</p>
         <h3>${esc(site.apexHost)}</h3>
         <a class="domain-url" href="${esc(site.primaryUrl)}" target="_blank" rel="noopener noreferrer">${esc(site.primaryUrl)}</a>
         <div class="domain-actions"><a class="domain-open" href="${esc(site.primaryUrl)}" target="_blank" rel="noopener noreferrer">Mở website <span aria-hidden="true">↗</span></a><button id="copyDomainUrl" type="button">▣&nbsp; Sao chép liên kết</button></div>
         <div class="domain-divider"></div>
         <h4>Địa chỉ đã kết nối</h4>
-        <div class="domain-connection"><span class="connection-symbol primary">◎</span><div><b>${esc(site.primaryHost)}</b><small>Tên miền chính</small></div><span class="domain-status ${connections.primary.ok?'ok':'off'}"><i></i>${connections.primary.ok?'Đang hoạt động':'Cần kiểm tra'}</span></div>
-        <div class="domain-connection"><span class="connection-symbol">↪</span><div><b>${esc(site.apexHost)}</b><small>Chuyển hướng về tên miền chính</small><em>${esc(site.apexHost)} → ${esc(site.primaryHost)} · ${connections.apex.ok?`Chuyển hướng ${connections.apex.status} trên Vercel`:'Chưa xác nhận chuyển hướng'}</em></div><span class="domain-status ${connections.apex.ok?'ok':'off'}"><i></i>${connections.apex.ok?'Đã kết nối':'Cần kiểm tra'}</span></div>
+        <div class="domain-connection"><span class="connection-symbol primary">◎</span><div><b>${esc(site.primaryHost)}</b><small>Tên miền chính</small></div><span class="domain-status ${checking?'pending':connections.primary.ok?'ok':'off'}"><i></i>${checking?'Đang kiểm tra…':connections.primary.ok?'Đang hoạt động':'Cần kiểm tra'}</span></div>
+        <div class="domain-connection"><span class="connection-symbol">↪</span><div><b>${esc(site.apexHost)}</b><small>Chuyển hướng về tên miền chính</small><em>${esc(site.apexHost)} → ${esc(site.primaryHost)} · ${checking?'Đang kiểm tra chuyển hướng':connections.apex.ok?`Chuyển hướng ${connections.apex.status} trên Vercel`:'Chưa xác nhận chuyển hướng'}</em></div><span class="domain-status ${checking?'pending':connections.apex.ok?'ok':'off'}"><i></i>${checking?'Đang kiểm tra…':connections.apex.ok?'Đã kết nối':'Cần kiểm tra'}</span></div>
       </section>
       <aside class="domain-side">
-        <section class="domain-card domain-info"><h3>Thông tin website</h3><dl><div><dt>Dự án</dt><dd>${esc(site.project)}</dd></div><div><dt>Môi trường</dt><dd>${esc(site.environment)}</dd></div><div><dt>Nền tảng triển khai</dt><dd>${esc(site.platform)}</dd></div><div><dt>Địa chỉ nền tảng</dt><dd><a href="${esc(site.platformUrl)}" target="_blank" rel="noopener noreferrer">${esc(site.platformHost)}</a></dd></div></dl></section>
-        <section class="domain-card domain-checks"><div class="domain-check-head"><div><h3>Kiểm tra kết nối</h3><p>Cập nhật lúc ${esc(checkedAt)}</p></div><span class="domain-live-dot ${activeClass}" aria-hidden="true"></span></div><div class="domain-check-list">${checkRows.map(([label,item])=>`<div>${domainStatusIcon(item.ok)}<span><b>${esc(label)}</b><small>${esc(item.detail)}</small></span></div>`).join('')}</div><p class="domain-note">Trạng thái được kiểm tra tại thời điểm mở trang, không phải cam kết uptime liên tục.</p></section>
+        <section class="domain-card domain-info"><h3>Thông tin website</h3><dl><div><dt>Dự án</dt><dd>${esc(site.project)}</dd></div><div><dt>Môi trường</dt><dd>${esc(site.environment)}</dd></div></dl></section>
+        <section class="domain-card domain-checks"><div class="domain-check-head"><div><h3>Kiểm tra kết nối</h3><p>${checking?'Đang lấy trạng thái mới…':`Cập nhật lúc ${esc(checkedAt)}`}</p></div><span class="domain-live-dot ${activeClass}" aria-hidden="true"></span></div><div class="domain-check-list">${checkRows.map(([label,item])=>`<div>${domainStatusIcon(item.ok,checking)}<span><b>${esc(label)}</b><small>${checking?'…':esc(item.detail)}</small></span></div>`).join('')}</div><p id="domainCheckMessage" class="domain-note">${checking?'Đang lấy trạng thái từ máy chủ.':'Trạng thái được kiểm tra tại thời điểm mở trang, không phải cam kết uptime liên tục.'}</p></section>
       </aside>
     </div>`;
-  $('#refreshDomains').onclick=async event=>{const button=event.currentTarget;button.disabled=true;button.innerHTML='<span class="domain-spin" aria-hidden="true">↻</span> Đang kiểm tra…';try{await renderDomains(state.navigation);toast('Đã cập nhật trạng thái tên miền.');}catch(error){button.disabled=false;button.innerHTML='<span aria-hidden="true">↻</span> Kiểm tra lại';toast(error.message,'error');}};
+}
+
+function bindDomainActions(site){
+  $('#refreshDomains').onclick=()=>renderDomains(state.navigation,true).catch(error=>{
+    const button=$('#refreshDomains');if(button){button.disabled=false;button.innerHTML='<span aria-hidden="true">↻</span> Kiểm tra lại';}
+    const message=$('#domainCheckMessage');if(message)message.textContent='Không thể cập nhật trạng thái. Vui lòng thử lại.';
+    toast(error.message,'error');
+  });
   $('#copyDomainUrl').onclick=()=>copyDomainUrl(site.primaryUrl);
+}
+
+async function renderDomains(navigation=state.navigation,notify=false){
+  $('#content').innerHTML=domainMarkup();
+  const report=await api('/domain-status');
+  if(navigation!==state.navigation)return;
+  $('#content').innerHTML=domainMarkup(report);
+  bindDomainActions(report.site);
+  if(notify||report.active)toast(report.active?'Kiểm tra tên miền thành công.':'Tên miền cần được kiểm tra lại.',report.active?'success':'error');
 }
 
 async function renderResource(resource,q=state.list?.resource===resource?state.list.q:'',page=state.list?.resource===resource?state.list.page:0,navigation=state.navigation){

@@ -120,7 +120,9 @@ test('the admin includes a responsive domain overview for ATHENA HEATEX',async()
  assert.match(html,/data-view="domains">Tên miền/);
  assert.match(script,/api\('\/domain-status'\)/);
  assert.match(script,/Địa chỉ đã kết nối/);
- assert.match(script,/athenaheatex\.vercel\.app|site\.platformHost/);
+ assert.match(script,/Đang lấy trạng thái từ máy chủ/);
+ assert.ok(script.includes("view===state.view&&$('#refreshDomains')?.disabled"));
+ assert.doesNotMatch(script,/Nền tảng triển khai|Địa chỉ nền tảng/);
  assert.match(css,/\.domain-overview/);
  assert.match(css,/@media\(max-width:760px\).*\.domain-overview\{grid-template-columns:1fr\}/s);
 });
