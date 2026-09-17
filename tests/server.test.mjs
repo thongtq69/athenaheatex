@@ -113,6 +113,22 @@ test('legacy branding and contact details are normalized everywhere visitors can
  assert.doesNotMatch(contact,/facebook\.com\/joylong|twitter\.com\/Joylong|linkedin\.com\/company\/shanghai-joylong/i);
 });
 
+test('every public page exposes the configured phone in a prominent click-to-call button',async()=>{
+ for(const file of ['index.html','contact-us-7.html','air-compressor-252.html']){
+  const html=await readFile(path.join(process.cwd(),'dist',file),'utf8');
+  const $=load(html);
+  const button=$('a.floating-call');
+  assert.equal(button.length,1,file);
+  assert.equal(button.attr('href'),'tel:+84 912 76 76 85',file);
+  assert.equal(button.attr('aria-label'),'Gọi +84 912 76 76 85',file);
+  assert.equal(button.find('.floating-call-number').text(),'+84 912 76 76 85',file);
+  assert.equal(button.find('.floating-call-icon svg').length,1,file);
+ }
+ const css=await readFile(path.join(process.cwd(),'dist','templates','default','css','public.css'),'utf8');
+ assert.match(css,/\.floating-call\{position:fixed/);
+ assert.match(css,/@media screen and \(max-width:768px\)\{\.floating-call\{/);
+});
+
 test('the shared header constrains large logos uploaded from admin',async()=>{
  const css=await (await fetch(base+'/templates/default/css/public.css')).text();
  assert.match(css,/#logo img\s*\{[^}]*max-width:\s*481px;[^}]*max-height:\s*78px;/);

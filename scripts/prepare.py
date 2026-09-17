@@ -56,6 +56,17 @@ CONTACT_CHANNEL_RULES = """/* Contact shortcuts shared by the footer, inquiry fo
 #footerBar .footer-channel-icon{width:22px;height:22px;margin:0 auto;background:transparent!important;border-radius:0}#footerBar .footer-channel-icon svg{width:20px;height:20px}
 @media screen and (max-width:768px){.contact-channel-icon{width:36px;height:36px}.footShare ul{justify-content:flex-start}.inquiry-contact-channels{padding:12px 12px 4px}.inquiry-contact-channels .contact-channel-label{font-size:13px}}
 """
+FLOATING_CALL_RULES = """/* Prominent click-to-call shortcut using the phone configured in the CMS. */
+.floating-call{position:fixed;left:24px;bottom:24px;z-index:998;display:inline-flex;align-items:center;min-height:58px;padding:0 8px 0 24px;border-radius:999px;background:#e53935;color:#fff!important;text-decoration:none!important;box-shadow:0 8px 24px rgba(0,0,0,.24);font:700 20px/1 Arial,sans-serif;letter-spacing:.4px;transition:transform .18s ease,box-shadow .18s ease}
+.floating-call:hover,.floating-call:focus{transform:translateY(-2px);box-shadow:0 11px 28px rgba(0,0,0,.3);outline:none}
+.floating-call:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.floating-call-number{white-space:nowrap}
+.floating-call-icon{display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;margin-left:16px;border-radius:50%;background:#fff;color:#1687d5;box-shadow:0 0 0 3px rgba(22,135,213,.28);flex:0 0 auto}
+.floating-call-icon svg{width:29px;height:29px;fill:currentColor}
+@media screen and (max-width:768px){.floating-call{left:12px;bottom:58px;min-height:48px;padding-left:17px;font-size:16px}.floating-call-icon{width:42px;height:42px;margin-left:12px}.floating-call-icon svg{width:24px;height:24px}}
+@media screen and (max-width:380px){.floating-call{font-size:14px;letter-spacing:0}}
+@media (prefers-reduced-motion:reduce){.floating-call{transition:none}}
+"""
 CSS_COMMENT = re.compile(r"/\*.*?\*/", re.S)
 CSS_RULE = re.compile(r"([^{}]*)\{([^{}]*)\}")
 CSS_BACKGROUND_DECL = re.compile(r"background(?:-image)?\s*:([^;]*)")
@@ -122,7 +133,7 @@ def apply_stylesheet_overrides():
         end = css.find(OVERRIDE_END, start)
         css = css[:start] + css[end + len(OVERRIDE_END):] if end != -1 else css[:start]
     STYLESHEET.write_text(css.rstrip("\n") + "\n", encoding="utf8")
-    block = "\n\n".join(x for x in (HEADER_RULE, CONTACT_CHANNEL_RULES, missing_background_rules()) if x)
+    block = "\n\n".join(x for x in (HEADER_RULE, CONTACT_CHANNEL_RULES, FLOATING_CALL_RULES, missing_background_rules()) if x)
     STYLESHEET.write_text(
         css.rstrip("\n") + "\n\n" + OVERRIDE_START + " - maintained by scripts/prepare.py, do not edit by hand */\n"
         + block + "\n" + OVERRIDE_END + "\n", encoding="utf8")
