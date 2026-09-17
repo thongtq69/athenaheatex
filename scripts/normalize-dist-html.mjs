@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { load } from 'cheerio';
 import { normalizeDocumentHtml } from '../lib/html-normalize.mjs';
-import { renderContact, renderGlobalControls } from '../lib/cms-render.mjs';
+import { renderContact, renderGlobalControls, renderSocialMeta } from '../lib/cms-render.mjs';
 import { ATHENA_CONTACT_DEFAULTS, rebrandTree, replaceLegacySiteText } from '../lib/site-settings.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -20,6 +20,7 @@ for (const file of files) {
   renderGlobalControls(rendered, ATHENA_CONTACT_DEFAULTS);
   renderContact(rendered, ATHENA_CONTACT_DEFAULTS);
   rebrandTree(rendered);
+  renderSocialMeta(rendered, `/${file}`);
   const normalized = rendered.html();
   if (normalized !== source) {
     await writeFile(target, normalized, 'utf8');

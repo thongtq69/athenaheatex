@@ -32,12 +32,21 @@ test('the home and search pages are served in Vietnamese with the local runtime'
   assert.doesNotMatch(html,/\/languages\//);
   assert.doesNotMatch(html,/class="(?:lang|header-lang)"/);
   assert.match(html,/href="\/favicon\.ico\?v=20260917-2"/);
-  if(file==='/index.html')assert.equal(load(html)('title').text(),'ATHENA HEATEX');
+  const $=load(html);
+  assert.equal($('meta[property="og:image"]').attr('content'),'https://www.athenaheatex.com/athena-heatex-share-preview.png');
+  assert.equal($('meta[name="twitter:card"]').attr('content'),'summary_large_image');
+  assert.equal($('meta[property="og:image:width"]').attr('content'),'2048');
+  assert.equal($('meta[property="og:image:height"]').attr('content'),'682');
+  if(file==='/index.html')assert.equal($('title').text(),'ATHENA HEATEX');
  }
  const favicon=await fetch(base+'/favicon.ico');
  assert.equal(favicon.status,200);
  assert.match(favicon.headers.get('content-type'),/image\/x-icon/);
  assert.ok((await favicon.arrayBuffer()).byteLength>1000);
+ const preview=await fetch(base+'/athena-heatex-share-preview.png');
+ assert.equal(preview.status,200);
+ assert.match(preview.headers.get('content-type'),/image\/png/);
+ assert.ok((await preview.arrayBuffer()).byteLength>100000);
 });
 test('the deployed entity editors mark only the representative image as required',async()=>{
  const source=await readFile(path.join(process.cwd(),'admin','admin.js'),'utf8');
